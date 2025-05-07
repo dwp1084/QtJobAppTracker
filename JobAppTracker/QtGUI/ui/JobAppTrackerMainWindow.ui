@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>JobAppTrackerMainWindow</class>
+ <widget class="QMainWindow" name="JobAppTrackerMainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Job Application Tracker</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <widget class="QWidget" name="widget" native="true">
+      <layout class="QHBoxLayout" name="horizontalLayout">
+       <item>
+        <widget class="QPushButton" name="addAppButton">
+         <property name="text">
+          <string>Add Job Application</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="horizontalSpacer">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <widget class="QTableWidget" name="appTableWidget">
+      <property name="editTriggers">
+       <set>QAbstractItemView::NoEditTriggers</set>
+      </property>
+      <row>
+       <property name="text">
+        <string>TestRow</string>
+       </property>
+      </row>
+      <column>
+       <property name="text">
+        <string>Company</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Job Title</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Applied On</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Followed Up</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Type</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Location</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>App Website</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Contact</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Materials Sent</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Salary</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Status</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Comment</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Days Pending</string>
+       </property>
+      </column>
+      <item row="0" column="0">
+       <property name="text">
+        <string>Example</string>
+       </property>
+      </item>
+      <item row="0" column="1">
+       <property name="text">
+        <string>Meme engineer</string>
+       </property>
+      </item>
+      <item row="0" column="2">
+       <property name="text">
+        <string>5-6-2025</string>
+       </property>
+      </item>
+      <item row="0" column="3">
+       <property name="text">
+        <string/>
+       </property>
+      </item>
+      <item row="0" column="4">
+       <property name="text">
+        <string>In Person</string>
+       </property>
+      </item>
+      <item row="0" column="5">
+       <property name="text">
+        <string>Hell, MI</string>
+       </property>
+      </item>
+      <item row="0" column="6">
+       <property name="text">
+        <string>LinkedIn</string>
+       </property>
+      </item>
+      <item row="0" column="7">
+       <property name="text">
+        <string>bruh</string>
+       </property>
+      </item>
+      <item row="0" column="8">
+       <property name="text">
+        <string>Resume</string>
+       </property>
+      </item>
+      <item row="0" column="9">
+       <property name="text">
+        <string>$420,690</string>
+       </property>
+      </item>
+      <item row="0" column="10">
+       <property name="text">
+        <string>Rejected</string>
+       </property>
+      </item>
+      <item row="0" column="11">
+       <property name="text">
+        <string>iwnegfoviwebno</string>
+       </property>
+      </item>
+      <item row="0" column="12">
+       <property name="text">
+        <string/>
+       </property>
+      </item>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>800</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionNew"/>
+    <addaction name="actionOpen"/>
+   </widget>
+   <widget class="QMenu" name="menuView">
+    <property name="title">
+     <string>View</string>
+    </property>
+    <addaction name="actionInactive_Applications"/>
+    <addaction name="actionDays_Since_Application"/>
+    <addaction name="separator"/>
+    <addaction name="actionStatistics_2"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuView"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionNew">
+   <property name="text">
+    <string>New</string>
+   </property>
+  </action>
+  <action name="actionOpen">
+   <property name="text">
+    <string>Open</string>
+   </property>
+  </action>
+  <action name="actionStatistics">
+   <property name="text">
+    <string>Statistics</string>
+   </property>
+  </action>
+  <action name="actionInactive_Applications">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Inactive Applications</string>
+   </property>
+  </action>
+  <action name="actionStatistics_2">
+   <property name="text">
+    <string>Statistics</string>
+   </property>
+  </action>
+  <action name="actionDays_Since_Application">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Days Since Application</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

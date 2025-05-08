@@ -5,6 +5,7 @@ from PyQt6.QtWidgets import QMainWindow, QMessageBox, QFileDialog
 
 from JobAppTracker.QtGUI.ui.ui_JobAppTrackerMainWindow import Ui_JobAppTrackerMainWindow
 from QtGUI.AppInfoScreen import AppInfoDialog
+from SQLite.Initializer import init_data_file
 from SQLite.Verifier import verify_sqlite, check_job_app_sqlite
 from errorDialog import showErrorMessage
 
@@ -28,7 +29,7 @@ class JobAppTrackerMainWindow(QMainWindow):
 
         if self.settings.value("file/currentFile"):
             filename = self.settings.value("file/currentFile")
-            if not os.path.exists("file/currentFile"):
+            if not os.path.exists(filename):
                 showErrorMessage(f"Last open file {filename} is missing", "Warning", QMessageBox.Icon.Warning)
             else:
                 titleStatus = os.path.basename(filename)
@@ -42,12 +43,12 @@ class JobAppTrackerMainWindow(QMainWindow):
         self.ui.addAppButton.clicked.connect(self.appInfoScreen.exec)
 
         self.ui.actionOpen.triggered.connect(self.openFileAction)
+        self.ui.actionNew.triggered.connect(self.newFileAction)
 
     def setTitleStatus(self, title_status):
         self.setWindowTitle(f"{TITLE_BASE} - {title_status}")
 
-    @pyqtSlot()
-    def openFileAction(self):
+    def handleStartLocationLoad(self):
         if not self.settings.value("file/startLocation"):
             documentsFolder = QStandardPaths.writableLocation(QStandardPaths.StandardLocation.DocumentsLocation)
             startFolder = os.path.join(documentsFolder, "JobAppTracker")
@@ -55,22 +56,47 @@ class JobAppTrackerMainWindow(QMainWindow):
                 os.mkdir(startFolder)
             self.settings.setValue("file/startLocation", startFolder)
 
-        fileName = QFileDialog.getOpenFileName(self, "Open Job App Tracker",
-                                               self.settings.value("file/startLocation"),
-                                               "SQLite database (*.sqlite *.sqlite3 *.db *.db3);;All Files (*)")
+    @pyqtSlot()
+    def openFileAction(self):
+        self.handleStartLocationLoad()
 
-        if fileName[0] == '':
+        fileName, _ = QFileDialog.getOpenFileName(self, "Open Job App Tracker",
+                                                  self.settings.value("file/startLocation"),
+                                                  "SQLite database (*.sqlite *.sqlite3 *.db *.db3);;All Files (*)")
+
+        if fileName == '':
             return
 
-        if not verify_sqlite(fileName[0]):
+        if not verify_sqlite(fileName):
             showErrorMessage("Invalid file type", "Warning", QMessageBox.Icon.Warning)
             return
 
-        if not check_job_app_sqlite(fileName[0]):
+        if not check_job_app_sqlite(fileName):
             showErrorMessage("SQLite file missing required tables", "Warning", QMessageBox.Icon.Warning)
             return
 
-        self.currentFile = fileName[0]
+        self.currentFile = fileName
         self.setTitleStatus(os.path.basename(self.currentFile))
         self.settings.setValue("file/currentFile", self.currentFile)
 
+    @pyqtSlot()
+    def newFileAction(self):
+        self.handleStartLocationLoad()
+
+        fileName, _ = QFileDialog.getSaveFileName(self, "Create new Job App Tracker",
+                                                  self.settings.value("file/startLocation"),
+                                                  "SQLite database (*.sqlite *.sqlite3 *.db *.db3)")
+
+        if fileName == '':
+            return
+
+        if os.path.exists(fileName):
+            showErrorMessage(f"Cannot overwrite existing file {fileName}", "Warning",
+                             QMessageBox.Icon.Warning)
+            return
+
+        init_data_file(fileName)
+
+        self.currentFile = fileName
+        self.setTitleStatus(os.path.basename(self.currentFile))
+        self.settings.setValue("file/currentFile", self.currentFile)

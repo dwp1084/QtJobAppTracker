@@ -217,17 +217,39 @@
         </item>
        </widget>
       </item>
-      <item row="9" column="0">
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QWidget" name="interviewDatesWidget" native="true">
+     <layout class="QFormLayout" name="formLayout_5">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+      <item row="0" column="0">
        <widget class="QLabel" name="label_13">
         <property name="text">
          <string>Add interview date</string>
         </property>
        </widget>
       </item>
-      <item row="9" column="1">
+      <item row="0" column="1">
        <layout class="QHBoxLayout" name="horizontalLayout_2">
         <item>
-         <widget class="QDateEdit" name="interviewDateField"/>
+         <widget class="QDateEdit" name="interviewDateField">
+          <property name="calendarPopup">
+           <bool>true</bool>
+          </property>
+         </widget>
         </item>
         <item>
          <widget class="QPushButton" name="interviewDateSubmit">
@@ -251,14 +273,14 @@
         </item>
        </layout>
       </item>
-      <item row="10" column="0">
+      <item row="1" column="0">
        <widget class="QLabel" name="label_14">
         <property name="text">
          <string>Interviews</string>
         </property>
        </widget>
       </item>
-      <item row="10" column="1">
+      <item row="1" column="1">
        <widget class="QListWidget" name="interviewsList">
         <property name="maximumSize">
          <size>
@@ -307,7 +329,11 @@
        </widget>
       </item>
       <item row="0" column="1">
-       <widget class="QDateEdit" name="followUpField"/>
+       <widget class="QDateEdit" name="followUpField">
+        <property name="calendarPopup">
+         <bool>true</bool>
+        </property>
+       </widget>
       </item>
      </layout>
     </widget>
@@ -405,7 +431,6 @@
   <tabstop>statusField</tabstop>
   <tabstop>interviewDateField</tabstop>
   <tabstop>interviewDateSubmit</tabstop>
-  <tabstop>interviewsList</tabstop>
   <tabstop>followedUpCheckBox</tabstop>
   <tabstop>followUpField</tabstop>
   <tabstop>commentsField</tabstop>

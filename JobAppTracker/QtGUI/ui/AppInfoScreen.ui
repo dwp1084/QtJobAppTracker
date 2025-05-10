@@ -388,6 +388,13 @@
        <number>0</number>
       </property>
       <item>
+       <widget class="QPushButton" name="appDeleteButton">
+        <property name="text">
+         <string>Delete</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <spacer name="horizontalSpacer">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
@@ -401,9 +408,9 @@
        </spacer>
       </item>
       <item>
-       <widget class="QPushButton" name="appDeleteButton">
+       <widget class="QPushButton" name="appCancelButton">
         <property name="text">
-         <string>Delete</string>
+         <string>Cancel</string>
         </property>
        </widget>
       </item>
@@ -431,10 +438,13 @@
   <tabstop>statusField</tabstop>
   <tabstop>interviewDateField</tabstop>
   <tabstop>interviewDateSubmit</tabstop>
+  <tabstop>interviewsList</tabstop>
   <tabstop>followedUpCheckBox</tabstop>
   <tabstop>followUpField</tabstop>
   <tabstop>commentsField</tabstop>
+  <tabstop>appCancelButton</tabstop>
   <tabstop>appSubmitButton</tabstop>
+  <tabstop>appDeleteButton</tabstop>
  </tabstops>
  <resources/>
  <connections/>

@@ -2,6 +2,7 @@ from SQLite.Utils import SQLiteRunner
 
 
 def add_application(data_db,
+                    applied_date,
                     company,
                     title,
                     applied_at,
@@ -31,14 +32,14 @@ def add_application(data_db,
     """
     add_app_sql = """
     INSERT INTO applications (company, title, applied_at, latest_follow_up, location, materials_sent, comments, salary, 
-    contact, status, type)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+    contact, status, type, application_date)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
     """
 
     db = SQLiteRunner(data_db)
 
     params = (company, title, applied_at, follow_up, location, materials_sent, comments, salary, contact, status,
-              job_type)
+              job_type, applied_date)
     db.run(add_app_sql, params)
 
 
@@ -77,7 +78,7 @@ def update_application(data_db,
     SET company = ?,
         title = ?,
         applied_at = ?,
-        follow_up = ?,
+        latest_follow_up = ?,
         location = ?,
         materials_sent = ?,
         comments = ?,
@@ -111,3 +112,11 @@ def get_applications(data_db):
     db = SQLiteRunner(data_db)
 
     return db.fetch(retrieve_apps_sql)
+
+
+def delete_application(data_db, app_id):
+    delete_app_sql = """
+    DELETE FROM applications WHERE app_id = ?;
+    """
+    db = SQLiteRunner(data_db)
+    db.run(delete_app_sql, (app_id,))

@@ -1,15 +1,15 @@
 import os.path
 
 from PyQt6.QtCore import QSettings, QStandardPaths, pyqtSlot
-from PyQt6.QtWidgets import QMainWindow, QMessageBox, QFileDialog, QTableWidgetItem
+from PyQt6.QtWidgets import QMainWindow, QFileDialog, QTableWidgetItem
 
-from Data.Application import Application
+from Data.Application import Application, JobTypes, Status
 from JobAppTracker.QtGUI.ui.ui_JobAppTrackerMainWindow import Ui_JobAppTrackerMainWindow
 from QtGUI.AppInfoScreen import AppInfoDialog
 from SQLite.ApplicationQueries import get_applications
 from SQLite.Initializer import init_data_file
 from SQLite.Verifier import verify_sqlite, check_job_app_sqlite
-from errorDialog import showErrorMessage
+from errorDialog import showWarningMessage
 
 TITLE_BASE = "Job Application Tracker"
 NO_FILE_LOADED = "No file loaded"
@@ -30,17 +30,17 @@ class JobAppTrackerMainWindow(QMainWindow):
 
         titleStatus = NO_FILE_LOADED
 
+        self.appInfoScreen = AppInfoDialog()
+
         if self.settings.value("file/currentFile"):
             filename = self.settings.value("file/currentFile")
             if not os.path.exists(filename):
-                showErrorMessage(f"Last open file {filename} is missing", "Warning", QMessageBox.Icon.Warning)
+                showWarningMessage(f"Last open file {filename} is missing")
             else:
                 titleStatus = os.path.basename(filename)
                 self.changeOpenFile(filename)
 
         self.setTitleStatus(titleStatus)
-
-        self.appInfoScreen = AppInfoDialog()
 
         self.ui.appTableWidget.cellDoubleClicked.connect(
             lambda row, _: self.appInfoScreen.editApplication(self.tableData[row])
@@ -50,9 +50,12 @@ class JobAppTrackerMainWindow(QMainWindow):
         self.ui.actionOpen.triggered.connect(self.openFileAction)
         self.ui.actionNew.triggered.connect(self.newFileAction)
 
+        self.appInfoScreen.table_updated.connect(self.load_data)
+
     def changeOpenFile(self, new_file_path):
         self.setTitleStatus(os.path.basename(new_file_path))
         self.currentFile = new_file_path
+        self.appInfoScreen.setCurrentFile(new_file_path)
         self.settings.setValue("file/currentFile", self.currentFile)
         self.load_data()
 
@@ -67,6 +70,7 @@ class JobAppTrackerMainWindow(QMainWindow):
                 os.mkdir(startFolder)
             self.settings.setValue("file/startLocation", startFolder)
 
+    @pyqtSlot()
     def load_data(self):
         # print(*(dict(row) for row in get_applications(self.currentFile)))
 
@@ -78,13 +82,13 @@ class JobAppTrackerMainWindow(QMainWindow):
                                    row_data["title"],
                                    row_data["application_date"],
                                    row_data["latest_follow_up"],
-                                   int(row_data["type"]),
+                                   JobTypes(row_data["type"]),
                                    row_data["location"],
                                    row_data["applied_at"],
                                    row_data["contact"],
                                    row_data["materials_sent"],
                                    row_data["salary"],
-                                   int(row_data["status"]),
+                                   Status(row_data["status"]),
                                    row_data["comments"])
             self.tableData.append(app_data)
 
@@ -93,16 +97,16 @@ class JobAppTrackerMainWindow(QMainWindow):
         for row, app in enumerate(self.tableData):
             self.ui.appTableWidget.setItem(row, 0, QTableWidgetItem(app.company))
             self.ui.appTableWidget.setItem(row, 1, QTableWidgetItem(app.title))
-            self.ui.appTableWidget.setItem(row, 2, QTableWidgetItem(app.applied_on.isoformat()))
+            self.ui.appTableWidget.setItem(row, 2, QTableWidgetItem(app.applied_on.strftime("%b %d, %Y")))
             if app.followed_up is not None:
-                self.ui.appTableWidget.setItem(row, 3, QTableWidgetItem(app.followed_up.isoformat()))
-            self.ui.appTableWidget.setItem(row, 4, QTableWidgetItem(app.get_job_type_name()))
+                self.ui.appTableWidget.setItem(row, 3, QTableWidgetItem(app.followed_up.strftime("%b %d, %Y")))
+            self.ui.appTableWidget.setItem(row, 4, QTableWidgetItem(str(app.job_type)))
             self.ui.appTableWidget.setItem(row, 5, QTableWidgetItem(app.location))
             self.ui.appTableWidget.setItem(row, 6, QTableWidgetItem(app.website))
             self.ui.appTableWidget.setItem(row, 7, QTableWidgetItem(app.contact))
             self.ui.appTableWidget.setItem(row, 8, QTableWidgetItem(app.materials))
             self.ui.appTableWidget.setItem(row, 9, QTableWidgetItem(app.salary))
-            self.ui.appTableWidget.setItem(row, 10, QTableWidgetItem(app.get_status_name()))
+            self.ui.appTableWidget.setItem(row, 10, QTableWidgetItem(str(app.status)))
             self.ui.appTableWidget.setItem(row, 11, QTableWidgetItem(app.comments))
             self.ui.appTableWidget.setItem(row, 12, QTableWidgetItem(str(app.days_pending)))
 
@@ -122,11 +126,11 @@ class JobAppTrackerMainWindow(QMainWindow):
             return
 
         if not verify_sqlite(fileName):
-            showErrorMessage("Invalid file type", "Warning", QMessageBox.Icon.Warning)
+            showWarningMessage("Invalid file type")
             return
 
         if not check_job_app_sqlite(fileName):
-            showErrorMessage("SQLite file missing required tables", "Warning", QMessageBox.Icon.Warning)
+            showWarningMessage("SQLite file missing required tables")
             return
 
         self.changeOpenFile(fileName)
@@ -143,8 +147,7 @@ class JobAppTrackerMainWindow(QMainWindow):
             return
 
         if os.path.exists(fileName):
-            showErrorMessage(f"Cannot overwrite existing file {fileName}", "Warning",
-                             QMessageBox.Icon.Warning)
+            showWarningMessage(f"Cannot overwrite existing file {fileName}")
             return
 
         init_data_file(fileName)

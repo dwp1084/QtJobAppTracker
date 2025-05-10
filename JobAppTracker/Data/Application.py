@@ -1,8 +1,34 @@
 from dataclasses import dataclass
 from datetime import date
+from enum import Enum
 
 JOB_TYPES = ["In Person", "Hybrid", "Remote"]
 STATUS = ["Pending", "Interview", "Offer", "Rejected"]
+
+
+class JobTypes(Enum):
+    IN_PERSON = 0
+    HYBRID = 1
+    REMOTE = 2
+
+    def __str__(self):
+        return self.name.capitalize().replace("_", " ")
+
+    def __int__(self):
+        return self.value
+
+
+class Status(Enum):
+    PENDING = 0
+    INTERVIEW = 1
+    OFFER = 2
+    REJECTED = 3
+
+    def __str__(self):
+        return self.name.capitalize().replace("_", " ")
+
+    def __int__(self):
+        return self.value
 
 
 @dataclass
@@ -12,20 +38,14 @@ class Application:
     title: str
     applied_on: date
     followed_up: date
-    job_type: int
+    job_type: JobTypes
     location: str
     website: str
     contact: str
     materials: str
     salary: str
-    status: int
+    status: Status
     comments: str
-
-    def get_job_type_name(self):
-        return JOB_TYPES[self.job_type]
-
-    def get_status_name(self):
-        return STATUS[self.status]
 
     @property
     def days_pending(self):

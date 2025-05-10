@@ -1,6 +1,6 @@
 import sys
 
-from PyQt6.QtWidgets import QApplication, QMessageBox
+from PyQt6.QtWidgets import QApplication
 
 from JobAppTracker.QtGUI.JobAppTrackerMainWindow import JobAppTrackerMainWindow
 from SQLite.Initializer import init_autocomplete_file
@@ -13,7 +13,7 @@ if __name__ == '__main__':
     try:
         init_autocomplete_file()
     except IOError as ioe:
-        showErrorMessage(str(ioe), "Error", QMessageBox.Icon.Critical)
+        showErrorMessage(str(ioe))
         sys.exit(-1)
 
     window.show()

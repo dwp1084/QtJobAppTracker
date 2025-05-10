@@ -1,8 +1,6 @@
 import os.path
-import sqlite3 as sql3
 
 from SQLite.Utils import SQLiteRunner
-from SQLite.Verifier import verify_sqlite
 
 APP_FILES_DIR = "internal"
 AUTOCOMPLETE_FILE = "autocomplete.sqlite"

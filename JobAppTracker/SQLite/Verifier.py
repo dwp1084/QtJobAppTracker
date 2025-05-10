@@ -1,5 +1,6 @@
 import sqlite3 as sql3
 
+
 def verify_sqlite(filename):
     """
     Helper function that verifies a file is a SQLite format file by issuing a simple pre-check query.

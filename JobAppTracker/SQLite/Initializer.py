@@ -8,17 +8,17 @@ AUTOCOMPLETE_FILE = "autocomplete.sqlite"
 CREATE_AUTOCOMPLETE_SQL = """
 CREATE TABLE IF NOT EXISTS companies (
     company_id INTEGER PRIMARY KEY,
-    name VARCHAR(50) NOT NULL
+    name VARCHAR(50) NOT NULL UNIQUE 
 );
 
 CREATE TABLE IF NOT EXISTS locations (
     location_id INTEGER PRIMARY KEY,
-    name VARCHAR(100) NOT NULL
+    name VARCHAR(100) NOT NULL UNIQUE 
 );
 
 CREATE TABLE IF NOT EXISTS app_sources (
     app_source_id INTEGER PRIMARY KEY,
-    name VARCHAR(50) NOT NULL
+    name VARCHAR(50) NOT NULL UNIQUE 
 );
 """
 

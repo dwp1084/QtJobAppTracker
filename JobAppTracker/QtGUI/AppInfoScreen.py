@@ -2,12 +2,14 @@ from dataclasses import asdict
 from datetime import date
 from enum import Enum, auto
 
-from PyQt6.QtCore import pyqtSlot, pyqtSignal
-from PyQt6.QtWidgets import QDialog
+from PyQt6.QtCore import pyqtSlot, pyqtSignal, Qt
+from PyQt6.QtWidgets import QDialog, QCompleter
 
 from Data.Application import Application
 from QtGUI.ui.ui_AppInfoScreen import Ui_AppInfoScreen
 from SQLite.ApplicationQueries import add_application, update_application, delete_application
+from SQLite.AutocompleteQueries import autocomplete_companies, autocomplete_locations, autocomplete_app_sources, \
+    insert_companies, insert_locations, insert_app_sources
 from errorDialog import showWarningMessage, showQuestionMessage
 
 
@@ -71,6 +73,20 @@ class AppInfoDialog(QDialog):
         for textField, key in self.textFieldMap.items():
             textField.setText(kwargs.get(key, ""))
 
+        self.fill_autocomplete_data(autocomplete_companies, self.ui.companyField)
+        self.fill_autocomplete_data(autocomplete_locations, self.ui.locationField)
+        self.fill_autocomplete_data(autocomplete_app_sources, self.ui.appSiteField)
+
+    def fill_autocomplete_data(self, fetch_func, text_field):
+        try:
+            word_list = fetch_func()
+            completer = QCompleter(word_list, self)
+            completer.setCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
+            text_field.setCompleter(completer)
+        except Exception as e:
+            print(str(e))
+            raise e
+
     def setCurrentFile(self, newFile):
         self.currentFile = newFile
 
@@ -91,10 +107,7 @@ class AppInfoDialog(QDialog):
         self.app_info_type = self.AppInfoType.EXISTING
         args = asdict(app)
         args["days_pending"] = app.days_pending
-        try:
-            self.fill_data(**args)
-        except Exception as e:
-            print(str(e))
+        self.fill_data(**args)
         self.exec()
 
     @pyqtSlot()
@@ -142,6 +155,10 @@ class AppInfoDialog(QDialog):
                     self.ui.jobTypeField.currentIndex(),
                     follow_up
                 )
+
+        insert_companies(self.ui.companyField.text())
+        insert_locations(self.ui.locationField.text())
+        insert_app_sources(self.ui.appSiteField.text())
 
         self.table_updated.emit()
         self.close()

@@ -1,7 +1,7 @@
 import os.path
 
 from PyQt6.QtCore import QSettings, QStandardPaths, pyqtSlot
-from PyQt6.QtWidgets import QMainWindow, QFileDialog, QTableWidgetItem
+from PyQt6.QtWidgets import QMainWindow, QFileDialog, QTableWidgetItem, QHeaderView
 
 from Data.Application import Application, JobTypes, Status
 from JobAppTracker.QtGUI.ui.ui_JobAppTrackerMainWindow import Ui_JobAppTrackerMainWindow
@@ -110,9 +110,10 @@ class JobAppTrackerMainWindow(QMainWindow):
             self.ui.appTableWidget.setItem(row, 11, QTableWidgetItem(app.comments))
             self.ui.appTableWidget.setItem(row, 12, QTableWidgetItem(str(app.days_pending)))
 
-    # @pyqtSlot()
-    # def startNewApplication(self):
-    #     self.appInfoScreen.newApplication()
+        self.ui.appTableWidget.resizeColumnsToContents()
+        for col_idx in range(self.ui.appTableWidget.columnCount()):
+            if self.ui.appTableWidget.columnWidth(col_idx) < 100:
+                self.ui.appTableWidget.setColumnWidth(col_idx, 100)
 
     @pyqtSlot()
     def openFileAction(self):

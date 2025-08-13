@@ -6,7 +6,7 @@ from PyQt6.QtWidgets import QMainWindow, QFileDialog, QTableWidgetItem, QHeaderV
 from Data.Application import Application, JobTypes, Status
 from JobAppTracker.QtGUI.ui.ui_JobAppTrackerMainWindow import Ui_JobAppTrackerMainWindow
 from QtGUI.AppInfoScreen import AppInfoDialog
-from SQLite.ApplicationQueries import get_applications
+from SQLite.ApplicationQueries import get_applications, get_interview_count_for_application
 from SQLite.Initializer import init_data_file
 from SQLite.Verifier import verify_sqlite, check_job_app_sqlite
 from errorDialog import showWarningMessage
@@ -100,15 +100,18 @@ class JobAppTrackerMainWindow(QMainWindow):
             self.ui.appTableWidget.setItem(row, 2, QTableWidgetItem(app.applied_on.strftime("%b %d, %Y")))
             if app.followed_up is not None:
                 self.ui.appTableWidget.setItem(row, 3, QTableWidgetItem(app.followed_up.strftime("%b %d, %Y")))
-            self.ui.appTableWidget.setItem(row, 4, QTableWidgetItem(str(app.job_type)))
-            self.ui.appTableWidget.setItem(row, 5, QTableWidgetItem(app.location))
-            self.ui.appTableWidget.setItem(row, 6, QTableWidgetItem(app.website))
-            self.ui.appTableWidget.setItem(row, 7, QTableWidgetItem(app.contact))
-            self.ui.appTableWidget.setItem(row, 8, QTableWidgetItem(app.materials))
-            self.ui.appTableWidget.setItem(row, 9, QTableWidgetItem(app.salary))
-            self.ui.appTableWidget.setItem(row, 10, QTableWidgetItem(str(app.status)))
-            self.ui.appTableWidget.setItem(row, 11, QTableWidgetItem(app.comments))
-            self.ui.appTableWidget.setItem(row, 12, QTableWidgetItem(str(app.days_pending)))
+            self.ui.appTableWidget.setItem(row, 4, QTableWidgetItem(
+                str(get_interview_count_for_application(self.currentFile, app.app_id))
+            ))
+            self.ui.appTableWidget.setItem(row, 5, QTableWidgetItem(str(app.job_type)))
+            self.ui.appTableWidget.setItem(row, 6, QTableWidgetItem(app.location))
+            self.ui.appTableWidget.setItem(row, 7, QTableWidgetItem(app.website))
+            self.ui.appTableWidget.setItem(row, 8, QTableWidgetItem(app.contact))
+            self.ui.appTableWidget.setItem(row, 9, QTableWidgetItem(app.materials))
+            self.ui.appTableWidget.setItem(row, 10, QTableWidgetItem(app.salary))
+            self.ui.appTableWidget.setItem(row, 11, QTableWidgetItem(str(app.status)))
+            self.ui.appTableWidget.setItem(row, 12, QTableWidgetItem(app.comments))
+            self.ui.appTableWidget.setItem(row, 13, QTableWidgetItem(str(app.days_pending)))
 
         self.ui.appTableWidget.resizeColumnsToContents()
         for col_idx in range(self.ui.appTableWidget.columnCount()):

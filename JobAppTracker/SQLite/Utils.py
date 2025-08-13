@@ -26,6 +26,20 @@ class SQLiteRunner:
             conn.execute(query, params)
             conn.commit()
 
+    def fetchone(self, query, params=()):
+        """
+        Runs a single SELECT SQLite query, then fetches only one returned
+        result using the built-in row factory, useful for aggregate functions.
+        :param query:
+        :param params:
+        :return:
+        """
+        with sqlite3.connect(self.db_file, detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES) as conn:
+            conn.row_factory = sqlite3.Row
+            cursor = conn.cursor()
+            cursor.execute(query, params)
+            return cursor.fetchone()
+
     def fetch(self, query, params=()):
         """
         Runs a single SELECT SQLite query, then fetches all returned

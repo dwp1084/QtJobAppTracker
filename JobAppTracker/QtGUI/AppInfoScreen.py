@@ -186,6 +186,7 @@ class AppInfoDialog(QDialog):
         add_interview_date(self.currentFile, self.app_id, interview_date)
 
         self.refresh_interview_dates()
+        self.table_updated.emit()
 
     @pyqtSlot()
     def askDelete(self):
@@ -215,4 +216,5 @@ class AppInfoDialog(QDialog):
 
             delete_interview(self.currentFile, date_id)
             self.refresh_interview_dates()
+            self.table_updated.emit()
 

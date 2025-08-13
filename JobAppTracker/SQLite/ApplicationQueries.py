@@ -123,6 +123,15 @@ def get_interviews_for_application(data_db, app_id):
     return db.fetch(get_interviews_sql, (app_id,))
 
 
+def get_interview_count_for_application(data_db, app_id):
+    get_interviews_count_sql = """
+    SELECT COUNT(*) FROM interview_dates WHERE app_id = ?;
+    """
+    db = SQLiteRunner(data_db)
+
+    return db.fetchone(get_interviews_count_sql, (app_id,))[0]
+
+
 def delete_interview(data_db, date_id):
     delete_interview_sql = """
     DELETE FROM interview_dates WHERE date_id = ?;

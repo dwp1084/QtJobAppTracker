@@ -7,7 +7,8 @@ from PyQt6.QtWidgets import QDialog, QCompleter
 
 from Data.Application import Application
 from QtGUI.ui.ui_AppInfoScreen import Ui_AppInfoScreen
-from SQLite.ApplicationQueries import add_application, update_application, delete_application
+from SQLite.ApplicationQueries import add_application, update_application, delete_application, \
+                                       get_interviews_for_application, add_interview_date
 from SQLite.AutocompleteQueries import autocomplete_companies, autocomplete_locations, autocomplete_app_sources, \
     insert_companies, insert_locations, insert_app_sources
 from errorDialog import showWarningMessage, showQuestionMessage
@@ -18,6 +19,8 @@ class AppInfoDialog(QDialog):
     currentFile = None
     app_id = None
     table_updated = pyqtSignal()
+
+    interview_dates = []
 
     class AppInfoType(Enum):
         NEW = auto(),
@@ -46,7 +49,9 @@ class AppInfoDialog(QDialog):
             lambda: self.ui.followUpWidget.setVisible(self.ui.followedUpCheckBox.isChecked())
         )
 
-        self.ui.appSubmitButton.clicked.connect(self.submit)
+        self.ui.interviewDateSubmit.clicked.connect(self.interview_submit)
+
+        self.ui.appSubmitButton.clicked.connect(self.app_submit)
         self.ui.appCancelButton.clicked.connect(self.close)
         self.ui.appDeleteButton.clicked.connect(self.askDelete)
 
@@ -87,6 +92,19 @@ class AppInfoDialog(QDialog):
             print(str(e))
             raise e
 
+    def refresh_interview_dates(self):
+        self.interview_dates.clear()
+        for date_row in get_interviews_for_application(self.currentFile, self.app_id):
+            row = dict(date_row)
+            self.interview_dates.append({
+                "date_id": row["date_id"],
+                "interview_date": date.fromisoformat(row["interview_date"])
+            })
+
+        self.ui.interviewsList.clear()
+        for date_row in self.interview_dates:
+            self.ui.interviewsList.addItem(date_row["interview_date"].strftime("%b %d, %Y"))
+
     def setCurrentFile(self, newFile):
         self.currentFile = newFile
 
@@ -108,10 +126,11 @@ class AppInfoDialog(QDialog):
         args = asdict(app)
         args["days_pending"] = app.days_pending
         self.fill_data(**args)
+        self.refresh_interview_dates()
         self.exec()
 
     @pyqtSlot()
-    def submit(self):
+    def app_submit(self):
         required_fields = [self.ui.companyField, self.ui.jobTitleField, self.ui.appSiteField]
 
         for field in required_fields:
@@ -162,6 +181,13 @@ class AppInfoDialog(QDialog):
 
         self.table_updated.emit()
         self.close()
+
+    @pyqtSlot()
+    def interview_submit(self):
+        interview_date = self.ui.interviewDateField.date().toPyDate()
+        add_interview_date(self.currentFile, self.app_id, interview_date)
+
+        self.refresh_interview_dates()
 
     @pyqtSlot()
     def askDelete(self):

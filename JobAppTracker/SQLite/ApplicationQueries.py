@@ -114,6 +114,15 @@ def get_applications(data_db):
     return db.fetch(retrieve_apps_sql)
 
 
+def get_interviews_for_application(data_db, app_id):
+    get_interviews_sql = """
+    SELECT date_id, interview_date FROM interview_dates WHERE app_id = ?;
+    """
+    db = SQLiteRunner(data_db)
+
+    return db.fetch(get_interviews_sql, (app_id,))
+
+
 def delete_application(data_db, app_id):
     delete_app_sql = """
     DELETE FROM applications WHERE app_id = ?;

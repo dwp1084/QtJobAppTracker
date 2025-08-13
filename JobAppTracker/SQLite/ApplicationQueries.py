@@ -116,11 +116,19 @@ def get_applications(data_db):
 
 def get_interviews_for_application(data_db, app_id):
     get_interviews_sql = """
-    SELECT date_id, interview_date FROM interview_dates WHERE app_id = ?;
+    SELECT date_id, interview_date FROM interview_dates WHERE app_id = ? ORDER BY interview_date DESC;
     """
     db = SQLiteRunner(data_db)
 
     return db.fetch(get_interviews_sql, (app_id,))
+
+
+def delete_interview(data_db, date_id):
+    delete_interview_sql = """
+    DELETE FROM interview_dates WHERE date_id = ?;
+    """
+    db = SQLiteRunner(data_db)
+    db.run(delete_interview_sql, (date_id,))
 
 
 def delete_application(data_db, app_id):

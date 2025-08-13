@@ -2,13 +2,13 @@ from dataclasses import asdict
 from datetime import date
 from enum import Enum, auto
 
-from PyQt6.QtCore import pyqtSlot, pyqtSignal, Qt
-from PyQt6.QtWidgets import QDialog, QCompleter
+from PyQt6.QtCore import pyqtSlot, pyqtSignal, Qt, QPoint
+from PyQt6.QtWidgets import QDialog, QCompleter, QMenu
 
 from Data.Application import Application
 from QtGUI.ui.ui_AppInfoScreen import Ui_AppInfoScreen
 from SQLite.ApplicationQueries import add_application, update_application, delete_application, \
-                                       get_interviews_for_application, add_interview_date
+                                       get_interviews_for_application, add_interview_date, delete_interview
 from SQLite.AutocompleteQueries import autocomplete_companies, autocomplete_locations, autocomplete_app_sources, \
     insert_companies, insert_locations, insert_app_sources
 from errorDialog import showWarningMessage, showQuestionMessage
@@ -55,6 +55,8 @@ class AppInfoDialog(QDialog):
         self.ui.appCancelButton.clicked.connect(self.close)
         self.ui.appDeleteButton.clicked.connect(self.askDelete)
 
+        self.ui.interviewsList.customContextMenuRequested.connect(self.interview_list_ctx_menu)
+
     def fill_data(self, **kwargs):
         self.app_id = kwargs.get("app_id", None)
         self.ui.jobTypeField.setCurrentIndex(int(kwargs.get("job_type", 0)))
@@ -83,14 +85,10 @@ class AppInfoDialog(QDialog):
         self.fill_autocomplete_data(autocomplete_app_sources, self.ui.appSiteField)
 
     def fill_autocomplete_data(self, fetch_func, text_field):
-        try:
-            word_list = fetch_func()
-            completer = QCompleter(word_list, self)
-            completer.setCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
-            text_field.setCompleter(completer)
-        except Exception as e:
-            print(str(e))
-            raise e
+        word_list = fetch_func()
+        completer = QCompleter(word_list, self)
+        completer.setCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
+        text_field.setCompleter(completer)
 
     def refresh_interview_dates(self):
         self.interview_dates.clear()
@@ -198,4 +196,23 @@ class AppInfoDialog(QDialog):
         delete_application(self.currentFile, self.app_id)
         self.table_updated.emit()
         self.close()
+
+    @pyqtSlot(QPoint)
+    def interview_list_ctx_menu(self, pos):
+        global_pos = self.ui.interviewsList.mapToGlobal(pos)
+
+        item = self.ui.interviewsList.itemAt(pos)
+        if item is None:
+            return
+
+        menu = QMenu()
+        delete_action = menu.addAction("Delete")
+
+        selected_action = menu.exec(global_pos)
+        if selected_action == delete_action:
+            row = self.ui.interviewsList.row(item)
+            date_id = self.interview_dates[row]["date_id"]
+
+            delete_interview(self.currentFile, date_id)
+            self.refresh_interview_dates()
 

@@ -3,10 +3,20 @@ from datetime import date
 from enum import Enum
 
 JOB_TYPES = ["In Person", "Hybrid", "Remote"]
+"""
+Constant names for job types, mapping in order to how they're stored in the db.
+"""
+
 STATUS = ["Pending", "Interview", "Offer", "Rejected"]
+"""
+Constant names for job statuses, mapping in order to how they're stored in the db.
+"""
 
 
 class JobTypes(Enum):
+    """
+    Job type enumeration
+    """
     IN_PERSON = 0
     HYBRID = 1
     REMOTE = 2
@@ -19,6 +29,9 @@ class JobTypes(Enum):
 
 
 class Status(Enum):
+    """
+    Application status enumeration
+    """
     PENDING = 0
     INTERVIEW = 1
     OFFER = 2
@@ -33,6 +46,9 @@ class Status(Enum):
 
 @dataclass
 class Application:
+    """
+    Application dataclass
+    """
     app_id: int
     company: str
     title: str
@@ -49,5 +65,9 @@ class Application:
 
     @property
     def days_pending(self):
+        """
+        Gets the number of days in which the application has been pending
+        :return:
+        """
         delta = date.today() - self.applied_on
         return delta.days

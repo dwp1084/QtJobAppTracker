@@ -53,6 +53,9 @@ class JobAppTrackerMainWindow(QMainWindow):
                                   QSettings.Format.IniFormat
                                   )
 
+        # Create the application info screen
+        self.appInfoScreen = AppInfoDialog()
+
         # Set window title and load the previously loaded file if possible
         titleStatus = NO_FILE_LOADED
 
@@ -66,10 +69,7 @@ class JobAppTrackerMainWindow(QMainWindow):
 
         self.setTitleStatus(titleStatus)
 
-        # Create the application info screen and link it to each application
-        # and the new application button
-        self.appInfoScreen = AppInfoDialog()
-
+        # Link application info screen to the application view
         self.ui.appTableWidget.cellDoubleClicked.connect(
             lambda row, _: self.appInfoScreen.editApplication(self.tableData[row])
         )

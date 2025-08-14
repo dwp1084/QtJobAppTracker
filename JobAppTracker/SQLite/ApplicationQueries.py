@@ -15,31 +15,33 @@ def add_application(data_db,
                     job_type,
                     follow_up=""):
     """
-    Inserts a new application into the database
-    :param data_db:
-    :param company:
-    :param title:
-    :param applied_at:
-    :param location:
-    :param materials_sent:
-    :param comments:
-    :param salary:
-    :param contact:
-    :param status:
-    :param job_type:
-    :param follow_up:
+    Inserts a new job application into the database.
+    :param data_db: Database file
+    :param applied_date: Application date
+    :param company: Company name
+    :param title: Job title
+    :param applied_at: Website or place where I applied
+    :param location: Job location if not remote
+    :param materials_sent: Materials sent to the company
+    :param comments: Comments about the job position
+    :param salary: Posted salary information
+    :param contact: Contact info
+    :param status: Application status
+    :param job_type: Job type (remote, in-person, hybrid)
+    :param follow_up: Latest follow-up date
     :return:
     """
     add_app_sql = """
-    INSERT INTO applications (company, title, applied_at, latest_follow_up, location, materials_sent, comments, salary, 
-    contact, status, type, application_date)
+    INSERT INTO applications (company, title, applied_at, latest_follow_up, 
+    location, materials_sent, comments, salary,  contact, status, type, 
+    application_date)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
     """
 
     db = SQLiteRunner(data_db)
 
-    params = (company, title, applied_at, follow_up, location, materials_sent, comments, salary, contact, status,
-              job_type, applied_date)
+    params = (company, title, applied_at, follow_up, location, materials_sent,
+              comments, salary, contact, status, job_type, applied_date)
     db.run(add_app_sql, params)
 
 
@@ -57,20 +59,20 @@ def update_application(data_db,
                        job_type,
                        follow_up=""):
     """
-    Updates the main fields of an application in the database
-    :param data_db:
-    :param app_id:
-    :param company:
-    :param title:
-    :param applied_at:
-    :param location:
-    :param materials_sent:
-    :param comments:
-    :param salary:
-    :param contact:
-    :param status:
-    :param job_type:
-    :param follow_up:
+    Updates the main fields of an application in the database.
+    :param data_db: Database file
+    :param app_id: Job application ID from database
+    :param company: Company name
+    :param title: Job title
+    :param applied_at: Website or place where I applied
+    :param location: Job location if not remote
+    :param materials_sent: Materials sent to the company
+    :param comments: Comments about the job position
+    :param salary: Posted salary information
+    :param contact: Contact info
+    :param status: Application status
+    :param job_type: Job type (remote, in-person, hybrid)
+    :param follow_up: Latest follow-up date
     :return:
     """
     update_app_sql = """
@@ -89,12 +91,19 @@ def update_application(data_db,
     WHERE app_id = ?;
     """
     db = SQLiteRunner(data_db)
-    params = (company, title, applied_at, follow_up, location, materials_sent, comments, salary, contact, status,
-              job_type, app_id)
+    params = (company, title, applied_at, follow_up, location, materials_sent,
+              comments, salary, contact, status, job_type, app_id)
     db.run(update_app_sql, params)
 
 
 def add_interview_date(data_db, app_id, date):
+    """
+    Add an interview date into the database.
+    :param data_db: Database file
+    :param app_id: Application ID
+    :param date: Interview date
+    :return:
+    """
     add_interview_sql = """
     INSERT INTO interview_dates (app_id, interview_date) VALUES (?, ?);
     """
@@ -105,9 +114,15 @@ def add_interview_date(data_db, app_id, date):
 
 
 def get_applications(data_db):
+    """
+    Grab a list of all job application data.
+    :param data_db: Database file
+    :return: Applications data
+    """
     retrieve_apps_sql = """
-    SELECT app_id, company, title, applied_at, application_date, latest_follow_up, location, materials_sent, comments, salary, 
-    contact, status, type FROM applications ORDER BY date(application_date) DESC;
+    SELECT app_id, company, title, applied_at, application_date, 
+    latest_follow_up, location, materials_sent, comments, salary, contact, 
+    status, type FROM applications ORDER BY date(application_date) DESC;
     """
     db = SQLiteRunner(data_db)
 
@@ -115,6 +130,12 @@ def get_applications(data_db):
 
 
 def get_interviews_for_application(data_db, app_id):
+    """
+    Grab a list of all interview dates for a specific application.
+    :param data_db: Database file
+    :param app_id: Application ID
+    :return: List of interview dates
+    """
     get_interviews_sql = """
     SELECT date_id, interview_date FROM interview_dates WHERE app_id = ? ORDER BY interview_date DESC;
     """
@@ -124,6 +145,12 @@ def get_interviews_for_application(data_db, app_id):
 
 
 def get_interview_count_for_application(data_db, app_id):
+    """
+    Gets the number of interviews tied to a specific application.
+    :param data_db: Database file
+    :param app_id: Application ID
+    :return: Number of interviews
+    """
     get_interviews_count_sql = """
     SELECT COUNT(*) FROM interview_dates WHERE app_id = ?;
     """
@@ -133,6 +160,12 @@ def get_interview_count_for_application(data_db, app_id):
 
 
 def delete_interview(data_db, date_id):
+    """
+    Delete an interview from the database.
+    :param data_db: Database file
+    :param date_id: Interview date ID
+    :return:
+    """
     delete_interview_sql = """
     DELETE FROM interview_dates WHERE date_id = ?;
     """
@@ -141,6 +174,12 @@ def delete_interview(data_db, date_id):
 
 
 def delete_application(data_db, app_id):
+    """
+    Delete an application from the database.
+    :param data_db: Database file
+    :param app_id: Application ID
+    :return:
+    """
     delete_app_sql = """
     DELETE FROM applications WHERE app_id = ?;
     """

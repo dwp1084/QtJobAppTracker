@@ -3,7 +3,8 @@ import sqlite3 as sql3
 
 def verify_sqlite(filename):
     """
-    Helper function that verifies a file is a SQLite format file by issuing a simple pre-check query.
+    Helper function that verifies a file is a SQLite format file by issuing a
+    simple pre-check query.
     :param filename:
     :return:
     """
@@ -21,6 +22,12 @@ def verify_sqlite(filename):
 
 
 def check_job_app_sqlite(filename):
+    """
+    Helper function that verifies that a SQLite format data file is both a valid
+    data file for this application and that it has all the necessary tables.
+    :param filename:
+    :return:
+    """
     REQUIRED_TABLES = {"applications", "interview_dates"}
 
     conn = sql3.connect(filename)

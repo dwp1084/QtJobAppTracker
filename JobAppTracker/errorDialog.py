@@ -1,7 +1,8 @@
 from PyQt6.QtWidgets import QMessageBox
 
 
-def _showMessage(message, title, icon, accepted=None, default_button=None, buttons=None):
+def _showMessage(message, title, icon, accepted=None, default_button=None,
+                 buttons=None):
     msg = QMessageBox()
     msg.setIcon(icon)
     msg.setText(message)

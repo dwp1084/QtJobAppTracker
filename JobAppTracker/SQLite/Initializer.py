@@ -3,7 +3,14 @@ import os.path
 from SQLite.Utils import SQLiteRunner
 
 APP_FILES_DIR = "internal"
+"""
+Name for the folder that contains internal files for the application.
+"""
+
 AUTOCOMPLETE_FILE = "autocomplete.sqlite"
+"""
+Name of the autocomplete data file.
+"""
 
 CREATE_AUTOCOMPLETE_SQL = """
 CREATE TABLE IF NOT EXISTS companies (
@@ -49,6 +56,11 @@ CREATE TABLE IF NOT EXISTS interview_dates (
 
 
 def init_autocomplete_file():
+    """
+    Initializes the autocomplete file for the application in the internal
+    file folder.
+    :return:
+    """
     if not os.path.exists(APP_FILES_DIR):
         os.mkdir(APP_FILES_DIR)
 
@@ -59,5 +71,10 @@ def init_autocomplete_file():
 
 
 def init_data_file(filePath):
+    """
+    Creates and initializes a new data file.
+    :param filePath:
+    :return:
+    """
     data_file_runner = SQLiteRunner(filePath)
     data_file_runner.run_script(CREATE_DATAFILE_SQL)

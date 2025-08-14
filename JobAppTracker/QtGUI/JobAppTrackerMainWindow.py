@@ -1,4 +1,5 @@
 import os.path
+from datetime import date
 
 from PyQt6.QtCore import QSettings, QStandardPaths, pyqtSlot
 from PyQt6.QtWidgets import (QMainWindow, QFileDialog, QTableWidgetItem,
@@ -13,6 +14,7 @@ from SQLite.ApplicationQueries import (get_applications,
 from SQLite.Initializer import init_data_file
 from SQLite.Verifier import verify_sqlite, check_job_app_sqlite
 from errorDialog import showWarningMessage
+from typing import cast
 
 # Base title for the main window
 TITLE_BASE = "Job Application Tracker"
@@ -129,11 +131,17 @@ class JobAppTrackerMainWindow(QMainWindow):
         self.tableData.clear()
         for row in get_applications(self.currentFile):
             row_data = dict(row)
+
+            # Purely for type checking purposes, the data coming from SQL is
+            # already the date type.
+            app_date = cast(date, row_data["application_date"])
+            follow_up = cast(date, row_data["latest_follow_up"])
+
             app_data = Application(int(row_data["app_id"]),
                                    row_data["company"],
                                    row_data["title"],
-                                   row_data["application_date"],
-                                   row_data["latest_follow_up"],
+                                   app_date,
+                                   follow_up,
                                    JobTypes(row_data["type"]),
                                    row_data["location"],
                                    row_data["applied_at"],

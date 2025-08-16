@@ -2,8 +2,7 @@ import os.path
 from datetime import date
 
 from PyQt6.QtCore import QSettings, QStandardPaths, pyqtSlot
-from PyQt6.QtWidgets import (QMainWindow, QFileDialog, QTableWidgetItem,
-                             QHeaderView)
+from PyQt6.QtWidgets import QMainWindow, QFileDialog, QTableWidgetItem
 
 from Data.Application import Application, JobTypes, Status
 from JobAppTracker.QtGUI.ui.ui_JobAppTrackerMainWindow import \
@@ -32,17 +31,17 @@ class JobAppTrackerMainWindow(QMainWindow):
     file into a table to view or modify.
     """
 
-    currentFile = None
+    currentFile: str | None = None
     """
     Path to the currently opened file
     """
 
-    tableData = []
+    tableData: list[Application] = []
     """
     An internal list of applications displayed on the table
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
         self.ui = Ui_JobAppTrackerMainWindow()
         self.ui.setupUi(self)
@@ -84,7 +83,7 @@ class JobAppTrackerMainWindow(QMainWindow):
         # Allow app info screen to trigger a data reload
         self.appInfoScreen.table_updated.connect(self.load_data)
 
-    def changeOpenFile(self, new_file_path):
+    def changeOpenFile(self, new_file_path: str) -> None:
         """
         Change the data file that is currently open and load in the new data.
         :param new_file_path: Path to the new data file
@@ -96,7 +95,7 @@ class JobAppTrackerMainWindow(QMainWindow):
         self.settings.setValue("file/currentFile", self.currentFile)
         self.load_data()
 
-    def setTitleStatus(self, title_status):
+    def setTitleStatus(self, title_status: str) -> None:
         """
         Set the window title based on what file is currently open.
         :param title_status: The name of the file that is opened, or a default
@@ -105,7 +104,7 @@ class JobAppTrackerMainWindow(QMainWindow):
         """
         self.setWindowTitle(f"{TITLE_BASE} - {title_status}")
 
-    def handleStartLocationLoad(self):
+    def handleStartLocationLoad(self) -> None:
         """
         If a custom starting data file location hasn't been defined, creates a
         folder in the Documents folder for the application and sets that to the
@@ -122,7 +121,7 @@ class JobAppTrackerMainWindow(QMainWindow):
             self.settings.setValue("file/startLocation", startFolder)
 
     @pyqtSlot()
-    def load_data(self):
+    def load_data(self) -> None:
         """
         Loads data from a data file into the main table and the data list.
         :return:
@@ -179,7 +178,7 @@ class JobAppTrackerMainWindow(QMainWindow):
                 self.ui.appTableWidget.setColumnWidth(col_idx, 100)
 
     @pyqtSlot()
-    def openFileAction(self):
+    def openFileAction(self) -> None:
         """
         Triggers a file opening dialog. Then, if a valid file is selected, it
         loads the new file into the program.
@@ -209,7 +208,7 @@ class JobAppTrackerMainWindow(QMainWindow):
         self.changeOpenFile(fileName)
 
     @pyqtSlot()
-    def newFileAction(self):
+    def newFileAction(self) -> None:
         """
         Triggers a new file creation dialog. If the user decides to create a
         file, and it doesn't already exist, it creates and initializes the file

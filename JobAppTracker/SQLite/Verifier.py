@@ -1,7 +1,8 @@
 import sqlite3 as sql3
+from os import PathLike
 
 
-def verify_sqlite(filename):
+def verify_sqlite(filename: str | PathLike) -> bool:
     """
     Helper function that verifies a file is a SQLite format file by issuing a
     simple pre-check query.
@@ -21,7 +22,7 @@ def verify_sqlite(filename):
     return valid
 
 
-def check_job_app_sqlite(filename):
+def check_job_app_sqlite(filename: str | PathLike) -> bool:
     """
     Helper function that verifies that a SQLite format data file is both a valid
     data file for this application and that it has all the necessary tables.

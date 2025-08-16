@@ -1,8 +1,15 @@
+from typing import Callable
+
 from PyQt6.QtWidgets import QMessageBox
 
 
-def _showMessage(message, title, icon, accepted=None, default_button=None,
-                 buttons=None):
+def _showMessage(message: str,
+                 title: str,
+                 icon: QMessageBox.Icon,
+                 accepted: Callable[[], None] | None = None,
+                 default_button: QMessageBox.StandardButton | None = None,
+                 buttons: QMessageBox.StandardButton | None = None
+                 ) -> None:
     msg = QMessageBox()
     msg.setIcon(icon)
     msg.setText(message)
@@ -15,15 +22,18 @@ def _showMessage(message, title, icon, accepted=None, default_button=None,
     msg.exec()
 
 
-def showErrorMessage(message):
+def showErrorMessage(message: str) -> None:
     _showMessage(message, "Error", QMessageBox.Icon.Critical)
 
 
-def showWarningMessage(message):
+def showWarningMessage(message: str) -> None:
     _showMessage(message, "Warning", QMessageBox.Icon.Warning)
 
 
-def showQuestionMessage(message, title, accepted):
+def showQuestionMessage(message: str,
+                        title: str,
+                        accepted: Callable[[], None]
+                        ) -> None:
     _showMessage(message,
                  title,
                  QMessageBox.Icon.Question,

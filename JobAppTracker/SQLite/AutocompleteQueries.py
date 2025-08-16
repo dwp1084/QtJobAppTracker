@@ -14,7 +14,7 @@ class AutocompleteTables(StrEnum):
     APP_SOURCES = "app_sources"
 
 
-def autocomplete_companies():
+def autocomplete_companies() -> list[str]:
     """
     Autocomplete wrapper function for companies.
     :return: Autocomplete data
@@ -22,7 +22,7 @@ def autocomplete_companies():
     return _autocomplete(AutocompleteTables.COMPANIES)
 
 
-def autocomplete_locations():
+def autocomplete_locations() -> list[str]:
     """
         Autocomplete wrapper function for locations.
         :return: Autocomplete data
@@ -30,7 +30,7 @@ def autocomplete_locations():
     return _autocomplete(AutocompleteTables.LOCATIONS)
 
 
-def autocomplete_app_sources():
+def autocomplete_app_sources() -> list[str]:
     """
         Autocomplete wrapper function for application websites.
         :return: Autocomplete data
@@ -38,7 +38,7 @@ def autocomplete_app_sources():
     return _autocomplete(AutocompleteTables.APP_SOURCES)
 
 
-def _autocomplete(table_name):
+def _autocomplete(table_name: AutocompleteTables) -> list[str]:
     """
     Internally used autocomplete function that gets a list from an autocomplete
     table and returns it.
@@ -57,7 +57,7 @@ def _autocomplete(table_name):
     return ac_list
 
 
-def insert_companies(value):
+def insert_companies(value) -> None:
     """
     Wrapper function for adding autocomplete data into the companies table.
     :param value: New data. If the data already exists, it will be ignored.
@@ -66,7 +66,7 @@ def insert_companies(value):
     _insert_ac(AutocompleteTables.COMPANIES, value)
 
 
-def insert_locations(value):
+def insert_locations(value) -> None:
     """
         Wrapper function for adding autocomplete data into the locations table.
         :param value: New data. If the data already exists, it will be ignored.
@@ -75,7 +75,7 @@ def insert_locations(value):
     _insert_ac(AutocompleteTables.LOCATIONS, value)
 
 
-def insert_app_sources(value):
+def insert_app_sources(value) -> None:
     """
         Wrapper function for adding autocomplete data into the application
         websites table.
@@ -85,7 +85,7 @@ def insert_app_sources(value):
     _insert_ac(AutocompleteTables.APP_SOURCES, value)
 
 
-def _insert_ac(table_name, value):
+def _insert_ac(table_name: AutocompleteTables, value: str) -> None:
     """
     Internally used function for inserting data into autocomplete tables. This
     will insert the value into the table if it's not already in there.

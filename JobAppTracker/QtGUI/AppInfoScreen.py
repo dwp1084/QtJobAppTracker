@@ -1,11 +1,13 @@
 from dataclasses import asdict
 from datetime import date
 from enum import Enum, auto
+from typing import Any, Callable
 
 from PyQt6.QtCore import pyqtSlot, pyqtSignal, Qt, QPoint
-from PyQt6.QtWidgets import QDialog, QCompleter, QMenu
+from PyQt6.QtWidgets import QDialog, QCompleter, QMenu, QLineEdit
 
 from Data.Application import Application
+from QtGUI.QtSignal import QtSignal
 from QtGUI.ui.ui_AppInfoScreen import Ui_AppInfoScreen
 from SQLite.ApplicationQueries import (add_application,
                                        update_application,
@@ -28,22 +30,22 @@ class AppInfoDialog(QDialog):
     application and to create or modify applications.
     """
 
-    currentFile = None
+    currentFile: str | None = None
     """
     Path to the data file that's currently in use
     """
 
-    app_id = None
+    app_id: int | None = None
     """
     The application ID for the currently loaded application
     """
 
-    interview_dates = []
+    interview_dates: list[dict[str, int | date]] = []
     """
     Internal list of interview dates shown in the interviews list
     """
 
-    table_updated = pyqtSignal()
+    table_updated: QtSignal = pyqtSignal()
     """
     Emitted when an update to the main table data happens, triggering a data 
     reload
@@ -56,9 +58,9 @@ class AppInfoDialog(QDialog):
         NEW = auto(),
         EXISTING = auto()
 
-    app_info_type = AppInfoType.NEW
+    app_info_type: AppInfoType = AppInfoType.NEW
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None) -> None:
         super().__init__(parent)
         self.ui = Ui_AppInfoScreen()
         self.ui.setupUi(self)
@@ -91,7 +93,7 @@ class AppInfoDialog(QDialog):
             self.interview_list_ctx_menu
         )
 
-    def fill_data(self, **kwargs):
+    def fill_data(self, **kwargs: Any) -> None:
         """
         Fills data into the data fields from various fields
         :param kwargs: Keyword arguments for the various field names
@@ -123,7 +125,10 @@ class AppInfoDialog(QDialog):
         self.fill_autocomplete_data(autocomplete_locations, self.ui.locationField)
         self.fill_autocomplete_data(autocomplete_app_sources, self.ui.appSiteField)
 
-    def fill_autocomplete_data(self, fetch_func, text_field):
+    def fill_autocomplete_data(self,
+                               fetch_func: Callable[[], list[str]],
+                               text_field: QLineEdit
+                               ) -> None:
         """
         Adds autocomplete data to a text field so results can be autocompleted.
         :param fetch_func: Database function to fetch autocomplete data from the
@@ -136,7 +141,7 @@ class AppInfoDialog(QDialog):
         completer.setCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
         text_field.setCompleter(completer)
 
-    def refresh_interview_dates(self):
+    def refresh_interview_dates(self) -> None:
         """
         Clears and reloads the list of interviews for this specific application
         when the data has changed.
@@ -159,7 +164,7 @@ class AppInfoDialog(QDialog):
                 date_row["interview_date"].strftime("%b %d, %Y")
             )
 
-    def setCurrentFile(self, newFile):
+    def setCurrentFile(self, newFile: str) -> None:
         """
         Sets the current data file
         :param newFile: New data file
@@ -168,7 +173,7 @@ class AppInfoDialog(QDialog):
         self.currentFile = newFile
 
     @pyqtSlot()
-    def newApplication(self):
+    def newApplication(self) -> None:
         """
         Sets up and opens this dialog for entering a new application
         :return:
@@ -181,7 +186,7 @@ class AppInfoDialog(QDialog):
         self.exec()
 
     @pyqtSlot(Application)
-    def editApplication(self, app):
+    def editApplication(self, app: Application) -> None:
         """
         Opens this dialog and fills it with application data to edit an existing
         application.
@@ -199,7 +204,7 @@ class AppInfoDialog(QDialog):
         self.exec()
 
     @pyqtSlot()
-    def app_submit(self):
+    def app_submit(self) -> None:
         """
         Function called when the submit button for this dialog is clicked. If
         the application loaded in is a new one, it will create a new application
@@ -272,7 +277,7 @@ class AppInfoDialog(QDialog):
         self.close()
 
     @pyqtSlot()
-    def interview_submit(self):
+    def interview_submit(self) -> None:
         """
         Function called when the interview date submit button is pressed.
         Submits the new date and refreshes the data.
@@ -285,7 +290,7 @@ class AppInfoDialog(QDialog):
         self.table_updated.emit()
 
     @pyqtSlot()
-    def askDelete(self):
+    def askDelete(self) -> None:
         """
         Shows a question dialog asking if the application should be deleted.
         :return:
@@ -296,7 +301,7 @@ class AppInfoDialog(QDialog):
                             )
 
     @pyqtSlot()
-    def delete(self):
+    def delete(self) -> None:
         """
         Deletes the loaded application and notifies that the table data has been
         updated.
@@ -307,7 +312,7 @@ class AppInfoDialog(QDialog):
         self.close()
 
     @pyqtSlot(QPoint)
-    def interview_list_ctx_menu(self, pos):
+    def interview_list_ctx_menu(self, pos: QPoint) -> None:
         """
         Creates a context menu for right-clicking on an interview date, showing
         an option to delete the date. If that option is clicked, the date is

@@ -1,19 +1,23 @@
+import datetime
+import sqlite3
+
 from SQLite.Utils import SQLiteRunner
 
 
-def add_application(data_db,
-                    applied_date,
-                    company,
-                    title,
-                    applied_at,
-                    location,
-                    materials_sent,
-                    comments,
-                    salary,
-                    contact,
-                    status,
-                    job_type,
-                    follow_up=""):
+def add_application(data_db: str,
+                    applied_date: datetime.date,
+                    company: str,
+                    title: str,
+                    applied_at: str,
+                    location: str,
+                    materials_sent: str,
+                    comments: str,
+                    salary: str,
+                    contact: str,
+                    status: int,
+                    job_type: int,
+                    follow_up: datetime.date | str = ""
+                    ) -> None:
     """
     Inserts a new job application into the database.
     :param data_db: Database file
@@ -45,19 +49,20 @@ def add_application(data_db,
     db.run(add_app_sql, params)
 
 
-def update_application(data_db,
-                       app_id,
-                       company,
-                       title,
-                       applied_at,
-                       location,
-                       materials_sent,
-                       comments,
-                       salary,
-                       contact,
-                       status,
-                       job_type,
-                       follow_up=""):
+def update_application(data_db: str,
+                       app_id: int,
+                       company: str,
+                       title: str,
+                       applied_at: str,
+                       location: str,
+                       materials_sent: str,
+                       comments: str,
+                       salary: str,
+                       contact: str,
+                       status: int,
+                       job_type: int,
+                       follow_up: datetime.date | str = ""
+                       ) -> None:
     """
     Updates the main fields of an application in the database.
     :param data_db: Database file
@@ -96,7 +101,7 @@ def update_application(data_db,
     db.run(update_app_sql, params)
 
 
-def add_interview_date(data_db, app_id, date):
+def add_interview_date(data_db: str, app_id: int, date: datetime.date) -> None:
     """
     Add an interview date into the database.
     :param data_db: Database file
@@ -113,7 +118,7 @@ def add_interview_date(data_db, app_id, date):
     db.run(add_interview_sql, params)
 
 
-def get_applications(data_db):
+def get_applications(data_db: str) -> list[sqlite3.Row]:
     """
     Grab a list of all job application data.
     :param data_db: Database file
@@ -129,7 +134,7 @@ def get_applications(data_db):
     return db.fetch(retrieve_apps_sql)
 
 
-def get_interviews_for_application(data_db, app_id):
+def get_interviews_for_application(data_db: str, app_id: int) -> list[sqlite3.Row]:
     """
     Grab a list of all interview dates for a specific application.
     :param data_db: Database file
@@ -137,14 +142,15 @@ def get_interviews_for_application(data_db, app_id):
     :return: List of interview dates
     """
     get_interviews_sql = """
-    SELECT date_id, interview_date FROM interview_dates WHERE app_id = ? ORDER BY interview_date DESC;
+    SELECT date_id, interview_date FROM interview_dates WHERE app_id = ? 
+    ORDER BY interview_date DESC;
     """
     db = SQLiteRunner(data_db)
 
     return db.fetch(get_interviews_sql, (app_id,))
 
 
-def get_interview_count_for_application(data_db, app_id):
+def get_interview_count_for_application(data_db: str, app_id: int) -> int:
     """
     Gets the number of interviews tied to a specific application.
     :param data_db: Database file
@@ -159,7 +165,7 @@ def get_interview_count_for_application(data_db, app_id):
     return db.fetchone(get_interviews_count_sql, (app_id,))[0]
 
 
-def delete_interview(data_db, date_id):
+def delete_interview(data_db: str, date_id: int) -> None:
     """
     Delete an interview from the database.
     :param data_db: Database file
@@ -173,7 +179,7 @@ def delete_interview(data_db, date_id):
     db.run(delete_interview_sql, (date_id,))
 
 
-def delete_application(data_db, app_id):
+def delete_application(data_db: str, app_id: int) -> None:
     """
     Delete an application from the database.
     :param data_db: Database file

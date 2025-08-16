@@ -1,4 +1,5 @@
 import os.path
+from os import PathLike
 
 from SQLite.Utils import SQLiteRunner
 
@@ -55,7 +56,7 @@ CREATE TABLE IF NOT EXISTS interview_dates (
 """
 
 
-def init_autocomplete_file():
+def init_autocomplete_file() -> None:
     """
     Initializes the autocomplete file for the application in the internal
     file folder.
@@ -70,7 +71,7 @@ def init_autocomplete_file():
     ac_file_runner.run_script(CREATE_AUTOCOMPLETE_SQL)
 
 
-def init_data_file(filePath):
+def init_data_file(filePath: str | PathLike) -> None:
     """
     Creates and initializes a new data file.
     :param filePath:

@@ -64,7 +64,7 @@ class Application:
     comments: str
 
     @property
-    def days_pending(self):
+    def days_pending(self) -> int:
         """
         Gets the number of days in which the application has been pending
         :return:

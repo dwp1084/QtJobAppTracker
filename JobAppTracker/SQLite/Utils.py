@@ -1,4 +1,6 @@
 import sqlite3
+from os import PathLike
+from typing import LiteralString
 
 
 class SQLiteRunner:
@@ -7,7 +9,7 @@ class SQLiteRunner:
     On creation, this class verifies that the file passed in is a valid
     SQLite database, otherwise throws an IOError.
     """
-    def __init__(self, db_file):
+    def __init__(self, db_file: str | PathLike | LiteralString | bytes) -> None:
         self.db_file = db_file
 
         try:
@@ -15,7 +17,7 @@ class SQLiteRunner:
         except sqlite3.DatabaseError:
             raise IOError(f"{self.db_file} corrupted.")
 
-    def run(self, query, params=()):
+    def run(self, query: str, params: tuple = ()) -> None:
         """
         Runs a single modifying SQLite query, then commits the changes.
         :param query: A single modifying SQLite query
@@ -30,7 +32,7 @@ class SQLiteRunner:
             conn.execute(query, params)
             conn.commit()
 
-    def fetchone(self, query, params=()):
+    def fetchone(self, query: str, params: tuple = ()) -> sqlite3.Row:
         """
         Runs a single SELECT SQLite query, then fetches only one returned
         result using the built-in row factory, useful for aggregate functions.
@@ -49,7 +51,7 @@ class SQLiteRunner:
             cursor.execute(query, params)
             return cursor.fetchone()
 
-    def fetch(self, query, params=()):
+    def fetch(self, query: str, params: tuple = ()) -> list[sqlite3.Row]:
         """
         Runs a single SELECT SQLite query, then fetches all returned
         results using the built-in row factory.
@@ -67,7 +69,7 @@ class SQLiteRunner:
             cursor.execute(query, params)
             return cursor.fetchall()
 
-    def run_script(self, script):
+    def run_script(self, script: str) -> None:
         """
         Runs a SQLite script without parameters, typically for creating
         database files.

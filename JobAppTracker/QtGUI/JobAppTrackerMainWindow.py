@@ -8,8 +8,8 @@ from Data.Application import Application, JobTypes, Status
 from JobAppTracker.QtGUI.ui.ui_JobAppTrackerMainWindow import \
     Ui_JobAppTrackerMainWindow
 from QtGUI.AppInfoScreen import AppInfoDialog
-from SQLite.ApplicationQueries import (get_applications,
-                                       get_interview_count_for_application)
+from SQLite.ApplicationQueries import (get_interview_count_for_application,
+                                       get_applications)
 from SQLite.Initializer import init_data_file
 from SQLite.Verifier import verify_sqlite, check_job_app_sqlite
 from errorDialog import showWarningMessage
@@ -126,30 +126,7 @@ class JobAppTrackerMainWindow(QMainWindow):
         Loads data from a data file into the main table and the data list.
         :return:
         """
-
-        self.tableData.clear()
-        for row in get_applications(self.currentFile):
-            row_data = dict(row)
-
-            # Purely for type checking purposes, the data coming from SQL is
-            # already the date type.
-            app_date = cast(date, row_data["application_date"])
-            follow_up = cast(date, row_data["latest_follow_up"])
-
-            app_data = Application(int(row_data["app_id"]),
-                                   row_data["company"],
-                                   row_data["title"],
-                                   app_date,
-                                   follow_up,
-                                   JobTypes(row_data["type"]),
-                                   row_data["location"],
-                                   row_data["applied_at"],
-                                   row_data["contact"],
-                                   row_data["materials_sent"],
-                                   row_data["salary"],
-                                   Status(row_data["status"]),
-                                   row_data["comments"])
-            self.tableData.append(app_data)
+        self.tableData = get_applications(self.currentFile)
 
         self.ui.appTableWidget.clearContents()
         self.ui.appTableWidget.setRowCount(len(self.tableData))

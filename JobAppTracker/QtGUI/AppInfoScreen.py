@@ -12,9 +12,8 @@ from QtGUI.ui.ui_AppInfoScreen import Ui_AppInfoScreen
 from SQLite.ApplicationQueries import (add_application,
                                        update_application,
                                        delete_application,
-                                       get_interviews_for_application,
                                        add_interview_date,
-                                       delete_interview)
+                                       delete_interview, get_interviews_for_application)
 from SQLite.AutocompleteQueries import (autocomplete_companies,
                                         autocomplete_locations,
                                         autocomplete_app_sources,
@@ -147,16 +146,8 @@ class AppInfoDialog(QDialog):
         when the data has changed.
         :return:
         """
-        self.interview_dates.clear()
-        for date_row in get_interviews_for_application(
-                self.currentFile,
-                self.app_id
-        ):
-            row = dict(date_row)
-            self.interview_dates.append({
-                "date_id": row["date_id"],
-                "interview_date": date.fromisoformat(row["interview_date"])
-            })
+        self.interview_dates = get_interviews_for_application(self.currentFile,
+                                                              self.app_id)
 
         self.ui.interviewsList.clear()
         for date_row in self.interview_dates:

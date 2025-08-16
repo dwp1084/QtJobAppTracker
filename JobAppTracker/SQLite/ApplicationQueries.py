@@ -1,6 +1,7 @@
 import datetime
-import sqlite3
+from typing import cast
 
+from Data.Application import Application, JobTypes, Status
 from SQLite.Utils import SQLiteRunner
 
 
@@ -118,7 +119,7 @@ def add_interview_date(data_db: str, app_id: int, date: datetime.date) -> None:
     db.run(add_interview_sql, params)
 
 
-def get_applications(data_db: str) -> list[sqlite3.Row]:
+def get_applications(data_db: str) -> list[Application]:
     """
     Grab a list of all job application data.
     :param data_db: Database file
@@ -131,10 +132,40 @@ def get_applications(data_db: str) -> list[sqlite3.Row]:
     """
     db = SQLiteRunner(data_db)
 
-    return db.fetch(retrieve_apps_sql)
+    data = db.fetch(retrieve_apps_sql)
+
+    apps_list = []
+
+    for row in data:
+        data_dict = dict(row)
+
+        # Purely for type checking purposes, the data coming from SQL is
+        # already the date type.
+        app_date = cast(datetime.date, data_dict["application_date"])
+        follow_up = cast(datetime.date, data_dict["latest_follow_up"])
+
+        app_data = Application(int(data_dict["app_id"]),
+                               data_dict["company"],
+                               data_dict["title"],
+                               app_date,
+                               follow_up,
+                               JobTypes(data_dict["type"]),
+                               data_dict["location"],
+                               data_dict["applied_at"],
+                               data_dict["contact"],
+                               data_dict["materials_sent"],
+                               data_dict["salary"],
+                               Status(data_dict["status"]),
+                               data_dict["comments"])
+
+        apps_list.append(app_data)
+
+    return apps_list
 
 
-def get_interviews_for_application(data_db: str, app_id: int) -> list[sqlite3.Row]:
+def get_interviews_for_application(data_db: str,
+                                   app_id: int
+                                   ) -> list[dict[str, int | datetime.date]]:
     """
     Grab a list of all interview dates for a specific application.
     :param data_db: Database file
@@ -147,7 +178,21 @@ def get_interviews_for_application(data_db: str, app_id: int) -> list[sqlite3.Ro
     """
     db = SQLiteRunner(data_db)
 
-    return db.fetch(get_interviews_sql, (app_id,))
+    data = db.fetch(get_interviews_sql, (app_id,))
+
+    interviews_list = []
+
+    for row in data:
+        data_dict = dict(row)
+
+        interviews_list.append(
+            {
+                "date_id": data_dict["date_id"],
+                "interview_date": datetime.date.fromisoformat(data_dict["interview_date"])
+            }
+        )
+
+    return interviews_list
 
 
 def get_interview_count_for_application(data_db: str, app_id: int) -> int:

@@ -131,23 +131,31 @@ class JobAppTrackerMainWindow(QMainWindow):
         self.ui.appTableWidget.clearContents()
         self.ui.appTableWidget.setRowCount(len(self.tableData))
         for row, app in enumerate(self.tableData):
-            self.ui.appTableWidget.setItem(row, 0, QTableWidgetItem(app.company))
-            self.ui.appTableWidget.setItem(row, 1, QTableWidgetItem(app.title))
-            self.ui.appTableWidget.setItem(row, 2, QTableWidgetItem(app.applied_on.strftime("%b %d, %Y")))
-            if app.followed_up is not None:
-                self.ui.appTableWidget.setItem(row, 3, QTableWidgetItem(app.followed_up.strftime("%b %d, %Y")))
-            self.ui.appTableWidget.setItem(row, 4, QTableWidgetItem(
-                str(get_interview_count_for_application(self.currentFile, app.app_id))
-            ))
-            self.ui.appTableWidget.setItem(row, 5, QTableWidgetItem(str(app.job_type)))
-            self.ui.appTableWidget.setItem(row, 6, QTableWidgetItem(app.location))
-            self.ui.appTableWidget.setItem(row, 7, QTableWidgetItem(app.website))
-            self.ui.appTableWidget.setItem(row, 8, QTableWidgetItem(app.contact))
-            self.ui.appTableWidget.setItem(row, 9, QTableWidgetItem(app.materials))
-            self.ui.appTableWidget.setItem(row, 10, QTableWidgetItem(app.salary))
-            self.ui.appTableWidget.setItem(row, 11, QTableWidgetItem(str(app.status)))
-            self.ui.appTableWidget.setItem(row, 12, QTableWidgetItem(app.comments))
-            self.ui.appTableWidget.setItem(row, 13, QTableWidgetItem(str(app.days_pending)))
+            followed_up = app.followed_up.strftime("%b %d, %Y") \
+                if app.followed_up is not None else ""
+
+            row_contents = [
+                app.company,
+                app.title,
+                app.applied_on.strftime("%b %d, %Y"),
+                followed_up,
+                str(
+                    get_interview_count_for_application(self.currentFile,
+                                                        app.app_id)
+                ),
+                str(app.job_type),
+                app.location,
+                app.website,
+                app.contact,
+                app.materials,
+                app.salary,
+                str(app.status),
+                app.comments,
+                str(app.days_pending)
+            ]
+
+            for col, item in enumerate(row_contents):
+                self.ui.appTableWidget.setItem(row, col, QTableWidgetItem(item))
 
         self.ui.appTableWidget.resizeColumnsToContents()
         for col_idx in range(self.ui.appTableWidget.columnCount()):

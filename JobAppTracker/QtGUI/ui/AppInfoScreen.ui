@@ -202,11 +202,6 @@
         </item>
         <item>
          <property name="text">
-          <string>Interview</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
           <string>Offered</string>
          </property>
         </item>

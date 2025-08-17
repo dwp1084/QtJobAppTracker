@@ -44,7 +44,7 @@ CREATE TABLE IF NOT EXISTS applications (
     comments TEXT NOT NULL DEFAULT '',
     salary TEXT NOT NULL DEFAULT '',
     contact TEXT NOT NULL DEFAULT '',
-    status INTEGER NOT NULL DEFAULT 0 CHECK(status > -1 AND status < 5),
+    status INTEGER NOT NULL DEFAULT 0 CHECK(status > -1 AND status < 65),
     type INTEGER NOT NULL DEFAULT 0 CHECK(type > -1 AND type < 4)
 );
 

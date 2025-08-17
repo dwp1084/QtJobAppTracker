@@ -23,11 +23,12 @@ class Status(Enum):
     Application status enumeration
     """
     PENDING = 0
-    INTERVIEW = 1
-    OFFER = 2
-    REJECTED = 3
+    OFFER = 1
+    REJECTED = 2
 
-    # This one is different as it's not meant to be stored in db
+    # These options are not going to be tied to combobox options, so they
+    # have much higher numbers
+    INTERVIEW = 63
     LIKELY_GHOSTED = 64
 
     def __str__(self):

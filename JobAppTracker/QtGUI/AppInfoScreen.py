@@ -15,7 +15,7 @@ from SQLite.ApplicationQueries import (add_application,
                                        delete_application,
                                        add_interview_date,
                                        delete_interview,
-                                       get_interviews_for_application)
+                                       get_interviews_for_application, set_interview_status)
 from SQLite.AutocompleteQueries import (autocomplete_companies,
                                         autocomplete_locations,
                                         autocomplete_app_sources,
@@ -276,6 +276,7 @@ class AppInfoDialog(QDialog):
         """
         interview_date = self.ui.interviewDateField.date().toPyDate()
         add_interview_date(self.currentFile, self.app_id, interview_date)
+        set_interview_status(self.currentFile, self.app_id)
 
         self.refresh_interview_dates()
         self.table_updated.emit()

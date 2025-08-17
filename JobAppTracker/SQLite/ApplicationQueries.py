@@ -125,6 +125,22 @@ def add_interview_date(data_db: str, app_id: int, date: datetime.date) -> None:
     db.run(add_interview_sql, params)
 
 
+def set_interview_status(data_db: str, app_id: int) -> None:
+    """
+    Sets an application status to "interview" in the database.
+    :param data_db: Database file
+    :param app_id: Application ID
+    :return:
+    """
+    set_status_sql = """
+    UPDATE applications SET status = ? WHERE app_id = ?;
+    """
+
+    db = DataFileSQLRunner(data_db)
+    params = (int(Status.INTERVIEW), app_id)
+    db.run(set_status_sql, params)
+
+
 def get_applications(data_db: str) -> list[Application]:
     """
     Grab a list of all job application data.

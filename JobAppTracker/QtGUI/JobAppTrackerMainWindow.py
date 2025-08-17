@@ -159,6 +159,8 @@ class JobAppTrackerMainWindow(QMainWindow):
         for col_idx in range(self.ui.appTableWidget.columnCount()):
             if self.ui.appTableWidget.columnWidth(col_idx) < 100:
                 self.ui.appTableWidget.setColumnWidth(col_idx, 100)
+            elif self.ui.appTableWidget.columnWidth(col_idx) > 600:
+                self.ui.appTableWidget.setColumnWidth(col_idx, 600)
 
     @pyqtSlot()
     def openFileAction(self) -> None:

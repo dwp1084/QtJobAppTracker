@@ -3,7 +3,7 @@ from typing import cast
 
 from Data.Application import Application, JobTypes, Status
 from Data.InterviewDate import InterviewDate
-from SQLite.Utils import SQLiteRunner
+from SQLite.Utils import DataFileSQLRunner
 
 
 def add_application(data_db: str,
@@ -44,7 +44,7 @@ def add_application(data_db: str,
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
     """
 
-    db = SQLiteRunner(data_db)
+    db = DataFileSQLRunner(data_db)
 
     params = (company, title, applied_at, follow_up, location, materials_sent,
               comments, salary, contact, status, job_type, applied_date)
@@ -97,7 +97,7 @@ def update_application(data_db: str,
         type = ?
     WHERE app_id = ?;
     """
-    db = SQLiteRunner(data_db)
+    db = DataFileSQLRunner(data_db)
     params = (company, title, applied_at, follow_up, location, materials_sent,
               comments, salary, contact, status, job_type, app_id)
     db.run(update_app_sql, params)
@@ -115,7 +115,7 @@ def add_interview_date(data_db: str, app_id: int, date: datetime.date) -> None:
     INSERT INTO interview_dates (app_id, interview_date) VALUES (?, ?);
     """
 
-    db = SQLiteRunner(data_db)
+    db = DataFileSQLRunner(data_db)
     params = (app_id, date)
     db.run(add_interview_sql, params)
 
@@ -131,7 +131,7 @@ def get_applications(data_db: str) -> list[Application]:
     latest_follow_up, location, materials_sent, comments, salary, contact, 
     status, type FROM applications ORDER BY date(application_date) DESC;
     """
-    db = SQLiteRunner(data_db)
+    db = DataFileSQLRunner(data_db)
 
     data = db.fetch(retrieve_apps_sql)
 
@@ -177,7 +177,7 @@ def get_interviews_for_application(data_db: str,
     SELECT date_id, interview_date FROM interview_dates WHERE app_id = ? 
     ORDER BY interview_date DESC;
     """
-    db = SQLiteRunner(data_db)
+    db = DataFileSQLRunner(data_db)
 
     data = db.fetch(get_interviews_sql, (app_id,))
 
@@ -204,7 +204,7 @@ def get_interview_count_for_application(data_db: str, app_id: int) -> int:
     get_interviews_count_sql = """
     SELECT COUNT(*) FROM interview_dates WHERE app_id = ?;
     """
-    db = SQLiteRunner(data_db)
+    db = DataFileSQLRunner(data_db)
 
     return db.fetchone(get_interviews_count_sql, (app_id,))[0]
 
@@ -219,7 +219,7 @@ def delete_interview(data_db: str, date_id: int) -> None:
     delete_interview_sql = """
     DELETE FROM interview_dates WHERE date_id = ?;
     """
-    db = SQLiteRunner(data_db)
+    db = DataFileSQLRunner(data_db)
     db.run(delete_interview_sql, (date_id,))
 
 
@@ -233,5 +233,5 @@ def delete_application(data_db: str, app_id: int) -> None:
     delete_app_sql = """
     DELETE FROM applications WHERE app_id = ?;
     """
-    db = SQLiteRunner(data_db)
+    db = DataFileSQLRunner(data_db)
     db.run(delete_app_sql, (app_id,))

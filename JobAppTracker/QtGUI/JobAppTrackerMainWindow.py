@@ -1,19 +1,17 @@
 import os.path
-from datetime import date
 
 from PyQt6.QtCore import QSettings, QStandardPaths, pyqtSlot
 from PyQt6.QtWidgets import QMainWindow, QFileDialog, QTableWidgetItem
 
-from Data.Application import Application, JobTypes, Status
+from Data.Application import Application
 from JobAppTracker.QtGUI.ui.ui_JobAppTrackerMainWindow import \
     Ui_JobAppTrackerMainWindow
 from QtGUI.AppInfoScreen import AppInfoDialog
 from SQLite.ApplicationQueries import (get_interview_count_for_application,
                                        get_applications)
 from SQLite.Initializer import init_data_file
-from SQLite.Verifier import verify_sqlite, check_job_app_sqlite
+from SQLite.Utils import DataFileSQLRunner
 from errorDialog import showWarningMessage
-from typing import cast
 
 # Base title for the main window
 TITLE_BASE = "Job Application Tracker"
@@ -182,11 +180,13 @@ class JobAppTrackerMainWindow(QMainWindow):
         if fileName == '':
             return
 
-        if not verify_sqlite(fileName):
+        try:
+            verify_file = DataFileSQLRunner(fileName)
+        except IOError:
             showWarningMessage("Invalid file type")
             return
 
-        if not check_job_app_sqlite(fileName):
+        if not verify_file.is_valid_format:
             showWarningMessage("SQLite file missing required tables")
             return
 

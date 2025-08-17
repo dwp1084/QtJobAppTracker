@@ -1,7 +1,7 @@
 import os.path
 from os import PathLike
 
-from SQLite.Utils import SQLiteRunner
+from SQLite.Utils import DataFileSQLRunner, ACFileSQLRunner
 
 APP_FILES_DIR = "internal"
 """
@@ -67,7 +67,7 @@ def init_autocomplete_file() -> None:
 
     ac_file = os.path.join(APP_FILES_DIR, AUTOCOMPLETE_FILE)
 
-    ac_file_runner = SQLiteRunner(ac_file)
+    ac_file_runner = ACFileSQLRunner(ac_file)
     ac_file_runner.run_script(CREATE_AUTOCOMPLETE_SQL)
 
 
@@ -77,5 +77,5 @@ def init_data_file(filePath: str | PathLike) -> None:
     :param filePath:
     :return:
     """
-    data_file_runner = SQLiteRunner(filePath)
+    data_file_runner = DataFileSQLRunner(filePath)
     data_file_runner.run_script(CREATE_DATAFILE_SQL)

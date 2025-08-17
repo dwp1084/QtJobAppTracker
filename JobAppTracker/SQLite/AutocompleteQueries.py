@@ -1,17 +1,7 @@
 import os.path
-from enum import StrEnum
 
 from SQLite.Initializer import AUTOCOMPLETE_FILE, APP_FILES_DIR
-from SQLite.Utils import SQLiteRunner
-
-
-class AutocompleteTables(StrEnum):
-    """
-    A simple string enum mapping a data type to a database name.
-    """
-    COMPANIES = "companies",
-    LOCATIONS = "locations",
-    APP_SOURCES = "app_sources"
+from SQLite.Utils import AutocompleteTables, ACFileSQLRunner
 
 
 def autocomplete_companies() -> list[str]:
@@ -46,7 +36,7 @@ def _autocomplete(table_name: AutocompleteTables) -> list[str]:
     :return: Autocomplete data
     """
     get_ac_sql = f"SELECT name FROM {table_name.value};"
-    ac_runner = SQLiteRunner(os.path.join(APP_FILES_DIR, AUTOCOMPLETE_FILE))
+    ac_runner = ACFileSQLRunner(os.path.join(APP_FILES_DIR, AUTOCOMPLETE_FILE))
     results = ac_runner.fetch(get_ac_sql)
 
     # Return results as a list
@@ -95,6 +85,6 @@ def _insert_ac(table_name: AutocompleteTables, value: str) -> None:
     :return:
     """
     insert_ac_sql = f"INSERT OR IGNORE INTO {table_name.value} ( name ) VALUES (?);"
-    ac_runner = SQLiteRunner(os.path.join(APP_FILES_DIR, AUTOCOMPLETE_FILE))
+    ac_runner = ACFileSQLRunner(os.path.join(APP_FILES_DIR, AUTOCOMPLETE_FILE))
     ac_runner.run(insert_ac_sql, (value,))
 

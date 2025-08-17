@@ -1,9 +1,11 @@
 import sqlite3
+from abc import ABC, abstractmethod
+from enum import StrEnum
 from os import PathLike
 from typing import LiteralString
 
 
-class SQLiteRunner:
+class SQLiteRunner(ABC):
     """
     Provides utility functions for executing SQLite queries on db files.
     On creation, this class verifies that the file passed in is a valid
@@ -12,10 +14,45 @@ class SQLiteRunner:
     def __init__(self, db_file: str | PathLike | LiteralString | bytes) -> None:
         self.db_file = db_file
 
-        try:
-            self.fetch("PRAGMA schema_version;")
-        except sqlite3.DatabaseError:
+        if not self.is_valid_sql:
             raise IOError(f"{self.db_file} corrupted.")
+
+    @property
+    def is_valid_sql(self) -> bool:
+        """
+        Runs a simple check to make sure the file that was opened is a SQLite
+        format file.
+        :return: True if valid SQLite, False if not
+        """
+        valid = True
+        try:
+            self.fetchone("PRAGMA schema_version;")
+        except sqlite3.DatabaseError:
+            valid = False
+
+        return valid
+
+    @property
+    @abstractmethod
+    def is_valid_format(self) -> bool: ...
+
+    def _is_valid_format(self, *required_tables: str) -> bool:
+        """
+        Internal implementation for the valid format functions. Checks if the
+        SQLite file contains all the tables it needs.
+        :param required_tables: All required table names as strings
+        :return: True if all required tables are present, false otherwise
+        """
+        try:
+            tables = self.fetch(
+                "SELECT name FROM sqlite_master WHERE type='table';"
+            )
+            table_set = {row[0] for row in tables}
+            valid = set(required_tables).issubset(table_set)
+        except sqlite3.DatabaseError:
+            valid = False
+
+        return valid
 
     def run(self, query: str, params: tuple = ()) -> None:
         """
@@ -79,3 +116,42 @@ class SQLiteRunner:
         with sqlite3.connect(self.db_file) as conn:
             conn.executescript(script)
             conn.commit()
+
+
+class DataFileSQLRunner(SQLiteRunner):
+    """
+    SQLite runner for the data files of the application.
+    """
+    @property
+    def is_valid_format(self) -> bool:
+        """
+        Checks if the data file contains all the tables it needs.
+        :return: True if it contains the required tables, false otherwise
+        """
+        return super()._is_valid_format("applications", "interview_dates")
+
+
+class AutocompleteTables(StrEnum):
+    """
+    A simple string enum mapping a data type to a database name.
+    """
+    COMPANIES = "companies",
+    LOCATIONS = "locations",
+    APP_SOURCES = "app_sources"
+
+
+class ACFileSQLRunner(SQLiteRunner):
+    """
+    SQLite runner for the autocomplete file of the application.
+    """
+    @property
+    def is_valid_format(self) -> bool:
+        """
+        Checks if the autocomplete file contains all the tables it needs.
+        :return: True if it contains the required tables, false otherwise
+        """
+        return super()._is_valid_format(
+            str(AutocompleteTables.COMPANIES),
+            str(AutocompleteTables.LOCATIONS),
+            str(AutocompleteTables.APP_SOURCES)
+        )

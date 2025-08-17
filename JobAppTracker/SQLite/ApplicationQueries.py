@@ -6,6 +6,11 @@ from Data.InterviewDate import InterviewDate
 from SQLite.Utils import DataFileSQLRunner
 
 
+APP_DAT_THRESHOLD = 21
+FOLLOW_UP_THRESHOLD = 7
+INTERVIEW_THRESHOLD = 60
+
+
 def add_application(data_db: str,
                     applied_date: datetime.date,
                     company: str,
@@ -192,6 +197,60 @@ def get_interviews_for_application(data_db: str,
         ))
 
     return interviews_list
+
+
+def days_since_last_interview(data_db: str,
+                              app_id: int
+                              ) -> int:
+    """
+    Gets the number of days that has passed since the last interview
+    :param data_db: Database file
+    :param app_id: Application ID
+    :return: Number of days, or -1 if no interview dates were found
+    """
+    get_interviews_sql = """
+    SELECT interview_date FROM interview_dates WHERE app_id = ? 
+    ORDER BY interview_date DESC;
+    """
+    db = DataFileSQLRunner(data_db)
+
+    data = db.fetchone(get_interviews_sql, (app_id,))
+
+    if data is not None:
+        latest_interview = datetime.date.fromisoformat(data[0])
+        return (datetime.date.today() - latest_interview).days
+
+    return -1  # If there is no date available, return arbitrary number
+
+
+def ghost_prediction(data_db: str, app: Application) -> Status:
+    """
+    Predicts if an application is likely to have been ghosted using set
+    thresholds from the application date, latest follow-up, and latest interview
+    :param data_db: Database file
+    :param app: Application
+    :return: Updated status, including if the application has been likely ghosted
+    """
+    past_follow_up_threshold = True if app.followed_up is None \
+        else ((datetime.date.today() - app.followed_up).days
+              > FOLLOW_UP_THRESHOLD)
+
+    match app.status:
+        case Status.PENDING:
+            past_app_threshold = ((datetime.date.today() - app.applied_on).days
+                                  > APP_DAT_THRESHOLD)
+
+            return Status.LIKELY_GHOSTED if (past_app_threshold and
+                                             past_follow_up_threshold) \
+                else app.status
+        case Status.INTERVIEW:
+            last_int = days_since_last_interview(data_db, app.app_id)
+
+            return Status.LIKELY_GHOSTED if (last_int > INTERVIEW_THRESHOLD and
+                                             past_follow_up_threshold) \
+                else app.status
+        case _:
+            return app.status
 
 
 def get_interview_count_for_application(data_db: str, app_id: int) -> int:

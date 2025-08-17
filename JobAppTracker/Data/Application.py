@@ -2,16 +2,6 @@ from dataclasses import dataclass
 from datetime import date
 from enum import Enum
 
-JOB_TYPES = ["In Person", "Hybrid", "Remote"]
-"""
-Constant names for job types, mapping in order to how they're stored in the db.
-"""
-
-STATUS = ["Pending", "Interview", "Offer", "Rejected"]
-"""
-Constant names for job statuses, mapping in order to how they're stored in the db.
-"""
-
 
 class JobTypes(Enum):
     """
@@ -36,6 +26,9 @@ class Status(Enum):
     INTERVIEW = 1
     OFFER = 2
     REJECTED = 3
+
+    # This one is different as it's not meant to be stored in db
+    LIKELY_GHOSTED = 64
 
     def __str__(self):
         return self.name.capitalize().replace("_", " ")

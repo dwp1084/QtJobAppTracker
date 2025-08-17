@@ -69,7 +69,7 @@ class SQLiteRunner(ABC):
             conn.execute(query, params)
             conn.commit()
 
-    def fetchone(self, query: str, params: tuple = ()) -> sqlite3.Row:
+    def fetchone(self, query: str, params: tuple = ()) -> sqlite3.Row | None:
         """
         Runs a single SELECT SQLite query, then fetches only one returned
         result using the built-in row factory, useful for aggregate functions.

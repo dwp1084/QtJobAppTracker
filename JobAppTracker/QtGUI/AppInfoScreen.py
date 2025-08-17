@@ -7,13 +7,15 @@ from PyQt6.QtCore import pyqtSlot, pyqtSignal, Qt, QPoint
 from PyQt6.QtWidgets import QDialog, QCompleter, QMenu, QLineEdit
 
 from Data.Application import Application
+from Data.InterviewDate import InterviewDate
 from QtGUI.QtSignal import QtSignal
 from QtGUI.ui.ui_AppInfoScreen import Ui_AppInfoScreen
 from SQLite.ApplicationQueries import (add_application,
                                        update_application,
                                        delete_application,
                                        add_interview_date,
-                                       delete_interview, get_interviews_for_application)
+                                       delete_interview,
+                                       get_interviews_for_application)
 from SQLite.AutocompleteQueries import (autocomplete_companies,
                                         autocomplete_locations,
                                         autocomplete_app_sources,
@@ -39,7 +41,7 @@ class AppInfoDialog(QDialog):
     The application ID for the currently loaded application
     """
 
-    interview_dates: list[dict[str, int | date]] = []
+    interview_dates: list[InterviewDate] = []
     """
     Internal list of interview dates shown in the interviews list
     """
@@ -150,10 +152,8 @@ class AppInfoDialog(QDialog):
                                                               self.app_id)
 
         self.ui.interviewsList.clear()
-        for date_row in self.interview_dates:
-            self.ui.interviewsList.addItem(
-                date_row["interview_date"].strftime("%b %d, %Y")
-            )
+        for interview_date in self.interview_dates:
+            self.ui.interviewsList.addItem(interview_date.date_str)
 
     def setCurrentFile(self, newFile: str) -> None:
         """
@@ -323,7 +323,7 @@ class AppInfoDialog(QDialog):
         selected_action = menu.exec(global_pos)
         if selected_action == delete_action:
             row = self.ui.interviewsList.row(item)
-            date_id = self.interview_dates[row]["date_id"]
+            date_id = self.interview_dates[row].date_id
 
             delete_interview(self.currentFile, date_id)
             self.refresh_interview_dates()

@@ -2,6 +2,7 @@ import datetime
 from typing import cast
 
 from Data.Application import Application, JobTypes, Status
+from Data.InterviewDate import InterviewDate
 from SQLite.Utils import SQLiteRunner
 
 
@@ -165,7 +166,7 @@ def get_applications(data_db: str) -> list[Application]:
 
 def get_interviews_for_application(data_db: str,
                                    app_id: int
-                                   ) -> list[dict[str, int | datetime.date]]:
+                                   ) -> list[InterviewDate]:
     """
     Grab a list of all interview dates for a specific application.
     :param data_db: Database file
@@ -185,12 +186,10 @@ def get_interviews_for_application(data_db: str,
     for row in data:
         data_dict = dict(row)
 
-        interviews_list.append(
-            {
-                "date_id": data_dict["date_id"],
-                "interview_date": datetime.date.fromisoformat(data_dict["interview_date"])
-            }
-        )
+        interviews_list.append(InterviewDate(
+            data_dict["date_id"],
+            datetime.date.fromisoformat(data_dict["interview_date"])
+        ))
 
     return interviews_list
 

@@ -85,13 +85,9 @@ class JobAppTrackerMainWindow(QMainWindow):
         self.appInfoScreen.table_updated.connect(self.load_data)
 
         # Hide days passed column option
-        show_days_passed_unchecked = self.settings.value(
-            "opts/showDaysPassed", type=bool
+        show_days_passed = self.settings.value(
+            "opts/showDaysPassed", defaultValue=True, type=bool
         )
-        show_days_passed = bool(show_days_passed_unchecked)
-        if show_days_passed_unchecked is None:
-            show_days_passed = True
-            self.settings.setValue("opts/showDaysPassed", show_days_passed)
 
         self.ui.actionDays_Since_Application.toggled.connect(
             lambda checked: self.toggleDaysPassedColumn(DAYS_PASSED_COL, checked)

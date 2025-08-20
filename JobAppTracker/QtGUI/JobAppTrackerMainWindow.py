@@ -3,7 +3,7 @@ import os.path
 from PyQt6.QtCore import QSettings, QStandardPaths, pyqtSlot
 from PyQt6.QtWidgets import QMainWindow, QFileDialog, QTableWidgetItem
 
-from Data.Application import Application
+from Data.Application import Application, Status
 from JobAppTracker.QtGUI.ui.ui_JobAppTrackerMainWindow import \
     Ui_JobAppTrackerMainWindow
 from QtGUI.AppInfoScreen import AppInfoDialog
@@ -22,7 +22,8 @@ NO_FILE_LOADED = "No file loaded"
 # Name of the app settings file
 CONFIG_FILE_NAME = "jobapptrackerconfig.ini"
 
-# Days passed column index - be careful if column numbers change
+# Column indices - careful if these change
+STATUS_COL = 11
 DAYS_PASSED_COL = 13
 
 
@@ -95,6 +96,14 @@ class JobAppTrackerMainWindow(QMainWindow):
 
         self.ui.actionDays_Since_Application.setChecked(show_days_passed)
 
+        # Setup show inactive
+        show_inactive = self.settings.value(
+            "opts/showInactiveApplications", defaultValue=True, type=bool
+        )
+
+        self.ui.actionInactive_Applications.toggled.connect(self.toggle_inactive)
+        self.ui.actionInactive_Applications.setChecked(show_inactive)
+
     def toggleDaysPassedColumn(self, col_idx: int, show_col: bool) -> None:
         """
         Hides or shows a column in the table based on its index.
@@ -108,6 +117,32 @@ class JobAppTrackerMainWindow(QMainWindow):
             self.ui.appTableWidget.hideColumn(col_idx)
 
         self.settings.setValue("opts/showDaysPassed", show_col)
+
+    @pyqtSlot(bool)
+    def toggle_inactive(self, show_inactive: bool) -> None:
+        """
+        Hides or shows applications in the table that are inactive (rejected or
+        likely ghosted)
+        :param show_inactive: True if inactive application should be shown, False
+            if hidden
+        :return:
+        """
+        if show_inactive:
+            for row in range(self.ui.appTableWidget.rowCount()):
+                self.ui.appTableWidget.setRowHidden(row, False)
+        else:
+            for row, app in enumerate(self.tableData):
+                app_status = ghost_prediction(
+                    self.currentFile,
+                    self.tableData[row]
+                )
+
+                if app_status in {Status.LIKELY_GHOSTED, Status.REJECTED}:
+                    self.ui.appTableWidget.setRowHidden(row, True)
+                else:
+                    self.ui.appTableWidget.setRowHidden(row, False)
+
+        self.settings.setValue("opts/showInactiveApplications", show_inactive)
 
     def changeOpenFile(self, new_file_path: str) -> None:
         """
@@ -189,6 +224,8 @@ class JobAppTrackerMainWindow(QMainWindow):
                 self.ui.appTableWidget.setColumnWidth(col_idx, 100)
             elif self.ui.appTableWidget.columnWidth(col_idx) > 600:
                 self.ui.appTableWidget.setColumnWidth(col_idx, 600)
+
+        self.toggle_inactive(self.ui.actionInactive_Applications.isChecked())
 
     @pyqtSlot()
     def openFileAction(self) -> None:

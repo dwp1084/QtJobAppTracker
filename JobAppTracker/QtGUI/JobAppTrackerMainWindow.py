@@ -22,6 +22,9 @@ NO_FILE_LOADED = "No file loaded"
 # Name of the app settings file
 CONFIG_FILE_NAME = "jobapptrackerconfig.ini"
 
+# Days passed column index - be careful if column numbers change
+DAYS_PASSED_COL = 13
+
 
 class JobAppTrackerMainWindow(QMainWindow):
     """
@@ -58,7 +61,7 @@ class JobAppTrackerMainWindow(QMainWindow):
         # Set window title and load the previously loaded file if possible
         titleStatus = NO_FILE_LOADED
 
-        if self.settings.value("file/currentFile"):
+        if self.settings.value("file/currentFile") is not None:
             filename = self.settings.value("file/currentFile")
             if not os.path.exists(filename):
                 showWarningMessage(f"Last open file {filename} is missing")
@@ -80,6 +83,35 @@ class JobAppTrackerMainWindow(QMainWindow):
 
         # Allow app info screen to trigger a data reload
         self.appInfoScreen.table_updated.connect(self.load_data)
+
+        # Hide days passed column option
+        show_days_passed_unchecked = self.settings.value(
+            "opts/showDaysPassed", type=bool
+        )
+        show_days_passed = bool(show_days_passed_unchecked)
+        if show_days_passed_unchecked is None:
+            show_days_passed = True
+            self.settings.setValue("opts/showDaysPassed", show_days_passed)
+
+        self.ui.actionDays_Since_Application.toggled.connect(
+            lambda checked: self.toggleDaysPassedColumn(DAYS_PASSED_COL, checked)
+        )
+
+        self.ui.actionDays_Since_Application.setChecked(show_days_passed)
+
+    def toggleDaysPassedColumn(self, col_idx: int, show_col: bool) -> None:
+        """
+        Hides or shows a column in the table based on its index.
+        :param col_idx: Column's index
+        :param show_col: True if column should be shown, False if hidden
+        :return:
+        """
+        if show_col:
+            self.ui.appTableWidget.showColumn(col_idx)
+        else:
+            self.ui.appTableWidget.hideColumn(col_idx)
+
+        self.settings.setValue("opts/showDaysPassed", show_col)
 
     def changeOpenFile(self, new_file_path: str) -> None:
         """
@@ -109,7 +141,7 @@ class JobAppTrackerMainWindow(QMainWindow):
         starting data file location.
         :return:
         """
-        if not self.settings.value("file/startLocation"):
+        if self.settings.value("file/startLocation") is None:
             documentsFolder = QStandardPaths.writableLocation(
                 QStandardPaths.StandardLocation.DocumentsLocation
             )

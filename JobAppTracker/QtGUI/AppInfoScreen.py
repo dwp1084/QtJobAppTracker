@@ -8,7 +8,7 @@ from PyQt6.QtWidgets import QDialog, QCompleter, QMenu, QLineEdit
 
 from Data.Application import Application
 from Data.InterviewDate import InterviewDate
-from QtGUI.QtSignal import QtSignal
+from QtGUI.QtUtils import QtSignal
 from QtGUI.ui.ui_AppInfoScreen import Ui_AppInfoScreen
 from SQLite.ApplicationQueries import (add_application,
                                        update_application,

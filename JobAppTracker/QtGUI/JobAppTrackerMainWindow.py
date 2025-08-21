@@ -1,6 +1,7 @@
 import os.path
 
 from PyQt6.QtCore import QSettings, QStandardPaths, pyqtSlot
+from PyQt6.QtGui import QAction
 from PyQt6.QtWidgets import QMainWindow, QFileDialog, QTableWidgetItem
 
 from Data.Application import Application, Status
@@ -23,7 +24,10 @@ NO_FILE_LOADED = "No file loaded"
 CONFIG_FILE_NAME = "jobapptrackerconfig.ini"
 
 # Column indices - careful if these change
+CONTACT_COL = 8
+MATERIALS_COL = 9
 STATUS_COL = 11
+COMMENT_COL = 12
 DAYS_PASSED_COL = 13
 
 
@@ -95,21 +99,51 @@ class JobAppTrackerMainWindow(QMainWindow):
         # Allow app info screen to trigger a data reload
         self.appInfoScreen.table_updated.connect(self.load_data)
 
-        # Hide days passed column option
-        show_days_passed = self.settings.value(
-            "opts/showDaysPassed", defaultValue=True, type=bool
+        # Map columns with their respective config keys and UI action elements
+        toggleable_columns: dict[str, tuple[QAction, int]] = {
+            "opts/showDaysPassed": (
+                self.ui.actionDays_Since_Application,
+                DAYS_PASSED_COL
+            ),
+            "opts/showComments": (
+                self.ui.actionComments,
+                COMMENT_COL
+            ),
+            "opts/showMaterialsSent": (
+                self.ui.actionMaterials_Sent,
+                MATERIALS_COL
+            ),
+            "opts/showContactInfo": (
+                self.ui.actionContact_Info,
+                CONTACT_COL
+            )
+        }
+
+        # Load in settings and hide columns if necessary
+        for key, data in toggleable_columns.items():
+            self.load_hide_column_setting(key, data[0], data[1])
+
+    def load_hide_column_setting(self, key: str, action: QAction, col_idx: int) -> None:
+        """
+        Loads a setting for a toggleable column and connects its associated
+        action.
+        :param key: Setting key
+        :param action: Action UI element
+        :param col_idx: Associated column index
+        :return:
+        """
+        show_col = self.settings.value(key, defaultValue=True, type=bool)
+        action.toggled.connect(  # type: ignore
+            lambda checked: self.toggleCol(col_idx, key, checked)
         )
 
-        self.ui.actionDays_Since_Application.toggled.connect(
-            lambda checked: self.toggleDaysPassedColumn(DAYS_PASSED_COL, checked)
-        )
+        action.setChecked(show_col)
 
-        self.ui.actionDays_Since_Application.setChecked(show_days_passed)
-
-    def toggleDaysPassedColumn(self, col_idx: int, show_col: bool) -> None:
+    def toggleCol(self, col_idx: int, key: str, show_col: bool) -> None:
         """
         Hides or shows a column in the table based on its index.
         :param col_idx: Column's index
+        :param key: Settings key
         :param show_col: True if column should be shown, False if hidden
         :return:
         """
@@ -118,7 +152,7 @@ class JobAppTrackerMainWindow(QMainWindow):
         else:
             self.ui.appTableWidget.hideColumn(col_idx)
 
-        self.settings.setValue("opts/showDaysPassed", show_col)
+        self.settings.setValue(key, show_col)
 
     @pyqtSlot(bool)
     def toggle_inactive(self, show_inactive: bool) -> None:

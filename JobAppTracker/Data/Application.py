@@ -43,19 +43,19 @@ class Application:
     """
     Application dataclass
     """
-    app_id: int
-    company: str
-    title: str
-    applied_on: date
-    followed_up: date
-    job_type: JobTypes
-    location: str
-    website: str
-    contact: str
-    materials: str
-    salary: str
-    status: Status
-    comments: str
+    app_id: int = -1
+    company: str = ""
+    title: str = ""
+    applied_on: date = date.today()
+    followed_up: date | None = None
+    job_type: JobTypes = JobTypes.IN_PERSON
+    location: str = ""
+    website: str = ""
+    contact: str = ""
+    materials: str = ""
+    salary: str = ""
+    status: Status = Status.PENDING
+    comments: str = ""
 
     @property
     def days_pending(self) -> int:

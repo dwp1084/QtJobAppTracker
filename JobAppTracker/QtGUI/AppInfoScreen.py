@@ -6,7 +6,7 @@ from typing import Any, Callable
 from PyQt6.QtCore import pyqtSlot, pyqtSignal, Qt, QPoint
 from PyQt6.QtWidgets import QDialog, QCompleter, QMenu, QLineEdit
 
-from Data.Application import Application
+from Data.Application import Application, JobTypes, Status
 from Data.InterviewDate import InterviewDate
 from QtGUI.QtUtils import QtSignal
 from QtGUI.ui.ui_AppInfoScreen import Ui_AppInfoScreen
@@ -15,7 +15,7 @@ from SQLite.ApplicationQueries import (add_application,
                                        delete_application,
                                        add_interview_date,
                                        delete_interview,
-                                       get_interviews_for_application, set_interview_status)
+                                       get_interviews_for_application, set_interview_status, ghost_prediction)
 from SQLite.AutocompleteQueries import (autocomplete_companies,
                                         autocomplete_locations,
                                         autocomplete_app_sources,
@@ -66,17 +66,6 @@ class AppInfoDialog(QDialog):
         self.ui = Ui_AppInfoScreen()
         self.ui.setupUi(self)
 
-        # Maps fields to dictionary keys for adding info to screen
-        self.textFieldMap = {
-            self.ui.companyField: "company",
-            self.ui.jobTitleField: "title",
-            self.ui.locationField: "location",
-            self.ui.appSiteField: "website",
-            self.ui.salaryField: "salary",
-            self.ui.materialsSent: "materials",
-            self.ui.contactField: "contact"
-        }
-
         # Connecting signals to slots
         self.ui.followedUpCheckBox.stateChanged.connect(
             lambda: self.ui.followUpWidget.setVisible(
@@ -94,33 +83,53 @@ class AppInfoDialog(QDialog):
             self.interview_list_ctx_menu
         )
 
-    def fill_data(self, **kwargs: Any) -> None:
+    def fill_data(self, app: Application = Application()) -> None:
         """
-        Fills data into the data fields from various fields
-        :param kwargs: Keyword arguments for the various field names
+        Fills data into the data fields from an application.
+        :param app: Application to fill. If left blank, a placeholder application
+        will be used in order to clear data for a new application
         :return:
         """
-        self.app_id = kwargs.get("app_id", None)
-        self.ui.jobTypeField.setCurrentIndex(int(kwargs.get("job_type", 0)))
-        self.ui.statusField.setCurrentIndex(int(kwargs.get("status", 0)))
-
         self.ui.interviewDateField.setDate(date.today())
 
-        self.ui.commentsField.setPlainText(kwargs.get("comments"))
-        self.ui.daysSinceAppliedLabel.setText(str(kwargs.get("days_pending")))
+        # If the placeholder application is used, no application is loaded
+        self.app_id = app.app_id if app.app_id > -1 else None
 
-        follow_up_date = kwargs.get("followed_up", None)
-        followed_up = follow_up_date is not None
+        status = ghost_prediction(self.currentFile, app)
+        self.ui.statusField.setPlaceholderText(str(status))
+
+        # Statuses that can be selected in combobox. If a different one applies,
+        # placeholder text is shown
+        selectableStatuses = {Status.PENDING, Status.OFFER, Status.REJECTED}
+
+        status_idx = int(status) if status in selectableStatuses else -1
+
+        self.ui.jobTypeField.setCurrentIndex(int(app.job_type))
+        self.ui.statusField.setCurrentIndex(status_idx)
+        self.ui.commentsField.setPlainText(app.comments)
+        self.ui.daysSinceAppliedLabel.setText(str(app.days_pending))
+
+        followed_up = app.followed_up is not None
         self.ui.followedUpCheckBox.setChecked(followed_up)
         if followed_up:
             self.ui.followUpWidget.show()
-            self.ui.followUpField.setDate(follow_up_date)
+            self.ui.followUpField.setDate(app.followed_up)
         else:
             self.ui.followUpWidget.hide()
             self.ui.followUpField.setDate(date.today())
 
-        for textField, key in self.textFieldMap.items():
-            textField.setText(kwargs.get(key, ""))
+        plainTextFields: dict[QLineEdit, str] = {
+            self.ui.companyField: app.company,
+            self.ui.jobTitleField: app.title,
+            self.ui.locationField: app.location,
+            self.ui.appSiteField: app.website,
+            self.ui.salaryField: app.salary,
+            self.ui.materialsSent: app.materials,
+            self.ui.contactField: app.contact
+        }
+
+        for field, data in plainTextFields.items():
+            field.setText(data)
 
         self.fill_autocomplete_data(autocomplete_companies, self.ui.companyField)
         self.fill_autocomplete_data(autocomplete_locations, self.ui.locationField)
@@ -188,9 +197,7 @@ class AppInfoDialog(QDialog):
         self.ui.appDeleteButton.show()
         self.ui.DaysSinceAppliedWidget.show()
         self.app_info_type = self.AppInfoType.EXISTING
-        args = asdict(app)
-        args["days_pending"] = app.days_pending
-        self.fill_data(**args)
+        self.fill_data(app)
         self.refresh_interview_dates()
         self.exec()
 
@@ -277,6 +284,10 @@ class AppInfoDialog(QDialog):
         interview_date = self.ui.interviewDateField.date().toPyDate()
         add_interview_date(self.currentFile, self.app_id, interview_date)
         set_interview_status(self.currentFile, self.app_id)
+
+        # Change placeholder text and index to show the interview status
+        self.ui.statusField.setPlaceholderText(str(Status.INTERVIEW))
+        self.ui.statusField.setCurrentIndex(-1)
 
         self.refresh_interview_dates()
         self.table_updated.emit()

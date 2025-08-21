@@ -71,7 +71,8 @@ def update_application(data_db: str,
                        follow_up: datetime.date | str = ""
                        ) -> None:
     """
-    Updates the main fields of an application in the database.
+    Updates the main fields of an application in the database. If an invalid
+    index is used for status, then it will not be updated in the database.
     :param data_db: Database file
     :param app_id: Job application ID from database
     :param company: Company name
@@ -87,7 +88,22 @@ def update_application(data_db: str,
     :param follow_up: Latest follow-up date
     :return:
     """
-    update_app_sql = """
+    update_without_status_sql = """
+    UPDATE applications 
+    SET company = ?,
+        title = ?,
+        applied_at = ?,
+        latest_follow_up = ?,
+        location = ?,
+        materials_sent = ?,
+        comments = ?,
+        salary = ?,
+        contact = ?,
+        type = ?
+    WHERE app_id = ?;
+    """
+
+    update_full_app_sql = """
     UPDATE applications 
     SET company = ?,
         title = ?,
@@ -102,10 +118,18 @@ def update_application(data_db: str,
         type = ?
     WHERE app_id = ?;
     """
+
+    if status < 0:
+        sql_query = update_without_status_sql
+        params = (company, title, applied_at, follow_up, location, materials_sent,
+                  comments, salary, contact, job_type, app_id)
+    else:
+        sql_query = update_full_app_sql
+        params = (company, title, applied_at, follow_up, location, materials_sent,
+                  comments, salary, contact, status, job_type, app_id)
+
     db = DataFileSQLRunner(data_db)
-    params = (company, title, applied_at, follow_up, location, materials_sent,
-              comments, salary, contact, status, job_type, app_id)
-    db.run(update_app_sql, params)
+    db.run(sql_query, params)
 
 
 def add_interview_date(data_db: str, app_id: int, date: datetime.date) -> None:

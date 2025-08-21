@@ -43,6 +43,8 @@ class JobAppTrackerMainWindow(QMainWindow):
     An internal list of applications displayed on the table
     """
 
+    hiddenCount: int = 0
+
     def __init__(self) -> None:
         super().__init__()
         self.ui = Ui_JobAppTrackerMainWindow()
@@ -61,6 +63,14 @@ class JobAppTrackerMainWindow(QMainWindow):
 
         # Set window title and load the previously loaded file if possible
         titleStatus = NO_FILE_LOADED
+
+        # Setup show inactive
+        show_inactive = self.settings.value(
+            "opts/showInactiveApplications", defaultValue=True, type=bool
+        )
+
+        self.ui.actionInactive_Applications.toggled.connect(self.toggle_inactive)
+        self.ui.actionInactive_Applications.setChecked(show_inactive)
 
         if self.settings.value("file/currentFile") is not None:
             filename = self.settings.value("file/currentFile")
@@ -96,14 +106,6 @@ class JobAppTrackerMainWindow(QMainWindow):
 
         self.ui.actionDays_Since_Application.setChecked(show_days_passed)
 
-        # Setup show inactive
-        show_inactive = self.settings.value(
-            "opts/showInactiveApplications", defaultValue=True, type=bool
-        )
-
-        self.ui.actionInactive_Applications.toggled.connect(self.toggle_inactive)
-        self.ui.actionInactive_Applications.setChecked(show_inactive)
-
     def toggleDaysPassedColumn(self, col_idx: int, show_col: bool) -> None:
         """
         Hides or shows a column in the table based on its index.
@@ -127,6 +129,8 @@ class JobAppTrackerMainWindow(QMainWindow):
             if hidden
         :return:
         """
+        self.hiddenCount = 0
+
         if show_inactive:
             for row in range(self.ui.appTableWidget.rowCount()):
                 self.ui.appTableWidget.setRowHidden(row, False)
@@ -139,10 +143,29 @@ class JobAppTrackerMainWindow(QMainWindow):
 
                 if app_status in {Status.LIKELY_GHOSTED, Status.REJECTED}:
                     self.ui.appTableWidget.setRowHidden(row, True)
+                    self.hiddenCount += 1
                 else:
                     self.ui.appTableWidget.setRowHidden(row, False)
 
         self.settings.setValue("opts/showInactiveApplications", show_inactive)
+
+        self.update_app_count()
+
+    def update_app_count(self) -> None:
+        """
+        Updates the application count label on the screen based on the number
+        of applications loaded and the number of rows hidden.
+        :return:
+        """
+        match self.hiddenCount:
+            case 0:
+                label_text = str(len(self.tableData))
+            case 1:
+                label_text = f"{len(self.tableData)} (1 application hidden)"
+            case _:
+                label_text = f"{len(self.tableData)} ({self.hiddenCount} applications hidden)"
+
+        self.ui.appCountLabel.setText(label_text)
 
     def changeOpenFile(self, new_file_path: str) -> None:
         """

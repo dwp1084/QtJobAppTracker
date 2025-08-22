@@ -24,11 +24,11 @@ NO_FILE_LOADED = "No file loaded"
 CONFIG_FILE_NAME = "jobapptrackerconfig.ini"
 
 # Column indices - careful if these change
-CONTACT_COL = 8
-MATERIALS_COL = 9
-STATUS_COL = 11
-COMMENT_COL = 12
-DAYS_PASSED_COL = 13
+CONTACT_COL = 9
+MATERIALS_COL = 10
+STATUS_COL = 12
+COMMENT_COL = 13
+DAYS_PASSED_COL = 14
 
 
 class JobAppTrackerMainWindow(QMainWindow):
@@ -263,6 +263,7 @@ class JobAppTrackerMainWindow(QMainWindow):
                 ),
                 str(app.job_type),
                 app.location,
+                app.found_at,
                 app.website,
                 app.contact,
                 app.materials,

@@ -125,7 +125,8 @@ class AppInfoDialog(QDialog):
             self.ui.appSiteField: app.website,
             self.ui.salaryField: app.salary,
             self.ui.materialsSent: app.materials,
-            self.ui.contactField: app.contact
+            self.ui.contactField: app.contact,
+            self.ui.appFoundOnField: app.found_at
         }
 
         for field, data in plainTextFields.items():
@@ -134,6 +135,7 @@ class AppInfoDialog(QDialog):
         self.fill_autocomplete_data(autocomplete_companies, self.ui.companyField)
         self.fill_autocomplete_data(autocomplete_locations, self.ui.locationField)
         self.fill_autocomplete_data(autocomplete_app_sources, self.ui.appSiteField)
+        self.fill_autocomplete_data(autocomplete_app_sources, self.ui.appFoundOnField)
 
     def fill_autocomplete_data(self,
                                fetch_func: Callable[[], list[str]],
@@ -241,6 +243,7 @@ class AppInfoDialog(QDialog):
                     date.today(),
                     self.ui.companyField.text(),
                     self.ui.jobTitleField.text(),
+                    self.ui.appFoundOnField.text(),
                     self.ui.appSiteField.text(),
                     self.ui.locationField.text(),
                     self.ui.materialsSent.text(),
@@ -258,6 +261,7 @@ class AppInfoDialog(QDialog):
                     self.app_id,
                     self.ui.companyField.text(),
                     self.ui.jobTitleField.text(),
+                    self.ui.appFoundOnField.text(),
                     self.ui.appSiteField.text(),
                     self.ui.locationField.text(),
                     self.ui.materialsSent.text(),
@@ -273,6 +277,7 @@ class AppInfoDialog(QDialog):
         insert_companies(self.ui.companyField.text())
         insert_locations(self.ui.locationField.text())
         insert_app_sources(self.ui.appSiteField.text())
+        insert_app_sources(self.ui.appFoundOnField.text())
 
         # Notifies that the table data has changed and closes the dialog
         self.table_updated.emit()

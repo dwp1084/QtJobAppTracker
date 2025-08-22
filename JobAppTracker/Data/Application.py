@@ -50,6 +50,7 @@ class Application:
     followed_up: date | None = None
     job_type: JobTypes = JobTypes.IN_PERSON
     location: str = ""
+    found_at: str = ""
     website: str = ""
     contact: str = ""
     materials: str = ""

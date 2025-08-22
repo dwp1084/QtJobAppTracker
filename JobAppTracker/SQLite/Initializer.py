@@ -37,6 +37,7 @@ CREATE TABLE IF NOT EXISTS applications (
     company TEXT NOT NULL,
     title TEXT NOT NULL,
     applied_at TEXT NOT NULL,
+    app_found_at TEXT NOT NULL,
     application_date DATE NOT NULL DEFAULT (date('now')),
     latest_follow_up DATE NOT NULL DEFAULT '',
     location TEXT NOT NULL DEFAULT 'N/A',

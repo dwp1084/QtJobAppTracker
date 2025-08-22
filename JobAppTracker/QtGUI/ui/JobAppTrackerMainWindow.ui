@@ -119,6 +119,11 @@
       </column>
       <column>
        <property name="text">
+        <string>App Found On</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
         <string>App Website</string>
        </property>
       </column>

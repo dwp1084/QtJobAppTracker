@@ -142,58 +142,58 @@
         </item>
        </widget>
       </item>
-      <item row="4" column="0">
+      <item row="5" column="0">
        <widget class="QLabel" name="label_8">
         <property name="text">
          <string>Application Site</string>
         </property>
        </widget>
       </item>
-      <item row="4" column="1">
+      <item row="5" column="1">
        <widget class="QLineEdit" name="appSiteField"/>
       </item>
-      <item row="5" column="0">
+      <item row="6" column="0">
        <widget class="QLabel" name="label_9">
         <property name="text">
          <string>Salary</string>
         </property>
        </widget>
       </item>
-      <item row="5" column="1">
+      <item row="6" column="1">
        <widget class="QLineEdit" name="salaryField"/>
       </item>
-      <item row="6" column="0">
+      <item row="7" column="0">
        <widget class="QLabel" name="label_10">
         <property name="text">
          <string>Materials Sent</string>
         </property>
        </widget>
       </item>
-      <item row="6" column="1">
+      <item row="7" column="1">
        <widget class="QLineEdit" name="materialsSent">
         <property name="text">
          <string>Resume</string>
         </property>
        </widget>
       </item>
-      <item row="7" column="0">
+      <item row="8" column="0">
        <widget class="QLabel" name="label_11">
         <property name="text">
          <string>Contact Info</string>
         </property>
        </widget>
       </item>
-      <item row="7" column="1">
+      <item row="8" column="1">
        <widget class="QLineEdit" name="contactField"/>
       </item>
-      <item row="8" column="0">
+      <item row="9" column="0">
        <widget class="QLabel" name="label_12">
         <property name="text">
          <string>Status</string>
         </property>
        </widget>
       </item>
-      <item row="8" column="1">
+      <item row="9" column="1">
        <widget class="QComboBox" name="statusField">
         <item>
          <property name="text">
@@ -211,6 +211,16 @@
          </property>
         </item>
        </widget>
+      </item>
+      <item row="4" column="0">
+       <widget class="QLabel" name="label_16">
+        <property name="text">
+         <string>Found on</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="1">
+       <widget class="QLineEdit" name="appFoundOnField"/>
       </item>
      </layout>
     </widget>

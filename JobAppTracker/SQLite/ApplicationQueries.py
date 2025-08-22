@@ -7,14 +7,26 @@ from SQLite.Utils import DataFileSQLRunner
 
 
 APP_DAT_THRESHOLD = 21
+"""
+Threshold, in days after application date, for ghosting prediction.
+"""
+
 FOLLOW_UP_THRESHOLD = 7
+"""
+Threshold, in days after follow-up date, for ghosting prediction.
+"""
+
 INTERVIEW_THRESHOLD = 60
+"""
+Threshold, in days after latest interview date, for ghosting prediction.
+"""
 
 
 def add_application(data_db: str,
                     applied_date: datetime.date,
                     company: str,
                     title: str,
+                    app_found_at: str,
                     applied_at: str,
                     location: str,
                     materials_sent: str,
@@ -31,6 +43,7 @@ def add_application(data_db: str,
     :param applied_date: Application date
     :param company: Company name
     :param title: Job title
+    :param app_found_at: Website or place where I found the application
     :param applied_at: Website or place where I applied
     :param location: Job location if not remote
     :param materials_sent: Materials sent to the company
@@ -43,16 +56,17 @@ def add_application(data_db: str,
     :return:
     """
     add_app_sql = """
-    INSERT INTO applications (company, title, applied_at, latest_follow_up, 
-    location, materials_sent, comments, salary,  contact, status, type, 
-    application_date)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+    INSERT INTO applications (company, title, app_found_at, applied_at, 
+    latest_follow_up, location, materials_sent, comments, salary,  contact, 
+    status, type, application_date)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
     """
 
     db = DataFileSQLRunner(data_db)
 
-    params = (company, title, applied_at, follow_up, location, materials_sent,
-              comments, salary, contact, status, job_type, applied_date)
+    params = (company, title, app_found_at, applied_at, follow_up, location,
+              materials_sent, comments, salary, contact, status, job_type,
+              applied_date)
     db.run(add_app_sql, params)
 
 
@@ -60,6 +74,7 @@ def update_application(data_db: str,
                        app_id: int,
                        company: str,
                        title: str,
+                       app_found_at: str,
                        applied_at: str,
                        location: str,
                        materials_sent: str,
@@ -77,6 +92,7 @@ def update_application(data_db: str,
     :param app_id: Job application ID from database
     :param company: Company name
     :param title: Job title
+    :param app_found_at: Website or place where I found the application
     :param applied_at: Website or place where I applied
     :param location: Job location if not remote
     :param materials_sent: Materials sent to the company
@@ -92,6 +108,7 @@ def update_application(data_db: str,
     UPDATE applications 
     SET company = ?,
         title = ?,
+        app_found_at = ?,
         applied_at = ?,
         latest_follow_up = ?,
         location = ?,
@@ -107,6 +124,7 @@ def update_application(data_db: str,
     UPDATE applications 
     SET company = ?,
         title = ?,
+        app_found_at = ?,
         applied_at = ?,
         latest_follow_up = ?,
         location = ?,
@@ -121,12 +139,13 @@ def update_application(data_db: str,
 
     if status < 0:
         sql_query = update_without_status_sql
-        params = (company, title, applied_at, follow_up, location, materials_sent,
-                  comments, salary, contact, job_type, app_id)
+        params = (company, title, app_found_at, applied_at, follow_up, location,
+                  materials_sent, comments, salary, contact, job_type, app_id)
     else:
         sql_query = update_full_app_sql
-        params = (company, title, applied_at, follow_up, location, materials_sent,
-                  comments, salary, contact, status, job_type, app_id)
+        params = (company, title, app_found_at, applied_at, follow_up, location,
+                  materials_sent, comments, salary, contact, status, job_type,
+                  app_id)
 
     db = DataFileSQLRunner(data_db)
     db.run(sql_query, params)
@@ -172,7 +191,7 @@ def get_applications(data_db: str) -> list[Application]:
     :return: Applications data
     """
     retrieve_apps_sql = """
-    SELECT app_id, company, title, applied_at, application_date, 
+    SELECT app_id, company, title, app_found_at, applied_at, application_date, 
     latest_follow_up, location, materials_sent, comments, salary, contact, 
     status, type FROM applications ORDER BY date(application_date) DESC;
     """
@@ -197,6 +216,7 @@ def get_applications(data_db: str) -> list[Application]:
                                follow_up,
                                JobTypes(data_dict["type"]),
                                data_dict["location"],
+                               data_dict["app_found_at"],
                                data_dict["applied_at"],
                                data_dict["contact"],
                                data_dict["materials_sent"],

@@ -8,7 +8,7 @@ from PyQt6.QtWidgets import QDialog, QCompleter, QMenu, QLineEdit
 
 from Data.Application import Application, JobTypes, Status
 from Data.InterviewDate import InterviewDate
-from QtGUI.QtUtils import QtSignal
+from QtGUI.QtUtils import QtSignal, shorten_string
 from QtGUI.ui.ui_AppInfoScreen import Ui_AppInfoScreen
 from SQLite.ApplicationQueries import (add_application,
                                        update_application,
@@ -183,6 +183,7 @@ class AppInfoDialog(QDialog):
         self.ui.DaysSinceAppliedWidget.hide()
         self.fill_data()
         self.app_info_type = self.AppInfoType.NEW
+        self.setWindowTitle("New Application")
         self.exec()
 
     @pyqtSlot(Application)
@@ -199,6 +200,9 @@ class AppInfoDialog(QDialog):
         self.app_info_type = self.AppInfoType.EXISTING
         self.fill_data(app)
         self.refresh_interview_dates()
+        job_title = shorten_string(app.title, 30)
+        company = shorten_string(app.company, 30)
+        self.setWindowTitle(f"Application Info - {job_title} at {company}")
         self.exec()
 
     @pyqtSlot()

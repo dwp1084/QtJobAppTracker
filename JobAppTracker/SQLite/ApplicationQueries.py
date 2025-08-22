@@ -5,7 +5,6 @@ from Data.Application import Application, JobTypes, Status
 from Data.InterviewDate import InterviewDate
 from SQLite.Utils import DataFileSQLRunner
 
-
 APP_DAT_THRESHOLD = 21
 """
 Threshold, in days after application date, for ghosting prediction.

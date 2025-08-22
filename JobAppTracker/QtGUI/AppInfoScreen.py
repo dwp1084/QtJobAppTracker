@@ -1,12 +1,11 @@
-from dataclasses import asdict
 from datetime import date
 from enum import Enum, auto
-from typing import Any, Callable
+from typing import Callable
 
 from PyQt6.QtCore import pyqtSlot, pyqtSignal, Qt, QPoint
 from PyQt6.QtWidgets import QDialog, QCompleter, QMenu, QLineEdit
 
-from Data.Application import Application, JobTypes, Status
+from Data.Application import Application, Status
 from Data.InterviewDate import InterviewDate
 from QtGUI.QtUtils import QtSignal, shorten_string
 from QtGUI.ui.ui_AppInfoScreen import Ui_AppInfoScreen

@@ -14,7 +14,9 @@ from SQLite.ApplicationQueries import (add_application,
                                        delete_application,
                                        add_interview_date,
                                        delete_interview,
-                                       get_interviews_for_application, set_interview_status, ghost_prediction)
+                                       get_interviews_for_application,
+                                       set_interview_status,
+                                       ghost_prediction)
 from SQLite.AutocompleteQueries import (autocomplete_companies,
                                         autocomplete_locations,
                                         autocomplete_app_sources,

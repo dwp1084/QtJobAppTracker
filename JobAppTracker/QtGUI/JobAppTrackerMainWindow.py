@@ -9,7 +9,8 @@ from JobAppTracker.QtGUI.ui.ui_JobAppTrackerMainWindow import \
     Ui_JobAppTrackerMainWindow
 from QtGUI.AppInfoScreen import AppInfoDialog
 from SQLite.ApplicationQueries import (get_interview_count_for_application,
-                                       get_applications, ghost_prediction)
+                                       get_applications,
+                                       ghost_prediction)
 from SQLite.Initializer import init_data_file
 from SQLite.Utils import DataFileSQLRunner
 from errorDialog import showWarningMessage

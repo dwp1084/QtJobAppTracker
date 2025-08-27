@@ -5,13 +5,18 @@ from PyQt6.QtGui import QAction
 from PyQt6.QtWidgets import QMainWindow, QFileDialog, QTableWidgetItem
 
 from Data.Application import Application, Status
+from Data.StatsData import StatsData
 from JobAppTracker.QtGUI.ui.ui_JobAppTrackerMainWindow import \
     Ui_JobAppTrackerMainWindow
 from QtGUI.AppInfoScreen import AppInfoDialog
+from QtGUI.StatsWindow import StatsWindow
 from SQLite.ApplicationQueries import (get_interview_count_for_application,
                                        get_applications,
                                        ghost_prediction)
 from SQLite.Initializer import init_data_file
+from SQLite.StatsQueries import (get_total_ints,
+                                 get_avg_apps_per_month,
+                                 get_avg_ints_and_count)
 from SQLite.Utils import DataFileSQLRunner
 from errorDialog import showWarningMessage
 
@@ -63,8 +68,9 @@ class JobAppTrackerMainWindow(QMainWindow):
                                   QSettings.Format.IniFormat
                                   )
 
-        # Create the application info screen
+        # Create additional windows
         self.appInfoScreen = AppInfoDialog()
+        self.statisticsWindow = StatsWindow()
 
         # Set window title and load the previously loaded file if possible
         titleStatus = NO_FILE_LOADED
@@ -123,6 +129,40 @@ class JobAppTrackerMainWindow(QMainWindow):
         # Load in settings and hide columns if necessary
         for key, data in toggleable_columns.items():
             self.load_hide_column_setting(key, data[0], data[1])
+
+        self.ui.actionStatistics.triggered.connect(self.show_stats)
+
+    @pyqtSlot()
+    def show_stats(self) -> None:
+        """
+        Gathers statistics and shows the statistics window.
+        :return:
+        """
+        total_apps = len(self.tableData)
+        total_num_interviews = get_total_ints(self.currentFile)
+        jobs_given_ints, avg_ints_per_job = get_avg_ints_and_count(
+            self.currentFile
+        )
+        avg_apps_per_month = get_avg_apps_per_month(self.currentFile)
+
+        stats_data = StatsData(total_apps,
+                               total_num_interviews,
+                               avg_ints_per_job,
+                               avg_apps_per_month,
+                               jobs_given_ints)
+
+        for app in self.tableData:
+            match ghost_prediction(self.currentFile, app):
+                case Status.PENDING | Status.INTERVIEW:
+                    stats_data.pending += 1
+                case Status.REJECTED:
+                    stats_data.rejected += 1
+                case Status.LIKELY_GHOSTED:
+                    stats_data.ghosted += 1
+                case _:
+                    pass
+
+        self.statisticsWindow.load_stats_and_show(stats_data)
 
     def load_hide_column_setting(self, key: str, action: QAction, col_idx: int) -> None:
         """

@@ -26,10 +26,25 @@ def get_avg_apps_per_month(data_db: str) -> float:
     get_avg_apps_sql = """
     SELECT AVG(app_count)
     FROM (
-        SELECT strftime('%Y-%m', application_date) AS year_month,
-        COUNT(*) AS app_count
-        FROM applications
-        GROUP BY year_month
+        -- Builds a list of each month starting from the first one found in the
+        -- data to the last one found
+        WITH RECURSIVE months_list(month) AS (
+            SELECT date(MIN(application_date), 'start of month')
+            FROM applications
+            UNION ALL
+            SELECT date(month, '+1 month')
+            FROM months_list
+            WHERE month < (SELECT date(MAX(application_date), 
+            'start of month') FROM applications)
+        )
+        -- Joins the list of months with the months found in the application
+        -- table, then counts entries per each month
+        SELECT strftime('%Y-%m', m.month) AS year_month,
+        COUNT(a.application_date) AS app_count 
+        FROM months_list AS m
+        LEFT JOIN applications AS a
+        ON strftime('%Y-%m', a.application_date) = year_month
+        GROUP BY m.month
     );
     """
 

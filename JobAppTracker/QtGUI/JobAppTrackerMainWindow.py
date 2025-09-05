@@ -138,6 +138,11 @@ class JobAppTrackerMainWindow(QMainWindow):
         Gathers statistics and shows the statistics window.
         :return:
         """
+
+        # Do nothing if the window is already open
+        if self.statisticsWindow.isVisible():
+            return
+
         total_apps = len(self.tableData)
         total_num_interviews = get_total_ints(self.currentFile)
         jobs_given_ints, avg_ints_per_job = get_avg_ints_and_count(

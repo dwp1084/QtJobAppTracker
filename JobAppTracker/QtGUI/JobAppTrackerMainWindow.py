@@ -1,7 +1,7 @@
 import os.path
 
 from PyQt6.QtCore import QSettings, QStandardPaths, pyqtSlot
-from PyQt6.QtGui import QAction
+from PyQt6.QtGui import QAction, QCloseEvent
 from PyQt6.QtWidgets import QMainWindow, QFileDialog, QTableWidgetItem
 
 from Data.Application import Application, Status
@@ -390,3 +390,14 @@ class JobAppTrackerMainWindow(QMainWindow):
         init_data_file(fileName)
 
         self.changeOpenFile(fileName)
+
+    def closeEvent(self, event: QCloseEvent) -> None:
+        """
+        Overrides the close event for the main window to ensure all other
+        windows are closed when the user wants to exit the application.
+        :param event: Close event
+        :return:
+        """
+        self.statisticsWindow.close()
+        self.appInfoScreen.close()
+        event.accept()

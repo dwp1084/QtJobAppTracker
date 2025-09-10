@@ -15,7 +15,7 @@ FOLLOW_UP_THRESHOLD = 7
 Threshold, in days after follow-up date, for ghosting prediction.
 """
 
-INTERVIEW_THRESHOLD = 60
+INTERVIEW_THRESHOLD = 90
 """
 Threshold, in days after latest interview date, for ghosting prediction.
 """

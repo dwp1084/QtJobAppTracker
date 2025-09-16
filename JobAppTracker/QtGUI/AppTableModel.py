@@ -7,6 +7,11 @@ from SQLite.ApplicationQueries import get_interview_count_for_application, ghost
 
 
 class AppTableModel(QAbstractTableModel):
+    """
+    Table model for the main application table. Defines columns and mapping of
+    data from the application dataclass to the table view.
+    """
+
     def __init__(self, data: list[Application], currentFile: str):
         super().__init__()
         self._data = data
@@ -35,26 +40,60 @@ class AppTableModel(QAbstractTableModel):
         ]
 
     def searchColIdx(self, name: str) -> int:
+        """
+        Searches for a column by its header name.
+        :param name: Header name to search for
+        :return: Column index if found, -1 if not found.
+        """
         for i, (header, _) in enumerate(self._columns):
             if header == name:
                 return i
         return -1
 
     def setCurrentFile(self, currentFile: str) -> None:
+        """
+        Changes the current open file path to reference.
+        :param currentFile: Open file path
+        :return:
+        """
         self.currentFile = currentFile
 
     def setModelData(self, data: list[Application]) -> None:
+        """
+        Changes the data list to be displayed on the table.
+        :param data: Data list
+        :return:
+        """
         self.beginResetModel()
         self._data = data
         self.endResetModel()
 
     def rowCount(self, parent: QModelIndex = ...) -> int:
+        """
+        Reimplementation of function for data model. Returns the row count for
+        the table (number of entries in the data)
+        :param parent:
+        :return:
+        """
         return len(self._data)
 
     def columnCount(self, parent: QModelIndex = ...) -> int:
+        """
+        Reimplementation of function for data model. Returns the column count
+        for the table (number of internally defined columns)
+        :param parent:
+        :return:
+        """
         return len(self._columns)
 
     def data(self, index: QModelIndex, role: Qt.ItemDataRole = ...):
+        """
+        Reimplementation of function for data model. Returns the data for a
+        specific cell in the table.
+        :param index:
+        :param role:
+        :return:
+        """
         if role == Qt.ItemDataRole.DisplayRole:
             app = self._data[index.row()]
             _, expr = self._columns[index.column()]
@@ -65,6 +104,14 @@ class AppTableModel(QAbstractTableModel):
                    section: int,
                    orientation: Qt.Orientation,
                    role: Qt.ItemDataRole = ...):
+        """
+        Reimplementation of function for data model. Returns the header data for
+        a specific column in the table.
+        :param section:
+        :param orientation:
+        :param role:
+        :return:
+        """
         if (role == Qt.ItemDataRole.DisplayRole
                 and orientation == Qt.Orientation.Horizontal):
             return self._columns[section][0]

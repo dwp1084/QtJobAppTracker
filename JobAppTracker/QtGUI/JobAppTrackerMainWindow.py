@@ -100,11 +100,6 @@ class JobAppTrackerMainWindow(QMainWindow):
 
         self.ui.appTableView.setModel(self.tableModel)
 
-        # Link application info screen to the application view
-        self.ui.appTableWidget.cellDoubleClicked.connect(
-            lambda row, _: self.appInfoScreen.editApplication(self.tableData[row])
-        )
-
         self.ui.appTableView.doubleClicked.connect(
             lambda index:
             self.appInfoScreen.editApplication(self.tableData[index.row()]
@@ -184,6 +179,14 @@ class JobAppTrackerMainWindow(QMainWindow):
         self.statisticsWindow.load_stats_and_show(stats_data)
 
     def load_hide_column_setting(self, key: str, action: QAction, header: str) -> None:
+        """
+        Loads a setting for a toggleable column and connects its associated
+        action.
+        :param key: Setting key
+        :param action: Action UI element
+        :param header: Associated column header
+        :return:
+        """
         show_col = self.settings.value(key, defaultValue=True, type=bool)
         action.toggled.connect(  # type: ignore
             lambda checked: self.toggleCol(header, key, checked)
@@ -192,6 +195,13 @@ class JobAppTrackerMainWindow(QMainWindow):
         action.setChecked(show_col)
 
     def toggleCol(self, header: str, key: str, show_col: bool) -> None:
+        """
+        Hides or shows a column in the table based on its index.
+        :param header: Column's header
+        :param key: Settings key
+        :param show_col: True if column should be shown, False if hidden
+        :return:
+        """
         col_idx = self.tableModel.searchColIdx(header)
         if col_idx < 0:
             raise ValueError("Invalid column name provided.")
@@ -217,9 +227,6 @@ class JobAppTrackerMainWindow(QMainWindow):
         self.hiddenCount = 0
 
         if show_inactive:
-            for row in range(self.ui.appTableWidget.rowCount()):
-                self.ui.appTableWidget.setRowHidden(row, False)
-
             for row in range(self.tableModel.rowCount()):
                 self.ui.appTableView.setRowHidden(row, False)
 
@@ -231,11 +238,9 @@ class JobAppTrackerMainWindow(QMainWindow):
                 )
 
                 if app_status in {Status.LIKELY_GHOSTED, Status.REJECTED}:
-                    self.ui.appTableWidget.setRowHidden(row, True)
                     self.ui.appTableView.setRowHidden(row, True)
                     self.hiddenCount += 1
                 else:
-                    self.ui.appTableWidget.setRowHidden(row, False)
                     self.ui.appTableView.setRowHidden(row, False)
 
         self.settings.setValue("opts/showInactiveApplications", show_inactive)
@@ -266,6 +271,9 @@ class JobAppTrackerMainWindow(QMainWindow):
         """
         self.setTitleStatus(os.path.basename(new_file_path))
         self.currentFile = new_file_path
+
+        # Disable updates during the changing data process to remove flickering
+        self.ui.appTableView.setUpdatesEnabled(False)
         self.tableModel.setCurrentFile(self.currentFile)
         self.appInfoScreen.setCurrentFile(new_file_path)
         self.settings.setValue("file/currentFile", self.currentFile)
@@ -304,57 +312,33 @@ class JobAppTrackerMainWindow(QMainWindow):
         """
         self.tableData = get_applications(self.currentFile)
 
-        self.ui.appTableWidget.clearContents()
-        self.ui.appTableWidget.setRowCount(len(self.tableData))
-        for row, app in enumerate(self.tableData):
-            followed_up = app.followed_up.strftime("%b %d, %Y") \
-                if app.followed_up is not None else ""
-
-            row_contents = [
-                app.company,
-                app.title,
-                app.applied_on.strftime("%b %d, %Y"),
-                followed_up,
-                str(
-                    get_interview_count_for_application(self.currentFile,
-                                                        app.app_id)
-                ),
-                str(app.job_type),
-                app.location,
-                app.found_at,
-                app.website,
-                app.contact,
-                app.materials,
-                app.salary,
-                str(ghost_prediction(self.currentFile, app)),
-                app.comments,
-                str(app.days_pending)
-            ]
-
-            for col, item in enumerate(row_contents):
-                self.ui.appTableWidget.setItem(row, col, QTableWidgetItem(item))
-
-        self.ui.appTableWidget.resizeColumnsToContents()
-        for col_idx in range(self.ui.appTableWidget.columnCount()):
-            if self.ui.appTableWidget.columnWidth(col_idx) < 100:
-                self.ui.appTableWidget.setColumnWidth(col_idx, 100)
-            elif self.ui.appTableWidget.columnWidth(col_idx) > 600:
-                self.ui.appTableWidget.setColumnWidth(col_idx, 600)
-
         self.tableModel.setModelData(self.tableData)
 
     @pyqtSlot()
-    def scheduleAdjust(self):
+    def scheduleAdjust(self) -> None:
+        """
+        Schedules an adjustment to the column size with a singleShot timer.
+        :return:
+        """
         QTimer.singleShot(0, self.adjustColumnSize)
 
     @pyqtSlot()
-    def adjustColumnSize(self):
+    def adjustColumnSize(self) -> None:
+        """
+        Adjusts column size to resize to content within minimum and maximum
+        bounds. This shouldn't be called directly, rather have it called at the
+        end of the event loop (using a singleShot timer)
+        :return:
+        """
         for col in range(self.tableModel.columnCount()):
             self.ui.appTableView.resizeColumnToContents(col)
             w = self.ui.appTableView.columnWidth(col)
             self.ui.appTableView.setColumnWidth(col, max(100, min(w, 400)))
 
         self.toggle_inactive(self.ui.actionInactive_Applications.isChecked())
+
+        # Re-enable updates, triggering a repaint of the table all at once.
+        self.ui.appTableView.setUpdatesEnabled(True)
 
     @pyqtSlot()
     def openFileAction(self) -> None:

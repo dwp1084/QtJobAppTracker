@@ -6,14 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>500</width>
+    <height>450</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Statistics</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
+  <layout class="QVBoxLayout" name="statsWindowMainLayout">
    <item>
     <widget class="QWidget" name="statsWidget" native="true">
      <layout class="QHBoxLayout" name="horizontalLayout">

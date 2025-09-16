@@ -6,7 +6,7 @@ from PyQt6.QtWidgets import QMainWindow, QFileDialog, QTableWidgetItem
 
 from Data.Application import Application, Status
 from Data.StatsData import StatsData
-from JobAppTracker.QtGUI.ui.ui_JobAppTrackerMainWindow import \
+from QtGUI.ui.ui_JobAppTrackerMainWindow import \
     Ui_JobAppTrackerMainWindow
 from QtGUI.AppInfoScreen import AppInfoDialog
 from QtGUI.StatsWindow import StatsWindow

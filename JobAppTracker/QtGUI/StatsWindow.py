@@ -3,6 +3,8 @@ from PyQt6.QtWidgets import QWidget
 from Data.StatsData import StatsData
 from QtGUI.ui.ui_StatsWindow import Ui_StatsWindow
 
+from PyQt6.QtCharts import QPieSeries, QChart, QChartView
+
 
 class StatsWindow(QWidget):
     """
@@ -13,6 +15,17 @@ class StatsWindow(QWidget):
         super().__init__()
         self.ui = Ui_StatsWindow()
         self.ui.setupUi(self)
+
+        self.pieSeries = QPieSeries()
+
+        self.chart = QChart()
+        self.chart.addSeries(self.pieSeries)
+        self.chart.setTitle("Applications Status")
+        self.chart.legend().setVisible(False)
+        self.chart.setTheme(QChart.ChartTheme.ChartThemeDark)
+        self.chartView = QChartView(self.chart)
+
+        self.ui.statsWindowMainLayout.addWidget(self.chartView)
 
     def load_stats_and_show(self, stats_data: StatsData) -> None:
         """
@@ -38,5 +51,16 @@ class StatsWindow(QWidget):
         self.ui.interviewRateLabel.setText(
             f"{round(stats_data.interview_rate * 100, 2)}%"
         )
+
+        self.chart.removeSeries(self.pieSeries)
+        self.pieSeries = QPieSeries()
+        self.pieSeries.append("Pending", stats_data.pending)
+        self.pieSeries.append("Rejected", stats_data.rejected)
+        self.pieSeries.append("Ghosted", stats_data.ghosted)
+
+        for pieSlice in self.pieSeries.slices():
+            pieSlice.setLabelVisible(True)
+            pieSlice.setLabel(f"{pieSlice.label()} {round(pieSlice.percentage() * 100, 1)}%")
+        self.chart.addSeries(self.pieSeries)
 
         self.show()

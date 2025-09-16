@@ -2,7 +2,7 @@ import sys
 
 from PyQt6.QtWidgets import QApplication
 
-from JobAppTracker.QtGUI.JobAppTrackerMainWindow import JobAppTrackerMainWindow
+from QtGUI.JobAppTrackerMainWindow import JobAppTrackerMainWindow
 from SQLite.Initializer import init_autocomplete_file
 from errorDialog import showErrorMessage
 

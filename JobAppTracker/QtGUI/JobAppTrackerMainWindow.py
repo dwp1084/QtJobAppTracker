@@ -1,11 +1,13 @@
 import os.path
+from argparse import ArgumentError
 
-from PyQt6.QtCore import QSettings, QStandardPaths, pyqtSlot
+from PyQt6.QtCore import QSettings, QStandardPaths, pyqtSlot, QTimer
 from PyQt6.QtGui import QAction, QCloseEvent
 from PyQt6.QtWidgets import QMainWindow, QFileDialog, QTableWidgetItem
 
 from Data.Application import Application, Status
 from Data.StatsData import StatsData
+from QtGUI.AppTableModel import AppTableModel
 from QtGUI.ui.ui_JobAppTrackerMainWindow import \
     Ui_JobAppTrackerMainWindow
 from QtGUI.AppInfoScreen import AppInfoDialog
@@ -83,6 +85,9 @@ class JobAppTrackerMainWindow(QMainWindow):
         self.ui.actionInactive_Applications.toggled.connect(self.toggle_inactive)
         self.ui.actionInactive_Applications.setChecked(show_inactive)
 
+        self.tableModel = AppTableModel(self.tableData, self.currentFile)
+        self.tableModel.modelReset.connect(self.scheduleAdjust)
+
         if self.settings.value("file/currentFile") is not None:
             filename = self.settings.value("file/currentFile")
             if not os.path.exists(filename):
@@ -93,10 +98,19 @@ class JobAppTrackerMainWindow(QMainWindow):
 
         self.setTitleStatus(titleStatus)
 
+        self.ui.appTableView.setModel(self.tableModel)
+
         # Link application info screen to the application view
         self.ui.appTableWidget.cellDoubleClicked.connect(
             lambda row, _: self.appInfoScreen.editApplication(self.tableData[row])
         )
+
+        self.ui.appTableView.doubleClicked.connect(
+            lambda index:
+            self.appInfoScreen.editApplication(self.tableData[index.row()]
+                                               )
+        )
+
         self.ui.addAppButton.clicked.connect(self.appInfoScreen.newApplication)
 
         # Connect the menu actions to their functions
@@ -107,22 +121,22 @@ class JobAppTrackerMainWindow(QMainWindow):
         self.appInfoScreen.table_updated.connect(self.load_data)
 
         # Map columns with their respective config keys and UI action elements
-        toggleable_columns: dict[str, tuple[QAction, int]] = {
+        toggleable_columns: dict[str, tuple[QAction, str]] = {
             "opts/showDaysPassed": (
                 self.ui.actionDays_Since_Application,
-                DAYS_PASSED_COL
+                "Days Pending"
             ),
             "opts/showComments": (
                 self.ui.actionComments,
-                COMMENT_COL
+                "Comments"
             ),
             "opts/showMaterialsSent": (
                 self.ui.actionMaterials_Sent,
-                MATERIALS_COL
+                "Materials Sent"
             ),
             "opts/showContactInfo": (
                 self.ui.actionContact_Info,
-                CONTACT_COL
+                "Contact"
             )
         }
 
@@ -169,34 +183,25 @@ class JobAppTrackerMainWindow(QMainWindow):
 
         self.statisticsWindow.load_stats_and_show(stats_data)
 
-    def load_hide_column_setting(self, key: str, action: QAction, col_idx: int) -> None:
-        """
-        Loads a setting for a toggleable column and connects its associated
-        action.
-        :param key: Setting key
-        :param action: Action UI element
-        :param col_idx: Associated column index
-        :return:
-        """
+    def load_hide_column_setting(self, key: str, action: QAction, header: str) -> None:
         show_col = self.settings.value(key, defaultValue=True, type=bool)
         action.toggled.connect(  # type: ignore
-            lambda checked: self.toggleCol(col_idx, key, checked)
+            lambda checked: self.toggleCol(header, key, checked)
         )
 
         action.setChecked(show_col)
 
-    def toggleCol(self, col_idx: int, key: str, show_col: bool) -> None:
-        """
-        Hides or shows a column in the table based on its index.
-        :param col_idx: Column's index
-        :param key: Settings key
-        :param show_col: True if column should be shown, False if hidden
-        :return:
-        """
+    def toggleCol(self, header: str, key: str, show_col: bool) -> None:
+        col_idx = self.tableModel.searchColIdx(header)
+        if col_idx < 0:
+            raise ValueError("Invalid column name provided.")
+
         if show_col:
-            self.ui.appTableWidget.showColumn(col_idx)
+            self.ui.appTableView.showColumn(col_idx)
         else:
-            self.ui.appTableWidget.hideColumn(col_idx)
+            self.ui.appTableView.hideColumn(col_idx)
+
+        self.scheduleAdjust()
 
         self.settings.setValue(key, show_col)
 
@@ -214,6 +219,10 @@ class JobAppTrackerMainWindow(QMainWindow):
         if show_inactive:
             for row in range(self.ui.appTableWidget.rowCount()):
                 self.ui.appTableWidget.setRowHidden(row, False)
+
+            for row in range(self.tableModel.rowCount()):
+                self.ui.appTableView.setRowHidden(row, False)
+
         else:
             for row, app in enumerate(self.tableData):
                 app_status = ghost_prediction(
@@ -223,9 +232,11 @@ class JobAppTrackerMainWindow(QMainWindow):
 
                 if app_status in {Status.LIKELY_GHOSTED, Status.REJECTED}:
                     self.ui.appTableWidget.setRowHidden(row, True)
+                    self.ui.appTableView.setRowHidden(row, True)
                     self.hiddenCount += 1
                 else:
                     self.ui.appTableWidget.setRowHidden(row, False)
+                    self.ui.appTableView.setRowHidden(row, False)
 
         self.settings.setValue("opts/showInactiveApplications", show_inactive)
 
@@ -255,6 +266,7 @@ class JobAppTrackerMainWindow(QMainWindow):
         """
         self.setTitleStatus(os.path.basename(new_file_path))
         self.currentFile = new_file_path
+        self.tableModel.setCurrentFile(self.currentFile)
         self.appInfoScreen.setCurrentFile(new_file_path)
         self.settings.setValue("file/currentFile", self.currentFile)
         self.load_data()
@@ -328,6 +340,19 @@ class JobAppTrackerMainWindow(QMainWindow):
                 self.ui.appTableWidget.setColumnWidth(col_idx, 100)
             elif self.ui.appTableWidget.columnWidth(col_idx) > 600:
                 self.ui.appTableWidget.setColumnWidth(col_idx, 600)
+
+        self.tableModel.setModelData(self.tableData)
+
+    @pyqtSlot()
+    def scheduleAdjust(self):
+        QTimer.singleShot(0, self.adjustColumnSize)
+
+    @pyqtSlot()
+    def adjustColumnSize(self):
+        for col in range(self.tableModel.columnCount()):
+            self.ui.appTableView.resizeColumnToContents(col)
+            w = self.ui.appTableView.columnWidth(col)
+            self.ui.appTableView.setColumnWidth(col, max(100, min(w, 400)))
 
         self.toggle_inactive(self.ui.actionInactive_Applications.isChecked())
 

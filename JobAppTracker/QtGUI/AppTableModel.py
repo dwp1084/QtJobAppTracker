@@ -3,7 +3,8 @@ from typing import Callable
 from PyQt6.QtCore import QAbstractTableModel, QModelIndex, Qt
 
 from Data.Application import Application
-from SQLite.ApplicationQueries import get_interview_count_for_application, ghost_prediction
+from SQLite.ApplicationQueries import (get_interview_count_for_application,
+                                       ghost_prediction)
 
 
 class AppTableModel(QAbstractTableModel):

@@ -1,19 +1,16 @@
 import os.path
-from argparse import ArgumentError
 
 from PyQt6.QtCore import QSettings, QStandardPaths, pyqtSlot, QTimer
 from PyQt6.QtGui import QAction, QCloseEvent
-from PyQt6.QtWidgets import QMainWindow, QFileDialog, QTableWidgetItem
+from PyQt6.QtWidgets import QMainWindow, QFileDialog
 
 from Data.Application import Application, Status
 from Data.StatsData import StatsData
-from QtGUI.AppTableModel import AppTableModel
-from QtGUI.ui.ui_JobAppTrackerMainWindow import \
-    Ui_JobAppTrackerMainWindow
 from QtGUI.AppInfoScreen import AppInfoDialog
+from QtGUI.AppTableModel import AppTableModel
 from QtGUI.StatsWindow import StatsWindow
-from SQLite.ApplicationQueries import (get_interview_count_for_application,
-                                       get_applications,
+from QtGUI.ui.ui_JobAppTrackerMainWindow import Ui_JobAppTrackerMainWindow
+from SQLite.ApplicationQueries import (get_applications,
                                        ghost_prediction)
 from SQLite.Initializer import init_data_file
 from SQLite.StatsQueries import (get_total_ints,
@@ -30,13 +27,6 @@ NO_FILE_LOADED = "No file loaded"
 
 # Name of the app settings file
 CONFIG_FILE_NAME = "jobapptrackerconfig.ini"
-
-# Column indices - careful if these change
-CONTACT_COL = 9
-MATERIALS_COL = 10
-STATUS_COL = 12
-COMMENT_COL = 13
-DAYS_PASSED_COL = 14
 
 
 class JobAppTrackerMainWindow(QMainWindow):
@@ -98,12 +88,13 @@ class JobAppTrackerMainWindow(QMainWindow):
 
         self.setTitleStatus(titleStatus)
 
+        # Set up table view
         self.ui.appTableView.setModel(self.tableModel)
 
         self.ui.appTableView.doubleClicked.connect(
-            lambda index:
-            self.appInfoScreen.editApplication(self.tableData[index.row()]
-                                               )
+            lambda index: self.appInfoScreen.editApplication(
+                self.tableData[index.row()]
+            )
         )
 
         self.ui.addAppButton.clicked.connect(self.appInfoScreen.newApplication)

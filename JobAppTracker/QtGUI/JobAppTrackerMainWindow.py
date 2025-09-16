@@ -91,6 +91,8 @@ class JobAppTrackerMainWindow(QMainWindow):
         # Set up table view
         self.ui.appTableView.setModel(self.tableModel)
 
+        self.ui.appTableView.verticalHeader().hide()
+
         self.ui.appTableView.doubleClicked.connect(
             lambda index: self.appInfoScreen.editApplication(
                 self.tableData[index.row()]
@@ -127,8 +129,8 @@ class JobAppTrackerMainWindow(QMainWindow):
         }
 
         # Load in settings and hide columns if necessary
-        for key, data in toggleable_columns.items():
-            self.load_hide_column_setting(key, data[0], data[1])
+        for key, (action, header) in toggleable_columns.items():
+            self.load_hide_column_setting(key, action, header)
 
         self.ui.actionStatistics.triggered.connect(self.show_stats)
 

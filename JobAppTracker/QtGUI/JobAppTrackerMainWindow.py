@@ -4,8 +4,10 @@ from PyQt6.QtCore import QSettings, QStandardPaths, pyqtSlot, QTimer
 from PyQt6.QtGui import QAction, QCloseEvent
 from PyQt6.QtWidgets import QMainWindow, QFileDialog
 
+import headers as h
 from Data.Application import Application, Status
 from Data.StatsData import StatsData
+from Export.XLSXExporter import XLSXExporter
 from QtGUI.AppInfoScreen import AppInfoDialog
 from QtGUI.AppTableModel import AppTableModel
 from QtGUI.StatsWindow import StatsWindow
@@ -78,6 +80,8 @@ class JobAppTrackerMainWindow(QMainWindow):
         self.tableModel = AppTableModel(self.tableData, self.currentFile)
         self.tableModel.modelReset.connect(self.scheduleAdjust)
 
+        self.xlsxExporter = XLSXExporter()
+
         if self.settings.value("file/currentFile") is not None:
             filename = self.settings.value("file/currentFile")
             if not os.path.exists(filename):
@@ -112,19 +116,19 @@ class JobAppTrackerMainWindow(QMainWindow):
         toggleable_columns: dict[str, tuple[QAction, str]] = {
             "opts/showDaysPassed": (
                 self.ui.actionDays_Since_Application,
-                "Days Pending"
+                h.H_PENDING
             ),
             "opts/showComments": (
                 self.ui.actionComments,
-                "Comments"
+                h.H_COMMENT
             ),
             "opts/showMaterialsSent": (
                 self.ui.actionMaterials_Sent,
-                "Materials Sent"
+                h.H_MATERIALS
             ),
             "opts/showContactInfo": (
                 self.ui.actionContact_Info,
-                "Contact"
+                h.H_CONTACT
             )
         }
 
@@ -133,6 +137,13 @@ class JobAppTrackerMainWindow(QMainWindow):
             self.load_hide_column_setting(key, action, header)
 
         self.ui.actionStatistics.triggered.connect(self.show_stats)
+
+        self.ui.actionXLSXExport.triggered.connect(self.export_as_xlsx)
+
+    @pyqtSlot()
+    def export_as_xlsx(self):
+        self.xlsxExporter.setCurrentFile(self.currentFile)
+        self.xlsxExporter.export(self.tableData)
 
     @pyqtSlot()
     def show_stats(self) -> None:

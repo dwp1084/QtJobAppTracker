@@ -260,3 +260,5 @@ fabric.properties
 
 # Discord settings
 .idea/discord.xml
+
+*.xlsx

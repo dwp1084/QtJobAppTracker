@@ -5,6 +5,7 @@ from PyQt6.QtCore import QAbstractTableModel, QModelIndex, Qt
 from Data.Application import Application
 from SQLite.ApplicationQueries import (get_interview_count_for_application,
                                        ghost_prediction)
+import headers as h
 
 
 class AppTableModel(QAbstractTableModel):
@@ -19,25 +20,25 @@ class AppTableModel(QAbstractTableModel):
         self.currentFile = currentFile
 
         self._columns: list[tuple[str, Callable[[Application], str]]] = [
-            ("Company", lambda app: app.company),
-            ("Job Title", lambda app: app.title),
-            ("Applied On", lambda app: app.applied_on.strftime("%b %d, %Y")),
-            ("Followed Up", lambda app: app.followed_up.strftime("%b %d, %Y") \
+            (h.H_COMPANY, lambda app: app.company),
+            (h.H_TITLE, lambda app: app.title),
+            (h.H_APP_DATE, lambda app: app.applied_on.strftime("%b %d, %Y")),
+            (h.H_FOLLOW_UP, lambda app: app.followed_up.strftime("%b %d, %Y") \
                 if app.followed_up is not None else ""),
-            ("Interviews", lambda app: str(
+            (h.H_INTERVIEWS, lambda app: str(
                     get_interview_count_for_application(self.currentFile,
                                                         app.app_id)
                 )),
-            ("Type", lambda app: str(app.job_type)),
-            ("Location", lambda app: app.location),
-            ("App Found On", lambda app: app.found_at),
-            ("App Website", lambda app: app.website),
-            ("Contact", lambda app: app.contact),
-            ("Materials Sent", lambda app: app.materials),
-            ("Salary", lambda app: app.salary),
-            ("Status", lambda app: str(ghost_prediction(self.currentFile, app))),
-            ("Comments", lambda app: app.comments),
-            ("Days Pending", lambda app: str(app.days_pending))
+            (h.H_JOB_TYPE, lambda app: str(app.job_type)),
+            (h.H_LOCATION, lambda app: app.location),
+            (h.H_APP_SRC, lambda app: app.found_at),
+            (h.H_APP_WEBSITE, lambda app: app.website),
+            (h.H_CONTACT, lambda app: app.contact),
+            (h.H_MATERIALS, lambda app: app.materials),
+            (h.H_SALARY, lambda app: app.salary),
+            (h.H_STATUS, lambda app: str(ghost_prediction(self.currentFile, app))),
+            (h.H_COMMENT, lambda app: app.comments),
+            (h.H_PENDING, lambda app: str(app.days_pending))
         ]
 
     def searchColIdx(self, name: str) -> int:

@@ -99,8 +99,16 @@
     <property name="title">
      <string>File</string>
     </property>
+    <widget class="QMenu" name="menuExport">
+     <property name="title">
+      <string>Export</string>
+     </property>
+     <addaction name="actionCSVExport"/>
+     <addaction name="actionXLSXExport"/>
+    </widget>
     <addaction name="actionNew"/>
     <addaction name="actionOpen"/>
+    <addaction name="menuExport"/>
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
@@ -186,6 +194,16 @@
    </property>
    <property name="text">
     <string>Contact Info</string>
+   </property>
+  </action>
+  <action name="actionCSVExport">
+   <property name="text">
+    <string>Export as CSV</string>
+   </property>
+  </action>
+  <action name="actionXLSXExport">
+   <property name="text">
+    <string>Export as XSLX</string>
    </property>
   </action>
  </widget>

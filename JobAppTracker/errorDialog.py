@@ -30,6 +30,10 @@ def showWarningMessage(message: str) -> None:
     _showMessage(message, "Warning", QMessageBox.Icon.Warning)
 
 
+def showInfoMessage(title: str, message: str) -> None:
+    _showMessage(message, title, QMessageBox.Icon.Information)
+
+
 def showQuestionMessage(message: str,
                         title: str,
                         accepted: Callable[[], None]

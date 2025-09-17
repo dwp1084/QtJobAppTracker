@@ -1,3 +1,4 @@
+import datetime
 import os.path
 
 from PyQt6.QtCore import QSettings, QStandardPaths, pyqtSlot, QTimer
@@ -7,6 +8,7 @@ from PyQt6.QtWidgets import QMainWindow, QFileDialog
 import headers as h
 from Data.Application import Application, Status
 from Data.StatsData import StatsData
+from Export.BaseExporter import BaseExporter
 from Export.XLSXExporter import XLSXExporter
 from QtGUI.AppInfoScreen import AppInfoDialog
 from QtGUI.AppTableModel import AppTableModel
@@ -19,7 +21,7 @@ from SQLite.StatsQueries import (get_total_ints,
                                  get_avg_apps_per_month,
                                  get_avg_ints_and_count)
 from SQLite.Utils import DataFileSQLRunner
-from errorDialog import showWarningMessage
+from errorDialog import showWarningMessage, showQuestionMessage
 
 # Base title for the main window
 TITLE_BASE = "Job Application Tracker"
@@ -138,12 +140,35 @@ class JobAppTrackerMainWindow(QMainWindow):
 
         self.ui.actionStatistics.triggered.connect(self.show_stats)
 
-        self.ui.actionXLSXExport.triggered.connect(self.export_as_xlsx)
+        self.ui.actionXLSXExport.triggered.connect(
+            lambda: self.export_data(self.xlsxExporter)
+        )
+
+    def export_data(self, exporter: BaseExporter):
+        current_date_str = datetime.date.today().isoformat()
+        default_file_name = f"{current_date_str} Job Application Tracker Export.xlsx"
+        default_save_location = QStandardPaths.writableLocation(
+            QStandardPaths.StandardLocation.DocumentsLocation
+        )
+
+        default_path = os.path.join(default_save_location, default_file_name)
+
+        fileName, _ = QFileDialog.getSaveFileName(
+            self,
+            exporter.save_dialog_title,
+            default_path,
+            exporter.filter
+        )
+
+        if fileName == "":
+            return
+
+        exporter.export(self.currentFile, fileName, self.tableData)
 
     @pyqtSlot()
     def export_as_xlsx(self):
-        self.xlsxExporter.setCurrentFile(self.currentFile)
-        self.xlsxExporter.export(self.tableData)
+        # self.xlsxExporter.setCurrentFile(self.currentFile)
+        self.xlsxExporter.export(self.currentFile, self.tableData)
 
     @pyqtSlot()
     def show_stats(self) -> None:

@@ -6,8 +6,9 @@ from Export.BaseExporter import BaseExporter
 
 import xlsxwriter as xlw
 import headers as h
-from SQLite.ApplicationQueries import get_interview_count_for_application, ghost_prediction, \
-    get_interviews_for_application
+from SQLite.ApplicationQueries import (get_interview_count_for_application,
+                                       ghost_prediction,
+                                       get_interviews_for_application)
 
 
 class XLSXExporter(BaseExporter):
@@ -39,11 +40,18 @@ class XLSXExporter(BaseExporter):
     def window_title(self) -> str:
         return "Excel Export"
 
-    def setCurrentFile(self, currentFile):
-        self.currentFile = currentFile
+    @property
+    def save_dialog_title(self) -> str:
+        return "Export as XLSX"
 
-    def _export(self, data: list[Application]) -> str:
-        with xlw.Workbook("Tempname.xlsx") as wb:
+    @property
+    def filter(self) -> str:
+        return "Excel Workbook (*.xlsx)"
+
+    def _export(self, db_file: str, save_path: str, data: list[Application]) -> None:
+        self.currentFile = db_file
+
+        with xlw.Workbook(save_path) as wb:
 
             # Create cell formats
             header_fmt = wb.add_format({"bold": True, "fg_color": "#bdbdbd"})
@@ -161,7 +169,3 @@ class XLSXExporter(BaseExporter):
                     ints_ws.write(row, 2, app.company)
                     ints_ws.write(row, 3, int_date.interview_date, date_format)
                     row += 1
-
-
-        # self.export_complete("Excel Export", "Tempname.xlsx")
-        return "Tempname.xlsx"

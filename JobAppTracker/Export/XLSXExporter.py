@@ -48,6 +48,10 @@ class XLSXExporter(BaseExporter):
     def filter(self) -> str:
         return "Excel Workbook (*.xlsx)"
 
+    @property
+    def ext(self) -> str:
+        return "xlsx"
+
     def _export(self, db_file: str, save_path: str, data: list[Application]) -> None:
         self.currentFile = db_file
 

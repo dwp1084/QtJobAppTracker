@@ -19,6 +19,10 @@ class BaseExporter(ABC):
     @abstractmethod
     def save_dialog_title(self) -> str: ...
 
+    @property
+    @abstractmethod
+    def ext(self) -> str: ...
+
     def _export_complete(self, filename):
         showInfoMessage(self.window_title, f"Data exported to {filename}.")
 

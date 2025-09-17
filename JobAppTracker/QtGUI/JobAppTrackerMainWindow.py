@@ -9,6 +9,7 @@ import headers as h
 from Data.Application import Application, Status
 from Data.StatsData import StatsData
 from Export.BaseExporter import BaseExporter
+from Export.CSVExporter import CSVExporter
 from Export.XLSXExporter import XLSXExporter
 from QtGUI.AppInfoScreen import AppInfoDialog
 from QtGUI.AppTableModel import AppTableModel
@@ -83,6 +84,7 @@ class JobAppTrackerMainWindow(QMainWindow):
         self.tableModel.modelReset.connect(self.scheduleAdjust)
 
         self.xlsxExporter = XLSXExporter()
+        self.csvExporter = CSVExporter()
 
         if self.settings.value("file/currentFile") is not None:
             filename = self.settings.value("file/currentFile")
@@ -144,9 +146,13 @@ class JobAppTrackerMainWindow(QMainWindow):
             lambda: self.export_data(self.xlsxExporter)
         )
 
+        self.ui.actionCSVExport.triggered.connect(
+            lambda: self.export_data(self.csvExporter)
+        )
+
     def export_data(self, exporter: BaseExporter):
         current_date_str = datetime.date.today().isoformat()
-        default_file_name = f"{current_date_str} Job Application Tracker Export.xlsx"
+        default_file_name = f"{current_date_str} Job Application Tracker Export.{exporter.ext}"
         default_save_location = QStandardPaths.writableLocation(
             QStandardPaths.StandardLocation.DocumentsLocation
         )

@@ -166,11 +166,6 @@ class JobAppTrackerMainWindow(QMainWindow):
         exporter.export(self.currentFile, fileName, self.tableData)
 
     @pyqtSlot()
-    def export_as_xlsx(self):
-        # self.xlsxExporter.setCurrentFile(self.currentFile)
-        self.xlsxExporter.export(self.currentFile, self.tableData)
-
-    @pyqtSlot()
     def show_stats(self) -> None:
         """
         Gathers statistics and shows the statistics window.

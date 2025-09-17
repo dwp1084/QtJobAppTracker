@@ -6,14 +6,15 @@ from Export.BaseExporter import BaseExporter
 
 import xlsxwriter as xlw
 import headers as h
-from SQLite.ApplicationQueries import get_interview_count_for_application, ghost_prediction
+from SQLite.ApplicationQueries import get_interview_count_for_application, ghost_prediction, \
+    get_interviews_for_application
 
 
 class XLSXExporter(BaseExporter):
     currentFile = ""
 
     def __init__(self):
-        self._columns: list[tuple[str, Callable[[Application], Any]]] = [
+        self.main_ws_columns: list[tuple[str, Callable[[Application], Any]]] = [
             (h.H_COMPANY, lambda app: app.company),
             (h.H_TITLE, lambda app: app.title),
             (h.H_APP_DATE, lambda app: app.applied_on),
@@ -46,6 +47,7 @@ class XLSXExporter(BaseExporter):
 
             # Create cell formats
             header_fmt = wb.add_format({"bold": True, "fg_color": "#bdbdbd"})
+            bold = wb.add_format({"bold": "true"})
             italic = wb.add_format({"italic": True})
             date_format = wb.add_format(
                 {"num_format": "d mmm yyyy"}
@@ -60,6 +62,7 @@ class XLSXExporter(BaseExporter):
             mid_green_cell = wb.add_format({"fg_color": "#6aa84f"})
             mid_light_blue = wb.add_format({"fg_color": "#6d9eeb"})
 
+            # Page 1 - Applications worksheet
             main_ws = wb.add_worksheet("Applications")
 
             note = f"""Exported from Job Application Tracker on {
@@ -67,18 +70,22 @@ class XLSXExporter(BaseExporter):
             }"""
 
             note_row = 0
-            header_row = 2
-            beginning_row = 3
+            count_row = 1
+            header_row = 3
+            beginning_row = 4
+
+            interviewed_apps: list[tuple[int, Application]] = []
 
             main_ws.write(note_row, 0, note, italic)
+            main_ws.write(count_row, 0, f"Total applications sent: {len(data)}", bold)
 
-            for col, (header, _) in enumerate(self._columns):
+            for col, (header, _) in enumerate(self.main_ws_columns):
                 main_ws.write(header_row, col, header, header_fmt)
 
             # Fill in data and format
             for row, app in enumerate(data):
                 currentStatus = Status.PENDING
-                for col, (_, expr) in enumerate(self._columns):
+                for col, (_, expr) in enumerate(self.main_ws_columns):
                     data = expr(app)
                     match data:
                         case date():
@@ -109,6 +116,7 @@ class XLSXExporter(BaseExporter):
                                                                 app.app_id)
                 if int_count > 0:
                     main_ws.write(row + beginning_row, 4, int_count, mid_green_cell)
+                    interviewed_apps.append((row, app))
 
                 # Match company cell color with app status color
                 match currentStatus:
@@ -132,6 +140,27 @@ class XLSXExporter(BaseExporter):
                     case _:
                         pass
 
+            # Page 2 - Interviews worksheet
+            ints_ws = wb.add_worksheet("Interviews")
+            ints_ws_headers = ("Job Title", "Application Date", "Company", "Interviewed")
+            for col, header in enumerate(ints_ws_headers):
+                ints_ws.write(0, col, header, header_fmt)
+
+            row = 1
+
+            for (app_row, app) in interviewed_apps:
+                int_dates = get_interviews_for_application(self.currentFile,
+                                                           app.app_id)
+                for int_date in int_dates:
+                    ints_ws.write_url(row,
+                                      0,
+                                      f"internal:Applications!B{app_row + beginning_row + 1}",
+                                      string=app.title
+                                      )
+                    ints_ws.write(row, 1, app.applied_on, date_format)
+                    ints_ws.write(row, 2, app.company)
+                    ints_ws.write(row, 3, int_date.interview_date, date_format)
+                    row += 1
 
 
         # self.export_complete("Excel Export", "Tempname.xlsx")

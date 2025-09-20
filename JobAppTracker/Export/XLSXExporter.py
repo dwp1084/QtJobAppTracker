@@ -12,6 +12,10 @@ from SQLite.ApplicationQueries import (get_interview_count_for_application,
 
 
 class XLSXExporter(BaseExporter):
+    """
+    Exporter that creates a comprehensive report on the database in XLSX format,
+    including some fancy formatting.
+    """
     currentFile = ""
 
     def __init__(self):
@@ -89,7 +93,10 @@ class XLSXExporter(BaseExporter):
             interviewed_apps: list[tuple[int, Application]] = []
 
             main_ws.write(note_row, 0, note, italic)
-            main_ws.write(count_row, 0, f"Total applications sent: {len(data)}", bold)
+            main_ws.write(count_row,
+                          0,
+                          f"Total applications sent: {len(data)}",
+                          bold)
 
             for col, (header, _) in enumerate(self.main_ws_columns):
                 main_ws.write(header_row, col, header, header_fmt)
@@ -101,25 +108,46 @@ class XLSXExporter(BaseExporter):
                     data = expr(app)
                     match data:
                         case date():
-                            main_ws.write(row + beginning_row, col, data, date_format)
+                            main_ws.write(row + beginning_row,
+                                          col,
+                                          data,
+                                          date_format)
                         case Status.REJECTED:
-                            main_ws.write(row + beginning_row, col, str(data), red_cell)
+                            main_ws.write(row + beginning_row,
+                                          col,
+                                          str(data),
+                                          red_cell)
                             currentStatus = data
                         case Status.LIKELY_GHOSTED:
-                            main_ws.write(row + beginning_row, col, str(data), org_cell)
+                            main_ws.write(row + beginning_row,
+                                          col,
+                                          str(data),
+                                          org_cell)
                             currentStatus = data
                         case Status.INTERVIEW:
-                            main_ws.write(row + beginning_row, col, str(data), mid_light_blue)
+                            main_ws.write(row + beginning_row,
+                                          col,
+                                          str(data),
+                                          mid_light_blue)
                             currentStatus = data
                         case Status():
                             main_ws.write(row + beginning_row, col, str(data))
                             currentStatus = data
                         case JobTypes.IN_PERSON:
-                            main_ws.write(row + beginning_row, col, str(data), mid_green_cell)
+                            main_ws.write(row + beginning_row,
+                                          col,
+                                          str(data),
+                                          mid_green_cell)
                         case JobTypes.HYBRID:
-                            main_ws.write(row + beginning_row, col, str(data), mid_yel_cell)
+                            main_ws.write(row + beginning_row,
+                                          col,
+                                          str(data),
+                                          mid_yel_cell)
                         case JobTypes.REMOTE:
-                            main_ws.write(row + beginning_row, col, str(data), mid_light_blue)
+                            main_ws.write(row + beginning_row,
+                                          col,
+                                          str(data),
+                                          mid_light_blue)
                         case _:
                             main_ws.write(row + beginning_row, col, data)
 
@@ -127,7 +155,10 @@ class XLSXExporter(BaseExporter):
                 int_count = get_interview_count_for_application(self.currentFile,
                                                                 app.app_id)
                 if int_count > 0:
-                    main_ws.write(row + beginning_row, 4, int_count, mid_green_cell)
+                    main_ws.write(row + beginning_row,
+                                  4,
+                                  int_count,
+                                  mid_green_cell)
                     interviewed_apps.append((row, app))
 
                 # Match company cell color with app status color
@@ -154,7 +185,10 @@ class XLSXExporter(BaseExporter):
 
             # Page 2 - Interviews worksheet
             ints_ws = wb.add_worksheet("Interviews")
-            ints_ws_headers = ("Job Title", "Application Date", "Company", "Interviewed")
+            ints_ws_headers = ("Job Title",
+                               "Application Date",
+                               "Company",
+                               "Interviewed")
             for col, header in enumerate(ints_ws_headers):
                 ints_ws.write(0, col, header, header_fmt)
 
@@ -166,7 +200,9 @@ class XLSXExporter(BaseExporter):
                 for int_date in int_dates:
                     ints_ws.write_url(row,
                                       0,
-                                      f"internal:Applications!B{app_row + beginning_row + 1}",
+                                      f"""internal:Applications!B{
+                                        app_row + beginning_row + 1
+                                      }""",
                                       string=app.title
                                       )
                     ints_ws.write(row, 1, app.applied_on, date_format)

@@ -5,10 +5,14 @@ from Data.Application import Application
 from Export.BaseExporter import BaseExporter
 
 import headers as h
-from SQLite.ApplicationQueries import get_interview_count_for_application, ghost_prediction
+from SQLite.ApplicationQueries import (get_interview_count_for_application,
+                                       ghost_prediction)
 
 
 class CSVExporter(BaseExporter):
+    """
+    Exporter that creates a limited report of the table data in CSV format.
+    """
     currentFile = ""
 
     def __init__(self):
@@ -29,7 +33,9 @@ class CSVExporter(BaseExporter):
             (h.H_CONTACT, lambda app: app.contact),
             (h.H_MATERIALS, lambda app: app.materials),
             (h.H_SALARY, lambda app: app.salary),
-            (h.H_STATUS, lambda app: str(ghost_prediction(self.currentFile, app))),
+            (h.H_STATUS, lambda app: str(
+                ghost_prediction(self.currentFile, app)
+            )),
             (h.H_COMMENT, lambda app: app.comments),
             (h.H_PENDING, lambda app: str(app.days_pending))
         ]

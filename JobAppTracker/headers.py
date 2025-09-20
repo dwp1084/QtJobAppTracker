@@ -1,3 +1,8 @@
+"""
+File contains header names for columns in the table, as well as for file
+exports.
+"""
+
 H_COMPANY = "Company"
 H_TITLE = "Job Title"
 H_APP_DATE = "Applied On"

@@ -22,7 +22,7 @@ from SQLite.StatsQueries import (get_total_ints,
                                  get_avg_apps_per_month,
                                  get_avg_ints_and_count)
 from SQLite.Utils import DataFileSQLRunner
-from errorDialog import showWarningMessage, showQuestionMessage
+from errorDialog import showWarningMessage
 
 # Base title for the main window
 TITLE_BASE = "Job Application Tracker"
@@ -151,8 +151,15 @@ class JobAppTrackerMainWindow(QMainWindow):
         )
 
     def export_data(self, exporter: BaseExporter):
+        """
+        Function that exports the data to a given format, allowing the user to
+        choose a save file name and location.
+        :param exporter: Exporter for a specific file format.
+        :return:
+        """
         current_date_str = datetime.date.today().isoformat()
-        default_file_name = f"{current_date_str} Job Application Tracker Export.{exporter.ext}"
+        default_file_name = \
+            f"{current_date_str} Job Application Tracker Export.{exporter.ext}"
         default_save_location = QStandardPaths.writableLocation(
             QStandardPaths.StandardLocation.DocumentsLocation
         )

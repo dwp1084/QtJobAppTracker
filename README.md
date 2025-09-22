@@ -4,6 +4,9 @@ This is a lightweight job application tracker written in Python that uses SQLite
 databases to keep track of the status of job applications, filter out inactive
 ones, and show statistics on the application data.
 
+This application was created using Python 3.11. It is not guaranteed or tested
+whether earlier versions will work or not.
+
 ## Usage
 
 To run the application without building into an executable, clone this 
@@ -27,7 +30,6 @@ python -m PyQt6.uic.pyuic [UI_filename].ui -o ui_[UI_filename].py
 ```
 
 Then finally, run [main.py](JobAppTracker/main.py)
-
 
 ## Build
 

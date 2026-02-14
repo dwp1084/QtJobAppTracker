@@ -6,7 +6,7 @@ exports.
 H_COMPANY = "Company"
 H_TITLE = "Job Title"
 H_APP_DATE = "Applied On"
-H_FOLLOW_UP = "Followed Up"
+H_FOLLOW_UP = "Last Contact"
 H_INTERVIEWS = "Interviews"
 H_JOB_TYPE = "Type"
 H_LOCATION = "Location"

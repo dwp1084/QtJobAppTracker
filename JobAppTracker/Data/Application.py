@@ -25,6 +25,8 @@ class Status(Enum):
     PENDING = 0
     OFFER = 1
     REJECTED = 2
+    DECLINED = 3
+    CANCELLED = 4
 
     # These options are not going to be tied to combobox options, so they
     # have much higher numbers

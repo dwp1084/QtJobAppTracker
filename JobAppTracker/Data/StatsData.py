@@ -15,6 +15,8 @@ class StatsData:
     pending: int = 0
     rejected: int = 0
     ghosted: int = 0
+    declined: int = 0
+    cancelled: int = 0
 
     @property
     def interview_rate(self) -> float:

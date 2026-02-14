@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>656</width>
-    <height>549</height>
+    <height>584</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -195,6 +195,9 @@
       </item>
       <item row="9" column="1">
        <widget class="QComboBox" name="statusField">
+        <property name="whatsThis">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set the current status of this application. The following statuses can be set:&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Pending&lt;/span&gt;: Default state, used if the application is currently still pending.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Offered&lt;/span&gt;: Used if the company has extended a job offer (Yipee!)&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Rejected&lt;/span&gt;: Used if the company has sent a rejection email for the position.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Declined&lt;/span&gt;: Used if you have withdrawn your application for this position, or declined the position before the offer.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Cancelled&lt;/span&gt;: Like the &lt;span style=&quot; font-style:italic;&quot;&gt;rejected&lt;/span&gt; option, but only if the email specifies that the company has decided not to fill the position as opposed to rejecting based on your candidacy.&lt;/p&gt;&lt;p&gt;The following states cannot be selected, but might appear:&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Interview&lt;/span&gt;: If the application is still pending and has had an interview. Automatically set when an interview date is added.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Likely ghosted&lt;/span&gt;: Appears if the application is still marked &lt;span style=&quot; font-style:italic;&quot;&gt;pending&lt;/span&gt; and the application has passed the ghosting prediction threshold (3 weeks after applying).&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
         <item>
          <property name="text">
           <string>Pending</string>
@@ -208,6 +211,16 @@
         <item>
          <property name="text">
           <string>Rejected</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Declined</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Cancelled</string>
          </property>
         </item>
        </widget>
@@ -266,7 +279,7 @@
         <item>
          <spacer name="horizontalSpacer_2">
           <property name="orientation">
-           <enum>Qt::Horizontal</enum>
+           <enum>Qt::Orientation::Horizontal</enum>
           </property>
           <property name="sizeHint" stdset="0">
            <size>
@@ -294,7 +307,7 @@
          </size>
         </property>
         <property name="contextMenuPolicy">
-         <enum>Qt::CustomContextMenu</enum>
+         <enum>Qt::ContextMenuPolicy::CustomContextMenu</enum>
         </property>
        </widget>
       </item>
@@ -304,7 +317,7 @@
    <item>
     <widget class="QCheckBox" name="followedUpCheckBox">
      <property name="text">
-      <string>Followed up?</string>
+      <string>Followed up / contacted?</string>
      </property>
     </widget>
    </item>
@@ -332,7 +345,7 @@
       <item row="0" column="0">
        <widget class="QLabel" name="label_3">
         <property name="text">
-         <string>Follow up date</string>
+         <string>Last contact date</string>
         </property>
        </widget>
       </item>
@@ -405,7 +418,7 @@
       <item>
        <spacer name="horizontalSpacer">
         <property name="orientation">
-         <enum>Qt::Horizontal</enum>
+         <enum>Qt::Orientation::Horizontal</enum>
         </property>
         <property name="sizeHint" stdset="0">
          <size>

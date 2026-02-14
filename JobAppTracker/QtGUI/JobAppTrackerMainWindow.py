@@ -210,6 +210,10 @@ class JobAppTrackerMainWindow(QMainWindow):
                     stats_data.rejected += 1
                 case Status.LIKELY_GHOSTED:
                     stats_data.ghosted += 1
+                case Status.DECLINED:
+                    stats_data.declined += 1
+                case Status.CANCELLED:
+                    stats_data.cancelled += 1
                 case _:
                     pass
 
@@ -274,7 +278,7 @@ class JobAppTrackerMainWindow(QMainWindow):
                     self.tableData[row]
                 )
 
-                if app_status in {Status.LIKELY_GHOSTED, Status.REJECTED}:
+                if app_status in {Status.LIKELY_GHOSTED, Status.REJECTED, Status.DECLINED, Status.CANCELLED}:
                     self.ui.appTableView.setRowHidden(row, True)
                     self.hiddenCount += 1
                 else:

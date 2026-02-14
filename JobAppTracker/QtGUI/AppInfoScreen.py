@@ -101,7 +101,7 @@ class AppInfoDialog(QDialog):
 
         # Statuses that can be selected in combobox. If a different one applies,
         # placeholder text is shown
-        selectableStatuses = {Status.PENDING, Status.OFFER, Status.REJECTED}
+        selectableStatuses = {Status.PENDING, Status.OFFER, Status.REJECTED, Status.DECLINED, Status.CANCELLED}
 
         status_idx = int(status) if status in selectableStatuses else -1
 

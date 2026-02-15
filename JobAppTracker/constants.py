@@ -1,6 +1,6 @@
 """
-File contains header names for columns in the table, as well as for file
-exports.
+File contains constants for the program, including header names for columns in
+the table, as well as for file exports.
 """
 
 H_COMPANY = "Company"
@@ -18,3 +18,5 @@ H_SALARY = "Salary"
 H_STATUS = "Status"
 H_COMMENT = "Comments"
 H_PENDING = "Days Pending"
+
+CURRENT_DATA_FILE_VERSION = 0

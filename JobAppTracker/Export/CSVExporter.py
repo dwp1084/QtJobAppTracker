@@ -4,7 +4,7 @@ from typing import Callable
 from Data.Application import Application
 from Export.BaseExporter import BaseExporter
 
-import headers as h
+import constants as h
 from SQLite.ApplicationQueries import (get_interview_count_for_application,
                                        ghost_prediction)
 

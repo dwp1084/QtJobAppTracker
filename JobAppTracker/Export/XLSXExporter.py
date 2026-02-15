@@ -5,7 +5,7 @@ from Data.Application import Application, Status, JobTypes
 from Export.BaseExporter import BaseExporter
 
 import xlsxwriter as xlw
-import headers as h
+import constants as h
 from SQLite.ApplicationQueries import (get_interview_count_for_application,
                                        ghost_prediction,
                                        get_interviews_for_application)

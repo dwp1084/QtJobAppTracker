@@ -5,7 +5,7 @@ from PyQt6.QtCore import QSettings, QStandardPaths, pyqtSlot, QTimer
 from PyQt6.QtGui import QAction, QCloseEvent
 from PyQt6.QtWidgets import QMainWindow, QFileDialog
 
-import headers as h
+import constants as h
 from Data.Application import Application, Status
 from Data.StatsData import StatsData
 from Export.BaseExporter import BaseExporter
@@ -16,13 +16,13 @@ from QtGUI.AppTableModel import AppTableModel
 from QtGUI.StatsWindow import StatsWindow
 from QtGUI.ui.ui_JobAppTrackerMainWindow import Ui_JobAppTrackerMainWindow
 from SQLite.ApplicationQueries import (get_applications,
-                                       ghost_prediction)
+                                       ghost_prediction, get_app_file_version)
 from SQLite.Initializer import init_data_file
 from SQLite.StatsQueries import (get_total_ints,
                                  get_avg_apps_per_month,
                                  get_avg_ints_and_count)
 from SQLite.Utils import DataFileSQLRunner
-from errorDialog import showWarningMessage
+from errorDialog import showWarningMessage, showErrorMessage
 
 # Base title for the main window
 TITLE_BASE = "Job Application Tracker"
@@ -329,7 +329,17 @@ class JobAppTrackerMainWindow(QMainWindow):
         :param new_file_path: Path to the new data file
         :return:
         """
-        self.setTitleStatus(os.path.basename(new_file_path))
+        file_version = get_app_file_version(new_file_path)
+        basename = os.path.basename(new_file_path)
+        if file_version > h.CURRENT_DATA_FILE_VERSION:
+            showErrorMessage(
+                f"{basename} cannot be opened because it was made for a newer " +
+                "version of the program. Please update to open this file.\n\n" +
+                f"File version: {file_version}\nCurrently supported version: {h.CURRENT_DATA_FILE_VERSION}"
+            )
+            return
+
+        self.setTitleStatus(basename)
         self.currentFile = new_file_path
 
         # Disable updates during the changing data process to remove flickering

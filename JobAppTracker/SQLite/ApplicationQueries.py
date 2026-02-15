@@ -20,7 +20,6 @@ INTERVIEW_THRESHOLD = 90
 Threshold, in days after latest interview date, for ghosting prediction.
 """
 
-
 def add_application(data_db: str,
                     applied_date: datetime.date,
                     company: str,
@@ -353,3 +352,14 @@ def delete_application(data_db: str, app_id: int) -> None:
     """
     db = DataFileSQLRunner(data_db)
     db.run(delete_app_sql, (app_id,))
+
+def get_app_file_version(data_db: str) -> int:
+    """
+    Gets the version number of the database.
+    :param data_db: Database file
+    :return: Version number
+    """
+
+    get_version_num_sql = "PRAGMA user_version;"
+    db = DataFileSQLRunner(data_db)
+    return db.fetchone(get_version_num_sql, ())[0]

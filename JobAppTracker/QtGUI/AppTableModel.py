@@ -5,7 +5,7 @@ from PyQt6.QtCore import QAbstractTableModel, QModelIndex, Qt
 from Data.Application import Application
 from SQLite.ApplicationQueries import (get_interview_count_for_application,
                                        ghost_prediction)
-import headers as h
+import constants as h
 
 
 class AppTableModel(QAbstractTableModel):

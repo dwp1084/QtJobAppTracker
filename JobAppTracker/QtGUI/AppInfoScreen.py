@@ -53,6 +53,8 @@ class AppInfoDialog(QDialog):
     reload
     """
 
+    privacy_filter: bool = False
+
     class AppInfoType(Enum):
         """
         States for the app info dialog
@@ -83,6 +85,9 @@ class AppInfoDialog(QDialog):
         self.ui.interviewsList.customContextMenuRequested.connect(
             self.interview_list_ctx_menu
         )
+
+    def enable_privacy_filter(self, setting: bool):
+        self.privacy_filter = setting
 
     def fill_data(self, app: Application = Application()) -> None:
         """
@@ -181,6 +186,12 @@ class AppInfoDialog(QDialog):
         Sets up and opens this dialog for entering a new application
         :return:
         """
+        if self.privacy_filter:
+            showWarningMessage(
+                "Cannot add applications when the Privacy Filter is enabled.\n" +
+                "Please disable the Privacy Filter to continue."
+            )
+            return
         self.ui.interviewDatesWidget.hide()
         self.ui.appDeleteButton.hide()
         self.ui.DaysSinceAppliedWidget.hide()
@@ -197,6 +208,12 @@ class AppInfoDialog(QDialog):
         :param app: Application data
         :return:
         """
+        if self.privacy_filter:
+            showWarningMessage(
+                "Cannot view individual applications or edit when the Privacy Filter is enabled.\n" +
+                "Please disable the Privacy Filter to continue."
+            )
+            return
         self.ui.interviewDatesWidget.show()
         self.ui.appDeleteButton.show()
         self.ui.DaysSinceAppliedWidget.show()

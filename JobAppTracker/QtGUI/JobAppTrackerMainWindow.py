@@ -77,11 +77,21 @@ class JobAppTrackerMainWindow(QMainWindow):
             "opts/showInactiveApplications", defaultValue=True, type=bool
         )
 
+        # Setup privacy filter
+        enable_privacy_filter = self.settings.value(
+            "opts/enablePrivacyFilter", defaultValue=False, type=bool
+        )
+
         self.ui.actionInactive_Applications.toggled.connect(self.toggle_inactive)
         self.ui.actionInactive_Applications.setChecked(show_inactive)
 
         self.tableModel = AppTableModel(self.tableData, self.currentFile)
         self.tableModel.modelReset.connect(self.scheduleAdjust)
+        self.tableModel.enable_privacy_filter(enable_privacy_filter)
+
+        self.ui.actionPrivacy_Filter.toggled.connect(self.toggle_privacy_filter)
+        self.ui.actionPrivacy_Filter.setChecked(enable_privacy_filter)
+        self.appInfoScreen.enable_privacy_filter(enable_privacy_filter)
 
         self.xlsxExporter = XLSXExporter()
         self.csvExporter = CSVExporter()
@@ -177,6 +187,15 @@ class JobAppTrackerMainWindow(QMainWindow):
             return
 
         exporter.export(self.currentFile, fileName, self.tableData)
+
+    @pyqtSlot(bool)
+    def toggle_privacy_filter(self, toggled: bool) -> None:
+        self.tableModel.enable_privacy_filter(toggled)
+        self.appInfoScreen.enable_privacy_filter(toggled)
+
+        self.scheduleAdjust()
+
+        self.settings.setValue("opts/enablePrivacyFilter", toggled)
 
     @pyqtSlot()
     def show_stats(self) -> None:

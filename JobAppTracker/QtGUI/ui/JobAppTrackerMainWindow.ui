@@ -99,9 +99,15 @@
     <property name="title">
      <string>File</string>
     </property>
+    <property name="toolTipsVisible">
+     <bool>true</bool>
+    </property>
     <widget class="QMenu" name="menuExport">
      <property name="title">
       <string>Export</string>
+     </property>
+     <property name="toolTipsVisible">
+      <bool>true</bool>
      </property>
      <addaction name="actionCSVExport"/>
      <addaction name="actionXLSXExport"/>
@@ -113,6 +119,9 @@
    <widget class="QMenu" name="menuView">
     <property name="title">
      <string>View</string>
+    </property>
+    <property name="toolTipsVisible">
+     <bool>true</bool>
     </property>
     <addaction name="actionInactive_Applications"/>
     <addaction name="actionContact_Info"/>
@@ -132,10 +141,16 @@
    <property name="text">
     <string>New</string>
    </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Create a new application set.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
   </action>
   <action name="actionOpen">
    <property name="text">
     <string>Open</string>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Open an existing application set.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
   </action>
   <action name="actionInactive_Applications">
@@ -148,10 +163,16 @@
    <property name="text">
     <string>Inactive Applications</string>
    </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Hide or show inactive applications on the main table.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
   </action>
   <action name="actionStatistics">
    <property name="text">
     <string>Statistics</string>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Open the statistics window.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
   </action>
   <action name="actionDays_Since_Application">
@@ -164,6 +185,9 @@
    <property name="text">
     <string>Days Since Application</string>
    </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Hide or show the &amp;quot;Days Since Application&amp;quot; column.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
   </action>
   <action name="actionComments">
    <property name="checkable">
@@ -174,6 +198,9 @@
    </property>
    <property name="text">
     <string>Comments</string>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Hide or show the &amp;quot;Comments&amp;quot; column.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
   </action>
   <action name="actionMaterials_Sent">
@@ -186,6 +213,9 @@
    <property name="text">
     <string>Materials Sent</string>
    </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Hide or show the &amp;quot;Materials Sent&amp;quot; column.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
   </action>
   <action name="actionContact_Info">
    <property name="checkable">
@@ -197,15 +227,24 @@
    <property name="text">
     <string>Contact Info</string>
    </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Hide or show the &amp;quot;Contact Info&amp;quot; column.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
   </action>
   <action name="actionCSVExport">
    <property name="text">
     <string>Export as CSV</string>
    </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Export application data to a CSV file.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
   </action>
   <action name="actionXLSXExport">
    <property name="text">
     <string>Export as XSLX</string>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Export formatted application data to an Excel spreadsheet.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
   </action>
   <action name="actionPrivacy_Filter">
@@ -214,6 +253,9 @@
    </property>
    <property name="text">
     <string>Privacy Filter</string>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Toggles a Privacy Filter that hides potentially sensitive information about applications (company, location, contact info, and comments)&lt;/p&gt;&lt;p&gt;Note: This mode prevents you from adding or editing any applications.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
   </action>
  </widget>

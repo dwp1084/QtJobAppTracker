@@ -52,6 +52,9 @@
        <layout class="QHBoxLayout" name="horizontalLayout_3">
         <item>
          <widget class="QPushButton" name="addAppButton">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="text">
            <string>Add Job Application</string>
           </property>
@@ -103,6 +106,9 @@
      <bool>true</bool>
     </property>
     <widget class="QMenu" name="menuExport">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="title">
       <string>Export</string>
      </property>
@@ -128,6 +134,7 @@
     <addaction name="actionMaterials_Sent"/>
     <addaction name="actionComments"/>
     <addaction name="actionDays_Since_Application"/>
+    <addaction name="actionApplication_Count"/>
     <addaction name="separator"/>
     <addaction name="actionStatistics"/>
     <addaction name="separator"/>
@@ -168,6 +175,9 @@
    </property>
   </action>
   <action name="actionStatistics">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Statistics</string>
    </property>
@@ -256,6 +266,17 @@
    </property>
    <property name="toolTip">
     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Toggles a Privacy Filter that hides potentially sensitive information about applications (company, location, contact info, and comments)&lt;/p&gt;&lt;p&gt;Note: This mode prevents you from adding or editing any applications.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+  </action>
+  <action name="actionApplication_Count">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Application Count</string>
    </property>
   </action>
  </widget>

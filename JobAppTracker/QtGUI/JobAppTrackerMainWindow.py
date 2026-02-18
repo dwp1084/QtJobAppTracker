@@ -67,8 +67,10 @@ class JobAppTrackerMainWindow(QMainWindow):
             QStandardPaths.StandardLocation.AppDataLocation
         )
 
-        # Config file creation, checking and migration
+        # Hide application count to start
+        self._showAppCount(False)
 
+        # Config file creation, checking and migration
         settings_dir = os.path.join(app_data, CONFIG_DIR_NAME)
 
         if not os.path.exists(settings_dir):
@@ -138,6 +140,10 @@ class JobAppTrackerMainWindow(QMainWindow):
             "opts/enablePrivacyFilter", defaultValue=False, type=bool
         )
 
+        show_app_count = self.settings.value(
+            "opts/showAppCount", defaultValue=True, type=bool
+        )
+
         self.ui.actionInactive_Applications.toggled.connect(self.toggle_inactive)
         self.ui.actionInactive_Applications.setChecked(show_inactive)
 
@@ -148,6 +154,9 @@ class JobAppTrackerMainWindow(QMainWindow):
         self.ui.actionPrivacy_Filter.toggled.connect(self.toggle_privacy_filter)
         self.ui.actionPrivacy_Filter.setChecked(enable_privacy_filter)
         self.appInfoScreen.enable_privacy_filter(enable_privacy_filter)
+
+        self.ui.actionApplication_Count.toggled.connect(self.showAppCount)
+        self.ui.actionApplication_Count.setChecked(show_app_count)
 
         self.xlsxExporter = XLSXExporter()
         self.csvExporter = CSVExporter()
@@ -399,6 +408,13 @@ class JobAppTrackerMainWindow(QMainWindow):
         self.setTitleStatus(basename)
         self.currentFile = new_file_path
 
+        # If a valid file is opened, enable stats window, add button,
+        # and others
+        self.ui.addAppButton.setEnabled(True)
+        self.ui.actionStatistics.setEnabled(True)
+        self.ui.menuExport.setEnabled(True)
+        self.showAppCount(self.ui.actionApplication_Count.isChecked())
+
         # Disable updates during the changing data process to remove flickering
         self.ui.appTableView.setUpdatesEnabled(False)
         self.tableModel.setCurrentFile(self.currentFile)
@@ -526,6 +542,21 @@ class JobAppTrackerMainWindow(QMainWindow):
         init_data_file(fileName)
 
         self.changeOpenFile(fileName)
+
+    @pyqtSlot(bool)
+    def showAppCount(self, visible: bool):
+        _visible = visible
+        if self.currentFile is None:
+            # Regardless of option, always hide it if no file is open
+            _visible = False
+
+        self.settings.setValue("opts/showAppCount", visible)
+
+        self._showAppCount(_visible)
+
+    def _showAppCount(self, visible: bool):
+        self.ui.appCountTitleLabel.setVisible(visible)
+        self.ui.appCountLabel.setVisible(visible)
 
     def closeEvent(self, event: QCloseEvent) -> None:
         """

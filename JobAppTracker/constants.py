@@ -20,3 +20,4 @@ H_COMMENT = "Comments"
 H_PENDING = "Days Pending"
 
 CURRENT_DATA_FILE_VERSION = 0
+CURRENT_APP_VERSION = "1.2.0.dev1"

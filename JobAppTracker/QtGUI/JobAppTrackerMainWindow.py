@@ -1,6 +1,8 @@
 import datetime
 import os.path
+import shutil
 
+import packaging.version
 from PyQt6.QtCore import QSettings, QStandardPaths, pyqtSlot, QTimer
 from PyQt6.QtGui import QAction, QCloseEvent
 from PyQt6.QtWidgets import QMainWindow, QFileDialog
@@ -22,6 +24,7 @@ from SQLite.StatsQueries import (get_total_ints,
                                  get_avg_apps_per_month,
                                  get_avg_ints_and_count)
 from SQLite.Utils import DataFileSQLRunner
+from constants import CURRENT_APP_VERSION
 from errorDialog import showWarningMessage, showErrorMessage
 
 # Base title for the main window
@@ -32,6 +35,8 @@ NO_FILE_LOADED = "No file loaded"
 
 # Name of the app settings file
 CONFIG_FILE_NAME = "jobapptrackerconfig.ini"
+
+CONFIG_DIR_NAME = f"Job Application Tracker"
 
 
 class JobAppTrackerMainWindow(QMainWindow):
@@ -61,9 +66,60 @@ class JobAppTrackerMainWindow(QMainWindow):
         app_data = QStandardPaths.writableLocation(
             QStandardPaths.StandardLocation.AppDataLocation
         )
-        self.settings = QSettings(os.path.join(app_data, CONFIG_FILE_NAME),
+
+        # Config file creation, checking and migration
+
+        settings_dir = os.path.join(app_data, CONFIG_DIR_NAME)
+
+        if not os.path.exists(settings_dir):
+            os.mkdir(settings_dir)
+
+        # Version directory and config file migration
+        remove_open_file = False
+
+        settings_version_dir = os.path.join(settings_dir, CURRENT_APP_VERSION)
+        if not os.path.exists(settings_version_dir):
+            os.mkdir(settings_version_dir)
+
+            current_version = packaging.version.parse(CURRENT_APP_VERSION)
+
+            # Do config file migration only if it's not a dev release
+            if not current_version.is_devrelease:
+                version_folders = os.listdir(settings_dir)
+                previous_versions: list[packaging.version.Version] = []
+
+                for version_str in version_folders:
+                    try:
+                        version = packaging.version.parse(version_str)
+                        if not version.is_devrelease and version < current_version:
+                            previous_versions.append(version)
+
+                    except packaging.version.InvalidVersion:
+                        pass  # Somehow, an invalid version folder got in there, just ignore it
+
+                sorted_versions = sorted(previous_versions, reverse=True)
+                if len(sorted_versions) > 0:
+                    most_recent_version = sorted_versions[0]
+                    shutil.copy2(
+                        os.path.join(
+                            os.path.join(settings_dir, str(most_recent_version)),
+                            CONFIG_FILE_NAME
+                        ),
+                        os.path.join(settings_version_dir, CONFIG_FILE_NAME)
+                    )
+
+                    # If current version is of a different major version,
+                    # migrate the file, but don't automatically open the last
+                    # opened file.
+                    if current_version.major != most_recent_version.major:
+                        remove_open_file = True
+
+        self.settings = QSettings(os.path.join(settings_version_dir, CONFIG_FILE_NAME),
                                   QSettings.Format.IniFormat
                                   )
+
+        if remove_open_file:
+            self.settings.remove("file/currentFile")
 
         # Create additional windows
         self.appInfoScreen = AppInfoDialog()
@@ -96,8 +152,9 @@ class JobAppTrackerMainWindow(QMainWindow):
         self.xlsxExporter = XLSXExporter()
         self.csvExporter = CSVExporter()
 
-        if self.settings.value("file/currentFile") is not None:
-            filename = self.settings.value("file/currentFile")
+        filename = self.settings.value("file/currentFile")
+
+        if filename is not None and filename != "":
             if not os.path.exists(filename):
                 showWarningMessage(f"Last open file {filename} is missing")
             else:

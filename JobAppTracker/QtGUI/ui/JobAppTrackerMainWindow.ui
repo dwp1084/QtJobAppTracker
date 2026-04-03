@@ -121,6 +121,7 @@
     <addaction name="actionNew"/>
     <addaction name="actionOpen"/>
     <addaction name="menuExport"/>
+    <addaction name="action_DEV_Delete_Config"/>
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
@@ -277,6 +278,11 @@
    </property>
    <property name="text">
     <string>Application Count</string>
+   </property>
+  </action>
+  <action name="action_DEV_Delete_Config">
+   <property name="text">
+    <string>(DEV) Delete Config</string>
    </property>
   </action>
  </widget>

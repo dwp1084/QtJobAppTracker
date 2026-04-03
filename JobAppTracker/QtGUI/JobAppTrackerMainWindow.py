@@ -25,7 +25,7 @@ from SQLite.StatsQueries import (get_total_ints,
                                  get_avg_ints_and_count)
 from SQLite.Utils import DataFileSQLRunner
 from constants import CURRENT_APP_VERSION
-from errorDialog import showWarningMessage, showErrorMessage
+from errorDialog import showWarningMessage, showErrorMessage, showQuestionMessage, showInfoMessage
 
 # Base title for the main window
 TITLE_BASE = "Job Application Tracker"
@@ -147,6 +147,12 @@ class JobAppTrackerMainWindow(QMainWindow):
         self.ui.actionInactive_Applications.toggled.connect(self.toggle_inactive)
         self.ui.actionInactive_Applications.setChecked(show_inactive)
 
+        current_version = packaging.version.parse(CURRENT_APP_VERSION)
+        if not current_version.is_devrelease:
+            self.ui.action_DEV_Delete_Config.setVisible(False)
+        else:
+            self.ui.action_DEV_Delete_Config.triggered.connect(self.dev_delete_config)
+
         self.tableModel = AppTableModel(self.tableData, self.currentFile)
         self.tableModel.modelReset.connect(self.scheduleAdjust)
         self.tableModel.enable_privacy_filter(enable_privacy_filter)
@@ -253,6 +259,28 @@ class JobAppTrackerMainWindow(QMainWindow):
             return
 
         exporter.export(self.currentFile, fileName, self.tableData)
+
+    @pyqtSlot()
+    def dev_delete_config(self):
+        app_data = QStandardPaths.writableLocation(
+            QStandardPaths.StandardLocation.AppDataLocation
+        )
+        config_file_path = os.path.join(
+            os.path.join(
+                os.path.join(app_data, CONFIG_DIR_NAME),
+                CURRENT_APP_VERSION
+            ),
+            CONFIG_FILE_NAME
+        )
+
+        if os.path.exists(config_file_path):
+            os.remove(config_file_path)
+
+        showInfoMessage("Config Reset",
+                        "Config file reset. Program will now close.")
+
+        self.close()
+
 
     @pyqtSlot(bool)
     def toggle_privacy_filter(self, toggled: bool) -> None:
@@ -405,6 +433,27 @@ class JobAppTrackerMainWindow(QMainWindow):
             )
             return
 
+        if file_version < h.CURRENT_DATA_FILE_VERSION:
+            file_dirname = os.path.dirname(new_file_path)
+            root, extension = os.path.splitext(basename)
+            backup_date = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+            backup_filename = f"{root}_backup{backup_date}{extension}"
+            backup_file_path = os.path.join(file_dirname, backup_filename)
+            showQuestionMessage(
+                f"{basename} is made for an older version of the program. If " +
+                "you open this file, it will be updated automatically and " +
+                "will no longer be compatible with older versions of this " +
+                "program.\n\nA backup file will be created at " +
+                f"{backup_file_path}, which will remain compatible with " +
+                f"the previous version.\n\nWould you like to open {basename}?",
+                "Outdated file version",
+                lambda: self._changeOpenFile(new_file_path)
+            )
+        else:
+            self._changeOpenFile(new_file_path)
+
+    def _changeOpenFile(self, new_file_path: str) -> None:
+        basename = os.path.basename(new_file_path)
         self.setTitleStatus(basename)
         self.currentFile = new_file_path
 
@@ -422,6 +471,7 @@ class JobAppTrackerMainWindow(QMainWindow):
         self.settings.setValue("file/currentFile", self.currentFile)
         self.load_data()
 
+
     def setTitleStatus(self, title_status: str) -> None:
         """
         Set the window title based on what file is currently open.
@@ -429,7 +479,7 @@ class JobAppTrackerMainWindow(QMainWindow):
             message if no file is opened.
         :return:
         """
-        self.setWindowTitle(f"{TITLE_BASE} - {title_status}")
+        self.setWindowTitle(f"{TITLE_BASE} {CURRENT_APP_VERSION} - {title_status}")
 
     def handleStartLocationLoad(self) -> None:
         """

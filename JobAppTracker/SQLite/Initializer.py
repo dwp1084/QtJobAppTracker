@@ -2,6 +2,7 @@ import os.path
 from os import PathLike
 
 from SQLite.Utils import DataFileSQLRunner, ACFileSQLRunner
+from constants import CURRENT_DATA_FILE_VERSION
 
 APP_FILES_DIR = "internal"
 """
@@ -31,7 +32,9 @@ CREATE TABLE IF NOT EXISTS app_sources (
 """
 
 
-CREATE_DATAFILE_SQL = """
+CREATE_DATAFILE_SQL = f"""
+PRAGMA user_version = {CURRENT_DATA_FILE_VERSION};
+
 CREATE TABLE IF NOT EXISTS applications (
     app_id INTEGER PRIMARY KEY,
     company TEXT NOT NULL,
@@ -46,13 +49,25 @@ CREATE TABLE IF NOT EXISTS applications (
     salary TEXT NOT NULL DEFAULT '',
     contact TEXT NOT NULL DEFAULT '',
     status INTEGER NOT NULL DEFAULT 0 CHECK(status > -1 AND status < 65),
-    type INTEGER NOT NULL DEFAULT 0 CHECK(type > -1 AND type < 4)
+    type INTEGER NOT NULL DEFAULT 0 CHECK(type > -1 AND type < 4),
+    link TEXT NOT NULL DEFAULT '',
+    description TEXT NOT NULL DEFAULT '',
+    rej_date DATE,
+    exp_low INTEGER,
+    exp_upp INTEGER
 );
 
 CREATE TABLE IF NOT EXISTS interview_dates (
     date_id INTEGER PRIMARY KEY,
     app_id INTEGER REFERENCES applications(app_id) ON UPDATE CASCADE,
     interview_date TEXT NOT NULL DEFAULT (date('now'))
+);
+
+CREATE TABLE IF NOT EXISTS documents (
+    doc_id INTEGER PRIMARY KEY,
+    app_id INTEGER REFERENCES applications(app_id) ON UPDATE CASCADE,
+    doc_name TEXT NOT NULL,
+    doc BLOB NOT NULL
 );
 """
 

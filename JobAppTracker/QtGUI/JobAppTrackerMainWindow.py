@@ -20,6 +20,7 @@ from QtGUI.ui.ui_JobAppTrackerMainWindow import Ui_JobAppTrackerMainWindow
 from SQLite.ApplicationQueries import (get_applications,
                                        ghost_prediction, get_app_file_version)
 from SQLite.Initializer import init_data_file
+from SQLite.Migration import migrate_file, SchemaMigrationException
 from SQLite.StatsQueries import (get_total_ints,
                                  get_avg_apps_per_month,
                                  get_avg_ints_and_count)
@@ -447,10 +448,27 @@ class JobAppTrackerMainWindow(QMainWindow):
                 f"{backup_file_path}, which will remain compatible with " +
                 f"the previous version.\n\nWould you like to open {basename}?",
                 "Outdated file version",
-                lambda: self._changeOpenFile(new_file_path)
+                lambda: self._migrate_file(new_file_path, backup_file_path, file_version)
             )
         else:
             self._changeOpenFile(new_file_path)
+
+    def _migrate_file(self, new_file_path: str, backup_file_path: str, file_version: int):
+        # First, back up the file to be migrated at the provided backup path
+        shutil.copy2(
+            new_file_path,
+            backup_file_path
+        )
+
+        # Next, run migrations through each version until the newest version is
+        # reached.
+        try:
+            migrate_file(new_file_path, file_version)
+        except SchemaMigrationException as sme:
+            showErrorMessage(f"Schema migration failed, file will now close: {sme}")
+            return
+
+        self._changeOpenFile(new_file_path)
 
     def _changeOpenFile(self, new_file_path: str) -> None:
         basename = os.path.basename(new_file_path)

@@ -363,3 +363,15 @@ def get_app_file_version(data_db: str) -> int:
     get_version_num_sql = "PRAGMA user_version;"
     db = DataFileSQLRunner(data_db)
     return db.fetchone(get_version_num_sql, ())[0]
+
+def set_app_file_version(data_db: str, version: int) -> None:
+    """
+    Gets the version number of the database.
+    :param data_db: Database file
+    :param version: New app version
+    :return:
+    """
+
+    get_version_num_sql = f"PRAGMA user_version = {version};"
+    db = DataFileSQLRunner(data_db)
+    db.run(get_version_num_sql)

@@ -3,6 +3,7 @@ from enum import Enum, auto
 from typing import Callable
 
 from PyQt6.QtCore import pyqtSlot, pyqtSignal, Qt, QPoint
+from PyQt6.QtGui import QIntValidator
 from PyQt6.QtWidgets import QDialog, QCompleter, QMenu, QLineEdit
 
 from Data.Application import Application, Status
@@ -82,6 +83,9 @@ class AppInfoDialog(QDialog):
         self.ui.appCancelButton.clicked.connect(self.close)
         self.ui.appDeleteButton.clicked.connect(self.askDelete)
 
+        self.ui.minExpField.setValidator(QIntValidator(0, 50))
+        self.ui.maxExpField.setValidator(QIntValidator(0, 50))
+
         self.ui.modifyButton.clicked.connect(
             # lambda: self.ui.hyperlinkField.setVisible(True)
             lambda: self.edit_job_link(True)
@@ -129,6 +133,9 @@ class AppInfoDialog(QDialog):
             self.ui.followUpWidget.hide()
             self.ui.followUpField.setDate(date.today())
 
+        exp_low = "" if app.exp_low is None else f"{app.exp_low}"
+        exp_upp = "" if app.exp_upp is None else f"{app.exp_upp}"
+
         plainTextFields: dict[QLineEdit, str] = {
             self.ui.companyField: app.company,
             self.ui.jobTitleField: app.title,
@@ -138,7 +145,9 @@ class AppInfoDialog(QDialog):
             self.ui.materialsSent: app.materials,
             self.ui.contactField: app.contact,
             self.ui.appFoundOnField: app.found_at,
-            self.ui.hyperlinkField: app.link
+            self.ui.hyperlinkField: app.link,
+            self.ui.minExpField: exp_low,
+            self.ui.maxExpField: exp_upp
         }
 
         for field, data in plainTextFields.items():
@@ -271,6 +280,33 @@ class AppInfoDialog(QDialog):
                 )
                 return
 
+        # Experience range input validation
+        min_exp = None
+        min_exp_input = self.ui.minExpField.text().strip()
+        if min_exp_input != "":
+            state, _, _ = self.ui.minExpField.validator().validate(min_exp_input, 0)
+
+            if state != QIntValidator.State.Acceptable:
+                showWarningMessage("Invalid input for minimum experience (Blank or between 0 and 50)")
+                return
+
+            min_exp = int(min_exp_input)
+
+        max_exp = None
+        max_exp_input = self.ui.maxExpField.text().strip()
+        if max_exp_input != "":
+            state, _, _ = self.ui.maxExpField.validator().validate(max_exp_input, 0)
+
+            if state != QIntValidator.State.Acceptable:
+                showWarningMessage("Invalid input for maximum experience (Blank or between 0 and 50)")
+                return
+
+            max_exp = int(max_exp_input)
+
+        if min_exp is not None and max_exp is not None and min_exp >= max_exp:
+            showWarningMessage("Minimum experience must be less than maximum experience.")
+            return
+
         # Adds follow-up date only if the checkbox has been pressed.
         follow_up = ""
         if self.ui.followedUpCheckBox.isChecked():
@@ -296,6 +332,8 @@ class AppInfoDialog(QDialog):
                     self.ui.jobTypeField.currentIndex(),
                     self.ui.hyperlinkField.text(),
                     self.ui.jobDescriptionEdit.toHtml(),
+                    min_exp,
+                    max_exp,
                     follow_up
                 )
 
@@ -316,6 +354,8 @@ class AppInfoDialog(QDialog):
                     self.ui.jobTypeField.currentIndex(),
                     self.ui.hyperlinkField.text(),
                     self.ui.jobDescriptionEdit.toHtml(),
+                    min_exp,
+                    max_exp,
                     follow_up
                 )
 

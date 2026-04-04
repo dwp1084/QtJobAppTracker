@@ -35,6 +35,8 @@ def add_application(data_db: str,
                     job_type: int,
                     link: str,
                     description: str,
+                    exp_low: int | None,
+                    exp_upp: int | None,
                     follow_up: datetime.date | str = "",
                     ) -> None:
     """
@@ -58,15 +60,15 @@ def add_application(data_db: str,
     add_app_sql = """
     INSERT INTO applications (company, title, app_found_at, applied_at, 
     latest_follow_up, location, materials_sent, comments, salary,  contact, 
-    status, type, application_date, link, description)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+    status, type, application_date, link, description, exp_low, exp_upp)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
     """
 
     db = DataFileSQLRunner(data_db)
 
     params = (company, title, app_found_at, applied_at, follow_up, location,
               materials_sent, comments, salary, contact, status, job_type,
-              applied_date, link, description)
+              applied_date, link, description, exp_low, exp_upp)
     db.run(add_app_sql, params)
 
 
@@ -85,6 +87,8 @@ def update_application(data_db: str,
                        job_type: int,
                        link: str,
                        description: str,
+                       exp_low: int | None,
+                       exp_upp: int | None,
                        follow_up: datetime.date | str = ""
                        ) -> None:
     """
@@ -120,7 +124,9 @@ def update_application(data_db: str,
         contact = ?,
         type = ?,
         link = ?,
-        description = ?
+        description = ?,
+        exp_low = ?,
+        exp_upp = ?
     WHERE app_id = ?;
     """
 
@@ -139,18 +145,20 @@ def update_application(data_db: str,
         status = ?,
         type = ?,
         link = ?,
-        description = ?
+        description = ?,
+        exp_low = ?,
+        exp_upp = ?
     WHERE app_id = ?;
     """
 
     if status < 0:
         sql_query = update_without_status_sql
         params = (company, title, app_found_at, applied_at, follow_up, location,
-                  materials_sent, comments, salary, contact, job_type, link, description, app_id)
+                  materials_sent, comments, salary, contact, job_type, link, description, exp_low, exp_upp, app_id)
     else:
         sql_query = update_full_app_sql
         params = (company, title, app_found_at, applied_at, follow_up, location,
-                  materials_sent, comments, salary, contact, status, job_type, link, description,
+                  materials_sent, comments, salary, contact, status, job_type, link, description, exp_low, exp_upp,
                   app_id)
 
     db = DataFileSQLRunner(data_db)

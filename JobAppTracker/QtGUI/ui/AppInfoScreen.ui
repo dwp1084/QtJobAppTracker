@@ -7,13 +7,13 @@
     <x>0</x>
     <y>0</y>
     <width>656</width>
-    <height>758</height>
+    <height>894</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Application Info</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
+  <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,5,0,0,0,1,0,0">
    <item>
     <widget class="QLabel" name="label">
      <property name="sizePolicy">
@@ -68,7 +68,7 @@
    <item>
     <widget class="QWidget" name="AppInfoWidget" native="true">
      <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+      <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>

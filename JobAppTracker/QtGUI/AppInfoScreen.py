@@ -405,8 +405,6 @@ class AppInfoDialog(QDialog):
                     follow_up
                 )
 
-                print(f"{self.ui.statusField.currentIndex()}")
-
         # Updates autocomplete data
         insert_companies(self.ui.companyField.text())
         insert_locations(self.ui.locationField.text())

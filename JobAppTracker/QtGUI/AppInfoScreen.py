@@ -82,6 +82,11 @@ class AppInfoDialog(QDialog):
         self.ui.appCancelButton.clicked.connect(self.close)
         self.ui.appDeleteButton.clicked.connect(self.askDelete)
 
+        self.ui.modifyButton.clicked.connect(
+            # lambda: self.ui.hyperlinkField.setVisible(True)
+            lambda: self.edit_job_link(True)
+        )
+
         self.ui.interviewsList.customContextMenuRequested.connect(
             self.interview_list_ctx_menu
         )
@@ -132,16 +137,35 @@ class AppInfoDialog(QDialog):
             self.ui.salaryField: app.salary,
             self.ui.materialsSent: app.materials,
             self.ui.contactField: app.contact,
-            self.ui.appFoundOnField: app.found_at
+            self.ui.appFoundOnField: app.found_at,
+            self.ui.hyperlinkField: app.link
         }
 
         for field, data in plainTextFields.items():
             field.setText(data)
 
+        hyperlink = ""
+        if app.link != "":
+            hyperlink = f"<a href={app.link}>{app.link}</a>"
+
+        self.ui.hyperlinkLabel.setText(hyperlink)
+
+        self.ui.jobDescriptionEdit.setHtml(app.description)
+
+        # Hyperlink logic
+        link_filled = app.link == ""
+
+        self.edit_job_link(link_filled)
+
         self.fill_autocomplete_data(autocomplete_companies, self.ui.companyField)
         self.fill_autocomplete_data(autocomplete_locations, self.ui.locationField)
         self.fill_autocomplete_data(autocomplete_app_sources, self.ui.appSiteField)
         self.fill_autocomplete_data(autocomplete_app_sources, self.ui.appFoundOnField)
+
+    def edit_job_link(self, isEditable: bool):
+        self.ui.modifyButton.setVisible(not isEditable)
+        self.ui.hyperlinkLabel.setVisible(not isEditable)
+        self.ui.hyperlinkField.setVisible(isEditable)
 
     def fill_autocomplete_data(self,
                                fetch_func: Callable[[], list[str]],
@@ -270,6 +294,8 @@ class AppInfoDialog(QDialog):
                     self.ui.contactField.text(),
                     self.ui.statusField.currentIndex(),
                     self.ui.jobTypeField.currentIndex(),
+                    self.ui.hyperlinkField.text(),
+                    self.ui.jobDescriptionEdit.toHtml(),
                     follow_up
                 )
 
@@ -288,6 +314,8 @@ class AppInfoDialog(QDialog):
                     self.ui.contactField.text(),
                     self.ui.statusField.currentIndex(),
                     self.ui.jobTypeField.currentIndex(),
+                    self.ui.hyperlinkField.text(),
+                    self.ui.jobDescriptionEdit.toHtml(),
                     follow_up
                 )
 

@@ -59,6 +59,11 @@ class Application:
     salary: str = ""
     status: Status = Status.PENDING
     comments: str = ""
+    link: str = ""
+    description: str = ""
+    rej_date: date | None = None
+    exp_low: int | None = None
+    exp_upp: int | None = None
 
     @property
     def days_pending(self) -> int:
@@ -68,3 +73,26 @@ class Application:
         """
         delta = date.today() - self.applied_on
         return delta.days
+
+    @property
+    def time_to_rejection(self) -> str:
+        if not (self.status == Status.REJECTED or self.status == Status.DECLINED) \
+            or self.rej_date is None:
+            return ""
+
+        delta = self.rej_date - self.applied_on
+
+        return f"{delta.days}"
+
+    @property
+    def experience(self) -> str:
+        if self.exp_low is None and self.exp_upp is None:
+            return ""
+
+        if self.exp_low is None:
+            return f"<{self.exp_upp} YOE"
+
+        if self.exp_upp is None:
+            return f"{self.exp_low}+ YOE"
+
+        return f"{self.exp_low}-{self.exp_upp} YOE"

@@ -32,12 +32,14 @@ class AppTableModel(QAbstractTableModel):
                 )),
             (h.H_JOB_TYPE, lambda app: str(app.job_type)),
             (h.H_LOCATION, lambda app: self.add_privacy_filter(app.location)),
+            (h.H_EXPERIENCE, lambda app: app.experience),
             (h.H_APP_SRC, lambda app: app.found_at),
             (h.H_APP_WEBSITE, lambda app: app.website),
             (h.H_CONTACT, lambda app: self.add_privacy_filter(app.contact)),
             (h.H_MATERIALS, lambda app: app.materials),
             (h.H_SALARY, lambda app: app.salary),
             (h.H_STATUS, lambda app: str(ghost_prediction(self.currentFile, app))),
+            (h.H_TTR, lambda app: app.time_to_rejection),
             (h.H_COMMENT, lambda app: self.add_privacy_filter(app.comments)),
             (h.H_PENDING, lambda app: str(app.days_pending))
         ]

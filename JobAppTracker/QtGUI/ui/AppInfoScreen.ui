@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>656</width>
-    <height>584</height>
+    <height>698</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -234,6 +234,74 @@
       </item>
       <item row="4" column="1">
        <widget class="QLineEdit" name="appFoundOnField"/>
+      </item>
+      <item row="10" column="0">
+       <widget class="QLabel" name="label_17">
+        <property name="text">
+         <string>Job Link</string>
+        </property>
+       </widget>
+      </item>
+      <item row="10" column="1">
+       <widget class="QWidget" name="linkWidget" native="true">
+        <layout class="QHBoxLayout" name="horizontalLayout_3">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item>
+          <layout class="QVBoxLayout" name="verticalLayout_2">
+           <item>
+            <widget class="QLabel" name="hyperlinkLabel">
+             <property name="text">
+              <string/>
+             </property>
+             <property name="textFormat">
+              <enum>Qt::TextFormat::RichText</enum>
+             </property>
+             <property name="openExternalLinks">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="hyperlinkField"/>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="QPushButton" name="modifyButton">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Modify</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item row="11" column="0">
+       <widget class="QLabel" name="label_18">
+        <property name="text">
+         <string>Description</string>
+        </property>
+       </widget>
+      </item>
+      <item row="11" column="1">
+       <widget class="QTextEdit" name="jobDescriptionEdit"/>
       </item>
      </layout>
     </widget>

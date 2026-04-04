@@ -33,7 +33,9 @@ def add_application(data_db: str,
                     contact: str,
                     status: int,
                     job_type: int,
-                    follow_up: datetime.date | str = ""
+                    link: str,
+                    description: str,
+                    follow_up: datetime.date | str = "",
                     ) -> None:
     """
     Inserts a new job application into the database.
@@ -56,15 +58,15 @@ def add_application(data_db: str,
     add_app_sql = """
     INSERT INTO applications (company, title, app_found_at, applied_at, 
     latest_follow_up, location, materials_sent, comments, salary,  contact, 
-    status, type, application_date)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+    status, type, application_date, link, description)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
     """
 
     db = DataFileSQLRunner(data_db)
 
     params = (company, title, app_found_at, applied_at, follow_up, location,
               materials_sent, comments, salary, contact, status, job_type,
-              applied_date)
+              applied_date, link, description)
     db.run(add_app_sql, params)
 
 
@@ -81,6 +83,8 @@ def update_application(data_db: str,
                        contact: str,
                        status: int,
                        job_type: int,
+                       link: str,
+                       description: str,
                        follow_up: datetime.date | str = ""
                        ) -> None:
     """
@@ -114,7 +118,9 @@ def update_application(data_db: str,
         comments = ?,
         salary = ?,
         contact = ?,
-        type = ?
+        type = ?,
+        link = ?,
+        description = ?
     WHERE app_id = ?;
     """
 
@@ -131,18 +137,20 @@ def update_application(data_db: str,
         salary = ?,
         contact = ?,
         status = ?,
-        type = ?
+        type = ?,
+        link = ?,
+        description = ?
     WHERE app_id = ?;
     """
 
     if status < 0:
         sql_query = update_without_status_sql
         params = (company, title, app_found_at, applied_at, follow_up, location,
-                  materials_sent, comments, salary, contact, job_type, app_id)
+                  materials_sent, comments, salary, contact, job_type, link, description, app_id)
     else:
         sql_query = update_full_app_sql
         params = (company, title, app_found_at, applied_at, follow_up, location,
-                  materials_sent, comments, salary, contact, status, job_type,
+                  materials_sent, comments, salary, contact, status, job_type, link, description,
                   app_id)
 
     db = DataFileSQLRunner(data_db)
@@ -191,7 +199,8 @@ def get_applications(data_db: str) -> list[Application]:
     retrieve_apps_sql = """
     SELECT app_id, company, title, app_found_at, applied_at, application_date, 
     latest_follow_up, location, materials_sent, comments, salary, contact, 
-    status, type FROM applications ORDER BY date(application_date) DESC;
+    status, type, link, description, rej_date, exp_low, exp_upp FROM 
+    applications ORDER BY date(application_date) DESC;
     """
     db = DataFileSQLRunner(data_db)
 
@@ -220,7 +229,12 @@ def get_applications(data_db: str) -> list[Application]:
                                data_dict["materials_sent"],
                                data_dict["salary"],
                                Status(data_dict["status"]),
-                               data_dict["comments"])
+                               data_dict["comments"],
+                               data_dict["link"],
+                               data_dict["description"],
+                               data_dict["rej_date"],
+                               data_dict["exp_low"],
+                               data_dict["exp_upp"])
 
         apps_list.append(app_data)
 

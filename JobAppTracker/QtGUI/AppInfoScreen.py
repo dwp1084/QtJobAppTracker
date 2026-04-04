@@ -4,7 +4,7 @@ from typing import Callable
 
 from PyQt6.QtCore import pyqtSlot, pyqtSignal, Qt, QPoint
 from PyQt6.QtGui import QIntValidator
-from PyQt6.QtWidgets import QDialog, QCompleter, QMenu, QLineEdit
+from PyQt6.QtWidgets import QDialog, QCompleter, QMenu, QLineEdit, QCheckBox
 
 from Data.Application import Application, Status
 from Data.InterviewDate import InterviewDate
@@ -86,8 +86,9 @@ class AppInfoDialog(QDialog):
         self.ui.minExpField.setValidator(QIntValidator(0, 50))
         self.ui.maxExpField.setValidator(QIntValidator(0, 50))
 
+        self.ui.storeRejectionDateCheckbox.checkStateChanged.connect(self.enable_rej_date_edit)
+
         self.ui.modifyButton.clicked.connect(
-            # lambda: self.ui.hyperlinkField.setVisible(True)
             lambda: self.edit_job_link(True)
         )
 
@@ -106,6 +107,13 @@ class AppInfoDialog(QDialog):
         :return:
         """
         self.ui.interviewDateField.setDate(date.today())
+
+        # Disconnect signal from status field while data is being filled out
+        # We only care about it when the user changes the status
+        try:
+            self.ui.statusField.currentIndexChanged.disconnect()
+        except TypeError:
+            pass    # Error when no signals are connected, but in this case that's fine
 
         # If the placeholder application is used, no application is loaded
         self.app_id = app.app_id if app.app_id > -1 else None
@@ -166,10 +174,42 @@ class AppInfoDialog(QDialog):
 
         self.edit_job_link(link_filled)
 
+        self.ui.storeRejectionDateCheckbox.setChecked(app.rej_date is None)
+        self.ui.rejectionDateEdit.setDisabled(app.rej_date is None)
+
+        if app.rej_date is not None:
+            self.ui.rejectionDateEdit.setDate(app.rej_date)
+        else:
+            self.ui.rejectionDateEdit.setDate(date.today())
+
+        showRejDateField = status == Status.REJECTED or status == Status.DECLINED
+        self.ui.rejectionDateWidget.setVisible(showRejDateField)
+
         self.fill_autocomplete_data(autocomplete_companies, self.ui.companyField)
         self.fill_autocomplete_data(autocomplete_locations, self.ui.locationField)
         self.fill_autocomplete_data(autocomplete_app_sources, self.ui.appSiteField)
         self.fill_autocomplete_data(autocomplete_app_sources, self.ui.appFoundOnField)
+
+        # Re-instate the signal
+        self.ui.statusField.currentIndexChanged.connect(
+            lambda idx: self.check_and_set_reject_date(Status(idx))
+        )
+
+    def check_and_set_reject_date(self, app_status: Status):
+        if app_status == Status.REJECTED or app_status == Status.DECLINED:
+            self.ui.rejectionDateWidget.setVisible(True)
+
+            if self.ui.storeRejectionDateCheckbox.checkState() == Qt.CheckState.Checked:
+                self.ui.storeRejectionDateCheckbox.setChecked(False)
+                self.ui.rejectionDateEdit.setDate(date.today())
+        else:
+            self.ui.rejectionDateWidget.setVisible(False)
+            self.ui.storeRejectionDateCheckbox.setChecked(True)
+
+    @pyqtSlot(Qt.CheckState)
+    def enable_rej_date_edit(self, checked: Qt.CheckState):
+        disableEdit = checked == Qt.CheckState.Checked
+        self.ui.rejectionDateEdit.setDisabled(disableEdit)
 
     def edit_job_link(self, isEditable: bool):
         self.ui.modifyButton.setVisible(not isEditable)
@@ -312,6 +352,10 @@ class AppInfoDialog(QDialog):
         if self.ui.followedUpCheckBox.isChecked():
             follow_up = self.ui.followUpField.date().toPyDate()
 
+        rej_date = None
+        if not self.ui.storeRejectionDateCheckbox.isChecked():
+            rej_date = self.ui.rejectionDateEdit.date().toPyDate()
+
         # Chooses which function to call based on dialog state
         match self.app_info_type:
 
@@ -334,6 +378,7 @@ class AppInfoDialog(QDialog):
                     self.ui.jobDescriptionEdit.toHtml(),
                     min_exp,
                     max_exp,
+                    rej_date,
                     follow_up
                 )
 
@@ -356,8 +401,11 @@ class AppInfoDialog(QDialog):
                     self.ui.jobDescriptionEdit.toHtml(),
                     min_exp,
                     max_exp,
+                    rej_date,
                     follow_up
                 )
+
+                print(f"{self.ui.statusField.currentIndex()}")
 
         # Updates autocomplete data
         insert_companies(self.ui.companyField.text())

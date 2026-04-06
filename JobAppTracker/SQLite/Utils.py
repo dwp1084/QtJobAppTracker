@@ -67,7 +67,7 @@ class SQLiteRunner(ABC):
                               sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
               as conn):
             conn.execute(query, params)
-            conn.commit()
+        conn.close()
 
     def fetchone(self, query: str, params: tuple = ()) -> sqlite3.Row | None:
         """
@@ -86,7 +86,11 @@ class SQLiteRunner(ABC):
             conn.row_factory = sqlite3.Row
             cursor = conn.cursor()
             cursor.execute(query, params)
-            return cursor.fetchone()
+            results = cursor.fetchone()
+
+        conn.close()
+
+        return results
 
     def fetch(self, query: str, params: tuple = ()) -> list[sqlite3.Row]:
         """
@@ -104,7 +108,11 @@ class SQLiteRunner(ABC):
             conn.row_factory = sqlite3.Row
             cursor = conn.cursor()
             cursor.execute(query, params)
-            return cursor.fetchall()
+            results = cursor.fetchall()
+
+        conn.close()
+
+        return results
 
     def run_script(self, script: str) -> None:
         """
@@ -115,7 +123,7 @@ class SQLiteRunner(ABC):
         """
         with sqlite3.connect(self.db_file) as conn:
             conn.executescript(script)
-            conn.commit()
+        conn.close()
 
 
 class DataFileSQLRunner(SQLiteRunner):

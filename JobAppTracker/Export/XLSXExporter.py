@@ -31,12 +31,14 @@ class XLSXExporter(BaseExporter):
             ),
             (h.H_JOB_TYPE, lambda app: app.job_type),
             (h.H_LOCATION, lambda app: app.location),
+            (h.H_EXPERIENCE, lambda app: app.experience),
             (h.H_APP_SRC, lambda app: app.found_at),
             (h.H_APP_WEBSITE, lambda app: app.website),
             (h.H_CONTACT, lambda app: app.contact),
             (h.H_MATERIALS, lambda app: app.materials),
             (h.H_SALARY, lambda app: app.salary),
             (h.H_STATUS, lambda app: ghost_prediction(self.currentFile, app)),
+            (h.H_TTR, lambda app: app.time_to_rejection),
             (h.H_PENDING, lambda app: app.days_pending)
         ]
 
@@ -77,6 +79,9 @@ class XLSXExporter(BaseExporter):
             mid_yel_cell = wb.add_format({"bg_color": "#ffd966"})
             mid_green_cell = wb.add_format({"fg_color": "#6aa84f"})
             mid_light_blue = wb.add_format({"fg_color": "#6d9eeb"})
+            purple_cell = wb.add_format({
+                "fg_color": "purple",
+                "font_color": "white"})
 
             # Page 1 - Applications worksheet
             main_ws = wb.add_worksheet("Applications")
@@ -104,7 +109,8 @@ class XLSXExporter(BaseExporter):
             # Fill in data and format
             for row, app in enumerate(data):
                 currentStatus = Status.PENDING
-                for col, (_, expr) in enumerate(self.main_ws_columns):
+                app_link = app.link
+                for col, (header, expr) in enumerate(self.main_ws_columns):
                     data = expr(app)
                     match data:
                         case date():
@@ -129,6 +135,18 @@ class XLSXExporter(BaseExporter):
                                           col,
                                           str(data),
                                           mid_light_blue)
+                            currentStatus = data
+                        case Status.CANCELLED:
+                            main_ws.write(row + beginning_row,
+                                          col,
+                                          str(data),
+                                          purple_cell)
+                            currentStatus = data
+                        case Status.DECLINED:
+                            main_ws.write(row + beginning_row,
+                                          col,
+                                          str(data),
+                                          mid_yel_cell)
                             currentStatus = data
                         case Status():
                             main_ws.write(row + beginning_row, col, str(data))
@@ -169,6 +187,17 @@ class XLSXExporter(BaseExporter):
                                              0,
                                              app.company,
                                              fmt)
+                    case Status.CANCELLED:
+                        fmt = purple_cell if int_count < 1 else mid_yel_cell
+                        main_ws.write(row + beginning_row,
+                                      0,
+                                      app.company,
+                                      fmt)
+                    case Status.DECLINED:
+                        main_ws.write(row + beginning_row,
+                                      0,
+                                      app.company,
+                                      mid_yel_cell)
                     case Status.LIKELY_GHOSTED:
                         fmt = org_cell if int_count < 1 else mid_yel_cell
                         main_ws.write(row + beginning_row,
@@ -182,6 +211,15 @@ class XLSXExporter(BaseExporter):
                                       mid_light_blue)
                     case _:
                         pass
+
+                if app_link != "":
+                    main_ws.write_url(
+                        row + beginning_row,
+                        1,
+                        app_link,
+                        string=app.title
+                    )
+
 
             # Page 2 - Interviews worksheet
             ints_ws = wb.add_worksheet("Interviews")

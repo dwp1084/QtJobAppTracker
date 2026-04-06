@@ -20,6 +20,7 @@ H_COMMENT = "Comments"
 H_PENDING = "Days Pending"
 H_TTR = "Time to Rejection"
 H_EXPERIENCE = "Experience level"
+H_LINK = "Link to Posting"
 
 CURRENT_DATA_FILE_VERSION = 1
 CURRENT_APP_VERSION = "2.0.0.dev1"

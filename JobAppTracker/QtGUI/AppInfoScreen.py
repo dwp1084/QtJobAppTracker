@@ -118,6 +118,9 @@ class AppInfoDialog(QDialog):
         # If the placeholder application is used, no application is loaded
         self.app_id = app.app_id if app.app_id > -1 else None
 
+        app_date_box_date = date.today() if self.app_id is None else app.applied_on
+        self.ui.appDateEdit.setDate(app_date_box_date)
+
         status = ghost_prediction(self.currentFile, app)
         self.ui.statusField.setPlaceholderText(str(status))
 
@@ -265,6 +268,7 @@ class AppInfoDialog(QDialog):
                 "Please disable the Privacy Filter to continue."
             )
             return
+        self.ui.appDateWidget.hide()
         self.ui.interviewDatesWidget.hide()
         self.ui.appDeleteButton.hide()
         self.ui.DaysSinceAppliedWidget.hide()
@@ -287,6 +291,7 @@ class AppInfoDialog(QDialog):
                 "Please disable the Privacy Filter to continue."
             )
             return
+        self.ui.appDateWidget.show()
         self.ui.interviewDatesWidget.show()
         self.ui.appDeleteButton.show()
         self.ui.DaysSinceAppliedWidget.show()
@@ -402,6 +407,7 @@ class AppInfoDialog(QDialog):
                     min_exp,
                     max_exp,
                     rej_date,
+                    self.ui.appDateEdit.date().toPyDate(),
                     follow_up
                 )
 

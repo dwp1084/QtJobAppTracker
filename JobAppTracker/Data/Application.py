@@ -76,6 +76,12 @@ class Application:
 
     @property
     def time_to_rejection(self) -> str:
+        """
+        Gets a string representing the number of days between the application
+        being sent and being rejected, or an empty string if no rejection date
+        is available.
+        :return:
+        """
         if not (self.status == Status.REJECTED or self.status == Status.DECLINED) \
             or self.rej_date is None:
             return ""
@@ -86,6 +92,12 @@ class Application:
 
     @property
     def experience(self) -> str:
+        """
+        Gets a string representing the experience range. Depending on whether
+        the upper bound and lower bound are set, it may return an empty string,
+        or any of the following formats: "x+ YOE", "<Y YOE", or "X-Y YOE".
+        :return:
+        """
         if self.exp_low is None and self.exp_upp is None:
             return ""
 

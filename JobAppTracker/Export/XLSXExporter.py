@@ -5,7 +5,7 @@ from Data.Application import Application, Status, JobTypes
 from Export.BaseExporter import BaseExporter
 
 import xlsxwriter as xlw
-import constants as h
+import constants as c
 from SQLite.ApplicationQueries import (get_interview_count_for_application,
                                        ghost_prediction,
                                        get_interviews_for_application)
@@ -20,26 +20,26 @@ class XLSXExporter(BaseExporter):
 
     def __init__(self):
         self.main_ws_columns: list[tuple[str, Callable[[Application], Any]]] = [
-            (h.H_COMPANY, lambda app: app.company),
-            (h.H_TITLE, lambda app: app.title),
-            (h.H_APP_DATE, lambda app: app.applied_on),
-            (h.H_FOLLOW_UP, lambda app: app.followed_up \
+            (c.H_COMPANY, lambda app: app.company),
+            (c.H_TITLE, lambda app: app.title),
+            (c.H_APP_DATE, lambda app: app.applied_on),
+            (c.H_FOLLOW_UP, lambda app: app.followed_up \
                 if app.followed_up is not None else ""),
-            (h.H_INTERVIEWS, lambda app:
+            (c.H_INTERVIEWS, lambda app:
                 get_interview_count_for_application(self.currentFile,
                                                     app.app_id)
-            ),
-            (h.H_JOB_TYPE, lambda app: app.job_type),
-            (h.H_LOCATION, lambda app: app.location),
-            (h.H_EXPERIENCE, lambda app: app.experience),
-            (h.H_APP_SRC, lambda app: app.found_at),
-            (h.H_APP_WEBSITE, lambda app: app.website),
-            (h.H_CONTACT, lambda app: app.contact),
-            (h.H_MATERIALS, lambda app: app.materials),
-            (h.H_SALARY, lambda app: app.salary),
-            (h.H_STATUS, lambda app: ghost_prediction(self.currentFile, app)),
-            (h.H_TTR, lambda app: app.time_to_rejection),
-            (h.H_PENDING, lambda app: app.days_pending)
+             ),
+            (c.H_JOB_TYPE, lambda app: app.job_type),
+            (c.H_LOCATION, lambda app: app.location),
+            (c.H_EXPERIENCE, lambda app: app.experience),
+            (c.H_APP_SRC, lambda app: app.found_at),
+            (c.H_APP_WEBSITE, lambda app: app.website),
+            (c.H_CONTACT, lambda app: app.contact),
+            (c.H_MATERIALS, lambda app: app.materials),
+            (c.H_SALARY, lambda app: app.salary),
+            (c.H_STATUS, lambda app: ghost_prediction(self.currentFile, app)),
+            (c.H_TTR, lambda app: app.time_to_rejection),
+            (c.H_PENDING, lambda app: app.days_pending)
         ]
 
     @property

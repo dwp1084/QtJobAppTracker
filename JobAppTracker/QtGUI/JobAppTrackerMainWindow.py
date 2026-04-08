@@ -7,7 +7,7 @@ from PyQt6.QtCore import QSettings, QStandardPaths, pyqtSlot, QTimer
 from PyQt6.QtGui import QAction, QCloseEvent
 from PyQt6.QtWidgets import QMainWindow, QFileDialog
 
-import constants as h
+import constants as c
 from Data.Application import Application, Status
 from Data.StatsData import StatsData
 from Export.BaseExporter import BaseExporter
@@ -26,7 +26,8 @@ from SQLite.StatsQueries import (get_total_ints,
                                  get_avg_ints_and_count)
 from SQLite.Utils import DataFileSQLRunner
 from constants import CURRENT_APP_VERSION
-from errorDialog import showWarningMessage, showErrorMessage, showQuestionMessage, showInfoMessage
+from errorDialog import (showWarningMessage, showErrorMessage, showQuestionMessage,
+                         showInfoMessage)
 
 # Base title for the main window
 TITLE_BASE = "Job Application Tracker"
@@ -203,19 +204,19 @@ class JobAppTrackerMainWindow(QMainWindow):
         toggleable_columns: dict[str, tuple[QAction, str]] = {
             "opts/showDaysPassed": (
                 self.ui.actionDays_Since_Application,
-                h.H_PENDING
+                c.H_PENDING
             ),
             "opts/showComments": (
                 self.ui.actionComments,
-                h.H_COMMENT
+                c.H_COMMENT
             ),
             "opts/showMaterialsSent": (
                 self.ui.actionMaterials_Sent,
-                h.H_MATERIALS
+                c.H_MATERIALS
             ),
             "opts/showContactInfo": (
                 self.ui.actionContact_Info,
-                h.H_CONTACT
+                c.H_CONTACT
             )
         }
 
@@ -263,6 +264,11 @@ class JobAppTrackerMainWindow(QMainWindow):
 
     @pyqtSlot()
     def dev_delete_config(self):
+        """
+        Deletes the config file, then closes the application. Only meant to be
+        accessible in development versions
+        :return:
+        """
         app_data = QStandardPaths.writableLocation(
             QStandardPaths.StandardLocation.AppDataLocation
         )
@@ -285,6 +291,11 @@ class JobAppTrackerMainWindow(QMainWindow):
 
     @pyqtSlot(bool)
     def toggle_privacy_filter(self, toggled: bool) -> None:
+        """
+        Toggles the privacy filter on or off
+        :param toggled: Whether it should be on or off
+        :return:
+        """
         self.tableModel.enable_privacy_filter(toggled)
         self.appInfoScreen.enable_privacy_filter(toggled)
 
@@ -392,7 +403,8 @@ class JobAppTrackerMainWindow(QMainWindow):
                     self.tableData[row]
                 )
 
-                if app_status in {Status.LIKELY_GHOSTED, Status.REJECTED, Status.DECLINED, Status.CANCELLED}:
+                if app_status in {Status.LIKELY_GHOSTED, Status.REJECTED,
+                                  Status.DECLINED, Status.CANCELLED}:
                     self.ui.appTableView.setRowHidden(row, True)
                     self.hiddenCount += 1
                 else:
@@ -426,15 +438,15 @@ class JobAppTrackerMainWindow(QMainWindow):
         """
         file_version = get_app_file_version(new_file_path)
         basename = os.path.basename(new_file_path)
-        if file_version > h.CURRENT_DATA_FILE_VERSION:
+        if file_version > c.CURRENT_DATA_FILE_VERSION:
             showErrorMessage(
                 f"{basename} cannot be opened because it was made for a newer " +
                 "version of the program. Please update to open this file.\n\n" +
-                f"File version: {file_version}\nCurrently supported version: {h.CURRENT_DATA_FILE_VERSION}"
+                f"File version: {file_version}\nCurrently supported version: {c.CURRENT_DATA_FILE_VERSION}"
             )
             return
 
-        if file_version < h.CURRENT_DATA_FILE_VERSION:
+        if file_version < c.CURRENT_DATA_FILE_VERSION:
             file_dirname = os.path.dirname(new_file_path)
             root, extension = os.path.splitext(basename)
             backup_date = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -453,24 +465,37 @@ class JobAppTrackerMainWindow(QMainWindow):
         else:
             self._changeOpenFile(new_file_path)
 
-    def _migrate_file(self, new_file_path: str, backup_file_path: str, file_version: int):
+    def _migrate_file(self, data_file_path: str, backup_file_path: str, file_version: int):
+        """
+        Callback function when a user wants to migrate a data file to the current
+        version. Backs up the data file, then performs the migration.
+        :param data_file_path: Current path to the data file
+        :param backup_file_path: Path to the backup file that will be created.
+        :param file_version: Data file version
+        :return:
+        """
         # First, back up the file to be migrated at the provided backup path
         shutil.copy2(
-            new_file_path,
+            data_file_path,
             backup_file_path
         )
 
         # Next, run migrations through each version until the newest version is
         # reached.
         try:
-            migrate_file(new_file_path, file_version)
+            migrate_file(data_file_path, file_version)
         except SchemaMigrationException as sme:
             showErrorMessage(f"Schema migration failed, file will now close: {sme}")
             return
 
-        self._changeOpenFile(new_file_path)
+        self._changeOpenFile(data_file_path)
 
     def _changeOpenFile(self, new_file_path: str) -> None:
+        """
+        Performs the data loading for the change open file function
+        :param new_file_path: Data file path
+        :return:
+        """
         basename = os.path.basename(new_file_path)
         self.setTitleStatus(basename)
         self.currentFile = new_file_path

@@ -4,7 +4,7 @@ from typing import Callable
 
 from PyQt6.QtCore import pyqtSlot, pyqtSignal, Qt, QPoint
 from PyQt6.QtGui import QIntValidator
-from PyQt6.QtWidgets import QDialog, QCompleter, QMenu, QLineEdit, QCheckBox, QStyle, QWhatsThis
+from PyQt6.QtWidgets import QDialog, QCompleter, QMenu, QLineEdit, QWhatsThis
 
 from Data.Application import Application, Status
 from Data.InterviewDate import InterviewDate
@@ -88,7 +88,9 @@ class AppInfoDialog(QDialog):
         self.ui.minExpField.setValidator(QIntValidator(0, 50))
         self.ui.maxExpField.setValidator(QIntValidator(0, 50))
 
-        self.ui.storeRejectionDateCheckbox.checkStateChanged.connect(self.enable_rej_date_edit)
+        self.ui.storeRejectionDateCheckbox.checkStateChanged.connect(
+            self.enable_rej_date_edit
+        )
 
         self.ui.modifyButton.clicked.connect(
             lambda: self.edit_job_link(True)
@@ -130,7 +132,11 @@ class AppInfoDialog(QDialog):
 
         # Statuses that can be selected in combobox. If a different one applies,
         # placeholder text is shown
-        selectableStatuses = {Status.PENDING, Status.OFFER, Status.REJECTED, Status.DECLINED, Status.CANCELLED}
+        selectableStatuses = {Status.PENDING,
+                              Status.OFFER,
+                              Status.REJECTED,
+                              Status.DECLINED,
+                              Status.CANCELLED}
 
         status_idx = int(status) if status in selectableStatuses else -1
 
@@ -205,6 +211,12 @@ class AppInfoDialog(QDialog):
         )
 
     def check_and_set_reject_date(self, app_status: Status):
+        """
+        Checks or unchecks the rejection date checkbox and sets the date when
+        the application status changes
+        :param app_status: Current application status
+        :return:
+        """
         if (app_status == Status.REJECTED
                 or app_status == Status.DECLINED
                 or app_status == Status.CANCELLED):
@@ -219,16 +231,30 @@ class AppInfoDialog(QDialog):
 
     @pyqtSlot()
     def whats_this_status_field(self):
+        """
+        Shows the extended help message for the status field.
+        :return:
+        """
         sf = self.ui.statusField
         pos = sf.mapToGlobal(QPoint(sf.width() // 2, sf.height() // 2))
         QWhatsThis.showText(pos, sf.whatsThis(), sf)
 
     @pyqtSlot(Qt.CheckState)
     def enable_rej_date_edit(self, checked: Qt.CheckState):
+        """
+        Sets whether the rejection date should be available to edit.
+        :param checked: Checkbox state
+        :return:
+        """
         disableEdit = checked == Qt.CheckState.Checked
         self.ui.rejectionDateEdit.setDisabled(disableEdit)
 
     def edit_job_link(self, isEditable: bool):
+        """
+        Toggles whether the job link should be editable or not
+        :param isEditable: Whether the link should be editable
+        :return:
+        """
         self.ui.modifyButton.setVisible(not isEditable)
         self.ui.hyperlinkLabel.setVisible(not isEditable)
         self.ui.hyperlinkField.setVisible(isEditable)
@@ -346,7 +372,9 @@ class AppInfoDialog(QDialog):
             state, _, _ = self.ui.minExpField.validator().validate(min_exp_input, 0)
 
             if state != QIntValidator.State.Acceptable:
-                showWarningMessage("Invalid input for minimum experience (Blank or between 0 and 50)")
+                showWarningMessage(
+                    "Invalid input for minimum experience (Blank or between 0 and 50)"
+                )
                 return
 
             min_exp = int(min_exp_input)
@@ -357,13 +385,17 @@ class AppInfoDialog(QDialog):
             state, _, _ = self.ui.maxExpField.validator().validate(max_exp_input, 0)
 
             if state != QIntValidator.State.Acceptable:
-                showWarningMessage("Invalid input for maximum experience (Blank or between 0 and 50)")
+                showWarningMessage(
+                    "Invalid input for maximum experience (Blank or between 0 and 50)"
+                )
                 return
 
             max_exp = int(max_exp_input)
 
         if min_exp is not None and max_exp is not None and min_exp >= max_exp:
-            showWarningMessage("Minimum experience must be less than maximum experience.")
+            showWarningMessage(
+                "Minimum experience must be less than maximum experience."
+            )
             return
 
         # Adds follow-up date only if the checkbox has been pressed.

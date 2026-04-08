@@ -55,6 +55,11 @@ def add_application(data_db: str,
     :param contact: Contact info
     :param status: Application status
     :param job_type: Job type (remote, in-person, hybrid)
+    :param link: Link to the application
+    :param description: Rich-text job description
+    :param exp_low: Lower bound for years of experience
+    :param exp_upp: Upper bound for years of experience
+    :param rej_date: Rejection date
     :param follow_up: Latest follow-up date
     :return:
     """
@@ -110,6 +115,12 @@ def update_application(data_db: str,
     :param contact: Contact info
     :param status: Application status
     :param job_type: Job type (remote, in-person, hybrid)
+    :param link: Link to the application
+    :param description: Rich-text job description
+    :param exp_low: Lower bound for years of experience
+    :param exp_upp: Upper bound for years of experience
+    :param rej_date: Rejection date
+    :param app_date: Application date
     :param follow_up: Latest follow-up date
     :return:
     """
@@ -161,11 +172,13 @@ def update_application(data_db: str,
     if status < 0:
         sql_query = update_without_status_sql
         params = (company, title, app_found_at, applied_at, follow_up, location,
-                  materials_sent, comments, salary, contact, job_type, link, description, exp_low, exp_upp,  rej_date, app_date, app_id)
+                  materials_sent, comments, salary, contact, job_type, link,
+                  description, exp_low, exp_upp,  rej_date, app_date, app_id)
     else:
         sql_query = update_full_app_sql
         params = (company, title, app_found_at, applied_at, follow_up, location,
-                  materials_sent, comments, salary, contact, status, job_type, link, description, exp_low, exp_upp, rej_date, app_date,
+                  materials_sent, comments, salary, contact, status, job_type,
+                  link, description, exp_low, exp_upp, rej_date, app_date,
                   app_id)
 
     db = DataFileSQLRunner(data_db)

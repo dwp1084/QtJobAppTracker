@@ -4,7 +4,7 @@ from typing import Callable
 
 from PyQt6.QtCore import pyqtSlot, pyqtSignal, Qt, QPoint
 from PyQt6.QtGui import QIntValidator
-from PyQt6.QtWidgets import QDialog, QCompleter, QMenu, QLineEdit, QCheckBox
+from PyQt6.QtWidgets import QDialog, QCompleter, QMenu, QLineEdit, QCheckBox, QStyle, QWhatsThis
 
 from Data.Application import Application, Status
 from Data.InterviewDate import InterviewDate
@@ -70,6 +70,8 @@ class AppInfoDialog(QDialog):
         self.ui = Ui_AppInfoScreen()
         self.ui.setupUi(self)
 
+        self.setWindowFlags(self.windowFlags() | Qt.WindowType.WindowMaximizeButtonHint)
+
         # Connecting signals to slots
         self.ui.followedUpCheckBox.stateChanged.connect(
             lambda: self.ui.followUpWidget.setVisible(
@@ -95,6 +97,8 @@ class AppInfoDialog(QDialog):
         self.ui.interviewsList.customContextMenuRequested.connect(
             self.interview_list_ctx_menu
         )
+
+        self.ui.statusHelpButton.clicked.connect(self.whats_this_status_field)
 
     def enable_privacy_filter(self, setting: bool):
         self.privacy_filter = setting
@@ -208,6 +212,12 @@ class AppInfoDialog(QDialog):
         else:
             self.ui.rejectionDateWidget.setVisible(False)
             self.ui.storeRejectionDateCheckbox.setChecked(True)
+
+    @pyqtSlot()
+    def whats_this_status_field(self):
+        sf = self.ui.statusField
+        pos = sf.mapToGlobal(QPoint(sf.width() // 2, sf.height() // 2))
+        QWhatsThis.showText(pos, sf.whatsThis(), sf)
 
     @pyqtSlot(Qt.CheckState)
     def enable_rej_date_edit(self, checked: Qt.CheckState):

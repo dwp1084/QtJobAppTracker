@@ -13,7 +13,7 @@
   <property name="windowTitle">
    <string>Application Info</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,0,5,0,0,0,1,0,0">
+  <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,0,5,0,0,1,0,0,0">
    <item>
     <widget class="QLabel" name="label">
      <property name="sizePolicy">
@@ -89,6 +89,9 @@
       </item>
       <item row="0" column="1">
        <widget class="QDateEdit" name="appDateEdit">
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Modify the date when this application was sent.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
         <property name="calendarPopup">
          <bool>true</bool>
         </property>
@@ -120,23 +123,37 @@
       </property>
       <item row="0" column="0">
        <widget class="QLabel" name="label_4">
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;* Required field.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
         <property name="text">
-         <string>Company</string>
+         <string>Company*</string>
         </property>
        </widget>
       </item>
       <item row="0" column="1">
-       <widget class="QLineEdit" name="companyField"/>
+       <widget class="QLineEdit" name="companyField">
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Name of the company the application is for.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+       </widget>
       </item>
       <item row="1" column="0">
        <widget class="QLabel" name="label_5">
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;* Required field.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
         <property name="text">
-         <string>Job Title</string>
+         <string>Job Title*</string>
         </property>
        </widget>
       </item>
       <item row="1" column="1">
-       <widget class="QLineEdit" name="jobTitleField"/>
+       <widget class="QLineEdit" name="jobTitleField">
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Job title of the application.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+       </widget>
       </item>
       <item row="2" column="0">
        <widget class="QLabel" name="label_6">
@@ -146,7 +163,11 @@
        </widget>
       </item>
       <item row="2" column="1">
-       <widget class="QLineEdit" name="locationField"/>
+       <widget class="QLineEdit" name="locationField">
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Location of the job posting, if applicable.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+       </widget>
       </item>
       <item row="3" column="0">
        <widget class="QLabel" name="label_7">
@@ -157,6 +178,9 @@
       </item>
       <item row="3" column="1">
        <widget class="QComboBox" name="jobTypeField">
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Role type (Fully In Person, Hybrid, Fully Remote)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
         <item>
          <property name="text">
           <string>In Person</string>
@@ -174,15 +198,36 @@
         </item>
        </widget>
       </item>
+      <item row="4" column="0">
+       <widget class="QLabel" name="label_16">
+        <property name="text">
+         <string>Found on</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="1">
+       <widget class="QLineEdit" name="appFoundOnField">
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Place where you found the application (job board, company website, recruiter, etc.) This does not have to be the same as where the application was actually sent.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+       </widget>
+      </item>
       <item row="5" column="0">
        <widget class="QLabel" name="label_8">
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;* Required field.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
         <property name="text">
-         <string>Application Site</string>
+         <string>Application Site*</string>
         </property>
        </widget>
       </item>
       <item row="5" column="1">
-       <widget class="QLineEdit" name="appSiteField"/>
+       <widget class="QLineEdit" name="appSiteField">
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Place where the application was sent (job board, company website, direct email, etc.)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+       </widget>
       </item>
       <item row="6" column="0">
        <widget class="QLabel" name="label_9">
@@ -192,150 +237,9 @@
        </widget>
       </item>
       <item row="6" column="1">
-       <widget class="QLineEdit" name="salaryField"/>
-      </item>
-      <item row="8" column="0">
-       <widget class="QLabel" name="label_10">
-        <property name="text">
-         <string>Materials Sent</string>
-        </property>
-       </widget>
-      </item>
-      <item row="8" column="1">
-       <widget class="QLineEdit" name="materialsSent">
-        <property name="text">
-         <string>Resume</string>
-        </property>
-       </widget>
-      </item>
-      <item row="9" column="0">
-       <widget class="QLabel" name="label_11">
-        <property name="text">
-         <string>Contact Info</string>
-        </property>
-       </widget>
-      </item>
-      <item row="9" column="1">
-       <widget class="QLineEdit" name="contactField"/>
-      </item>
-      <item row="10" column="0">
-       <widget class="QLabel" name="label_12">
-        <property name="text">
-         <string>Status</string>
-        </property>
-       </widget>
-      </item>
-      <item row="10" column="1">
-       <widget class="QComboBox" name="statusField">
-        <property name="whatsThis">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set the current status of this application. The following statuses can be set:&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Pending&lt;/span&gt;: Default state, used if the application is currently still pending.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Offered&lt;/span&gt;: Used if the company has extended a job offer (Yipee!)&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Rejected&lt;/span&gt;: Used if the company has sent a rejection email for the position.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Declined&lt;/span&gt;: Used if you have withdrawn your application for this position, or declined the position before the offer.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Cancelled&lt;/span&gt;: Like the &lt;span style=&quot; font-style:italic;&quot;&gt;rejected&lt;/span&gt; option, but only if the email specifies that the company has decided not to fill the position as opposed to rejecting based on your candidacy.&lt;/p&gt;&lt;p&gt;The following states cannot be selected, but might appear:&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Interview&lt;/span&gt;: If the application is still pending and has had an interview. Automatically set when an interview date is added.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Likely ghosted&lt;/span&gt;: Appears if the application is still marked &lt;span style=&quot; font-style:italic;&quot;&gt;pending&lt;/span&gt; and the application has passed the ghosting prediction threshold (3 weeks after applying).&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-        </property>
-        <item>
-         <property name="text">
-          <string>Pending</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Offered</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Rejected</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Declined</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Cancelled</string>
-         </property>
-        </item>
-       </widget>
-      </item>
-      <item row="4" column="0">
-       <widget class="QLabel" name="label_16">
-        <property name="text">
-         <string>Found on</string>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="1">
-       <widget class="QLineEdit" name="appFoundOnField"/>
-      </item>
-      <item row="11" column="0">
-       <widget class="QLabel" name="label_17">
-        <property name="text">
-         <string>Job Link</string>
-        </property>
-       </widget>
-      </item>
-      <item row="11" column="1">
-       <widget class="QWidget" name="linkWidget" native="true">
-        <layout class="QHBoxLayout" name="horizontalLayout_3">
-         <property name="leftMargin">
-          <number>0</number>
-         </property>
-         <property name="topMargin">
-          <number>0</number>
-         </property>
-         <property name="rightMargin">
-          <number>0</number>
-         </property>
-         <property name="bottomMargin">
-          <number>0</number>
-         </property>
-         <item>
-          <layout class="QVBoxLayout" name="verticalLayout_2">
-           <item>
-            <widget class="QLabel" name="hyperlinkLabel">
-             <property name="text">
-              <string/>
-             </property>
-             <property name="textFormat">
-              <enum>Qt::TextFormat::RichText</enum>
-             </property>
-             <property name="openExternalLinks">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLineEdit" name="hyperlinkField"/>
-           </item>
-          </layout>
-         </item>
-         <item>
-          <widget class="QPushButton" name="modifyButton">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="text">
-            <string>Modify</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </widget>
-      </item>
-      <item row="12" column="0">
-       <widget class="QLabel" name="label_18">
-        <property name="text">
-         <string>Description</string>
-        </property>
-       </widget>
-      </item>
-      <item row="12" column="1">
-       <widget class="QTextEdit" name="jobDescriptionEdit">
-        <property name="tabChangesFocus">
-         <bool>true</bool>
+       <widget class="QLineEdit" name="salaryField">
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Advertised wage/salary range.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
        </widget>
       </item>
@@ -397,7 +301,11 @@
              </widget>
             </item>
             <item row="0" column="1">
-             <widget class="QLineEdit" name="minExpField"/>
+             <widget class="QLineEdit" name="minExpField">
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Minimum level of experience required in the posting.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+             </widget>
             </item>
            </layout>
           </widget>
@@ -438,7 +346,11 @@
              </widget>
             </item>
             <item row="0" column="1">
-             <widget class="QLineEdit" name="maxExpField"/>
+             <widget class="QLineEdit" name="maxExpField">
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Maximum level of experience required in the posting.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+             </widget>
             </item>
            </layout>
           </widget>
@@ -457,6 +369,273 @@
           </spacer>
          </item>
         </layout>
+       </widget>
+      </item>
+      <item row="8" column="0">
+       <widget class="QLabel" name="label_10">
+        <property name="text">
+         <string>Materials Sent</string>
+        </property>
+       </widget>
+      </item>
+      <item row="8" column="1">
+       <widget class="QLineEdit" name="materialsSent">
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Brief description of what documents / materials you sent the company (resume, cover letter, transcript, etc.)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="text">
+         <string>Resume</string>
+        </property>
+       </widget>
+      </item>
+      <item row="9" column="0">
+       <widget class="QLabel" name="label_11">
+        <property name="text">
+         <string>Contact Info</string>
+        </property>
+       </widget>
+      </item>
+      <item row="9" column="1">
+       <widget class="QLineEdit" name="contactField">
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Any relevant contact info (recuiters, hiring managers, etc.)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+       </widget>
+      </item>
+      <item row="10" column="0">
+       <widget class="QLabel" name="label_12">
+        <property name="text">
+         <string>Status</string>
+        </property>
+       </widget>
+      </item>
+      <item row="11" column="0">
+       <widget class="QLabel" name="label_17">
+        <property name="text">
+         <string>Job Link</string>
+        </property>
+       </widget>
+      </item>
+      <item row="11" column="1">
+       <widget class="QWidget" name="linkWidget" native="true">
+        <layout class="QHBoxLayout" name="horizontalLayout_3">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item>
+          <layout class="QVBoxLayout" name="verticalLayout_2">
+           <item>
+            <widget class="QLabel" name="hyperlinkLabel">
+             <property name="text">
+              <string/>
+             </property>
+             <property name="textFormat">
+              <enum>Qt::TextFormat::RichText</enum>
+             </property>
+             <property name="openExternalLinks">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="hyperlinkField">
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Link to the job posting (could be the actual application site, or a job board where you found it)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="QPushButton" name="modifyButton">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Click here to modify the link to the posting.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="text">
+            <string>Modify</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item row="12" column="0">
+       <widget class="QLabel" name="label_18">
+        <property name="text">
+         <string>Description</string>
+        </property>
+       </widget>
+      </item>
+      <item row="12" column="1">
+       <widget class="QTextEdit" name="jobDescriptionEdit">
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Copy the job description into this field in case the above link is inaccessible for some reason. This field retains the formatting when copied.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="tabChangesFocus">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="10" column="1">
+       <layout class="QHBoxLayout" name="horizontalLayout_5">
+        <item>
+         <widget class="QComboBox" name="statusField">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Current application status.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <property name="whatsThis">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set the current status of this application. The following statuses can be set:&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Pending&lt;/span&gt;: Default state, used if the application is currently still pending.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Offered&lt;/span&gt;: Used if the company has extended a job offer (Yipee!)&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Rejected&lt;/span&gt;: Used if the company has sent a rejection email for the position.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Declined&lt;/span&gt;: Used if you have withdrawn your application for this position, or declined the position before the offer.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Cancelled&lt;/span&gt;: Like the &lt;span style=&quot; font-style:italic;&quot;&gt;rejected&lt;/span&gt; option, but only if the email specifies that the company has decided not to fill the position as opposed to rejecting based on your candidacy.&lt;/p&gt;&lt;p&gt;The following states cannot be selected, but might appear:&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Interview&lt;/span&gt;: If the application is still pending and has had an interview. Automatically set when an interview date is added.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Likely ghosted&lt;/span&gt;: Appears if the application is still marked &lt;span style=&quot; font-style:italic;&quot;&gt;pending&lt;/span&gt; and the application has passed the ghosting prediction threshold (3 weeks after applying).&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <item>
+           <property name="text">
+            <string>Pending</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Offered</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Rejected</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Declined</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Cancelled</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="statusHelpButton">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Show a more detailed explanation of the possible application statuses.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <property name="text">
+           <string>Statuses?</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QCheckBox" name="followedUpCheckBox">
+     <property name="toolTip">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Check this box if either you or the company contacted each other at any point (outside of a rejection email)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+     <property name="text">
+      <string>Followed up / contacted?</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QWidget" name="followUpWidget" native="true">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <layout class="QFormLayout" name="formLayout_3">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_3">
+        <property name="text">
+         <string>Last contact date</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QDateEdit" name="followUpField">
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Latest date of contact between you and the company (follow-ups, interview scheduling, questionnaires, etc.)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="calendarPopup">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QWidget" name="commentsWidget" native="true">
+     <layout class="QFormLayout" name="formLayout_4">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_15">
+        <property name="text">
+         <string>Comments</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QPlainTextEdit" name="commentsField">
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Any personal comments / thoughts to keep track of about this application.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="tabChangesFocus">
+         <bool>true</bool>
+        </property>
        </widget>
       </item>
      </layout>
@@ -488,6 +667,9 @@
        <layout class="QHBoxLayout" name="horizontalLayout_2">
         <item>
          <widget class="QDateEdit" name="interviewDateField">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select a date when an interview is scheduled.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
           <property name="calendarPopup">
            <bool>true</bool>
           </property>
@@ -495,8 +677,11 @@
         </item>
         <item>
          <widget class="QPushButton" name="interviewDateSubmit">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Add the interview date selected to this application's interview dates.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
           <property name="text">
-           <string>Submit</string>
+           <string>Add Interview</string>
           </property>
          </widget>
         </item>
@@ -533,82 +718,8 @@
         <property name="contextMenuPolicy">
          <enum>Qt::ContextMenuPolicy::CustomContextMenu</enum>
         </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item>
-    <widget class="QCheckBox" name="followedUpCheckBox">
-     <property name="text">
-      <string>Followed up / contacted?</string>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QWidget" name="followUpWidget" native="true">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <layout class="QFormLayout" name="formLayout_3">
-      <property name="leftMargin">
-       <number>0</number>
-      </property>
-      <property name="topMargin">
-       <number>0</number>
-      </property>
-      <property name="rightMargin">
-       <number>0</number>
-      </property>
-      <property name="bottomMargin">
-       <number>0</number>
-      </property>
-      <item row="0" column="0">
-       <widget class="QLabel" name="label_3">
-        <property name="text">
-         <string>Last contact date</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1">
-       <widget class="QDateEdit" name="followUpField">
-        <property name="calendarPopup">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item>
-    <widget class="QWidget" name="commentsWidget" native="true">
-     <layout class="QFormLayout" name="formLayout_4">
-      <property name="leftMargin">
-       <number>0</number>
-      </property>
-      <property name="topMargin">
-       <number>0</number>
-      </property>
-      <property name="rightMargin">
-       <number>0</number>
-      </property>
-      <property name="bottomMargin">
-       <number>0</number>
-      </property>
-      <item row="0" column="0">
-       <widget class="QLabel" name="label_15">
-        <property name="text">
-         <string>Comments</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1">
-       <widget class="QPlainTextEdit" name="commentsField">
-        <property name="tabChangesFocus">
-         <bool>true</bool>
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;List of interview dates for this application. Right-click a specific date for the option to delete it.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
        </widget>
       </item>
@@ -641,6 +752,9 @@
        <layout class="QHBoxLayout" name="horizontalLayout_6" stretch="0,1">
         <item>
          <widget class="QCheckBox" name="storeRejectionDateCheckbox">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Check this box if there is / should be no saved rejection date (will be checked if file was migrated from an older version).&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Setting the application status to &amp;quot;rejected, declined, or cancelled&amp;quot; should automatically set this date, so you likely won't need to change this.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
           <property name="text">
            <string>No rejection date</string>
           </property>
@@ -648,6 +762,9 @@
         </item>
         <item>
          <widget class="QDateEdit" name="rejectionDateEdit">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Change the date when the application was rejected, declined, or cancelled.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
           <property name="calendarPopup">
            <bool>true</bool>
           </property>
@@ -681,6 +798,9 @@
       </property>
       <item>
        <widget class="QPushButton" name="appDeleteButton">
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Delete this application.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
         <property name="text">
          <string>Delete</string>
         </property>
@@ -701,6 +821,9 @@
       </item>
       <item>
        <widget class="QPushButton" name="appCancelButton">
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Discard all pending changes to this application, and don't create the application if it's new.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
         <property name="text">
          <string>Cancel</string>
         </property>
@@ -708,6 +831,9 @@
       </item>
       <item>
        <widget class="QPushButton" name="appSubmitButton">
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Save all changes to this application.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
         <property name="text">
          <string>Submit</string>
         </property>
@@ -731,7 +857,6 @@
   <tabstop>maxExpField</tabstop>
   <tabstop>materialsSent</tabstop>
   <tabstop>contactField</tabstop>
-  <tabstop>statusField</tabstop>
   <tabstop>modifyButton</tabstop>
   <tabstop>hyperlinkField</tabstop>
   <tabstop>jobDescriptionEdit</tabstop>

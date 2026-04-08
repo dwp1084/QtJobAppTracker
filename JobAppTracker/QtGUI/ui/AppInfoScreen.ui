@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>656</width>
-    <height>924</height>
+    <height>926</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -744,7 +744,7 @@
       <item row="0" column="0">
        <widget class="QLabel" name="label_22">
         <property name="text">
-         <string>Rejection / Declined Date</string>
+         <string>Rejection Date</string>
         </property>
        </widget>
       </item>
@@ -753,7 +753,7 @@
         <item>
          <widget class="QCheckBox" name="storeRejectionDateCheckbox">
           <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Check this box if there is / should be no saved rejection date (will be checked if file was migrated from an older version).&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Setting the application status to &amp;quot;rejected, declined, or cancelled&amp;quot; should automatically set this date, so you likely won't need to change this.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Check this box if there is / should be no saved rejection date (will be checked if file was migrated from an older version).&lt;/p&gt;&lt;p&gt;Setting the application status to &amp;quot;rejected, declined, or cancelled&amp;quot; should automatically set this date, so you likely won't need to change this.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
           <property name="text">
            <string>No rejection date</string>

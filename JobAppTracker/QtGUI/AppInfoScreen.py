@@ -189,7 +189,9 @@ class AppInfoDialog(QDialog):
         else:
             self.ui.rejectionDateEdit.setDate(date.today())
 
-        showRejDateField = status == Status.REJECTED or status == Status.DECLINED
+        showRejDateField = (status == Status.REJECTED
+                            or status == Status.DECLINED
+                            or status == Status.CANCELLED)
         self.ui.rejectionDateWidget.setVisible(showRejDateField)
 
         self.fill_autocomplete_data(autocomplete_companies, self.ui.companyField)
@@ -203,7 +205,9 @@ class AppInfoDialog(QDialog):
         )
 
     def check_and_set_reject_date(self, app_status: Status):
-        if app_status == Status.REJECTED or app_status == Status.DECLINED:
+        if (app_status == Status.REJECTED
+                or app_status == Status.DECLINED
+                or app_status == Status.CANCELLED):
             self.ui.rejectionDateWidget.setVisible(True)
 
             if self.ui.storeRejectionDateCheckbox.checkState() == Qt.CheckState.Checked:

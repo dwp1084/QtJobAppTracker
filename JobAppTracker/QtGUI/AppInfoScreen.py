@@ -207,7 +207,10 @@ class AppInfoDialog(QDialog):
 
         # Re-instate the signal
         self.ui.statusField.currentIndexChanged.connect(
-            lambda idx: self.check_and_set_reject_date(Status(idx))
+            lambda idx: self.check_and_set_reject_date(
+                # When this is called, a -1 index will can only mean the Interview status
+                Status(idx) if idx > 0 else Status.INTERVIEW
+            )
         )
 
     def check_and_set_reject_date(self, app_status: Status):

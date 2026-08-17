@@ -176,9 +176,10 @@ class AppInfoDialog(QDialog):
 
         hyperlink = ""
         if app.link != "":
-            hyperlink = f"<a href={app.link}>{app.link}</a>"
+            hyperlink = f"<a href=\"{app.link}\">{shorten_string(app.link, 100)}</a>"
 
         self.ui.hyperlinkLabel.setText(hyperlink)
+        self.ui.hyperlinkLabel.setToolTip(f"<html>{app.link}</html>")
 
         self.ui.jobDescriptionEdit.setHtml(app.description)
 

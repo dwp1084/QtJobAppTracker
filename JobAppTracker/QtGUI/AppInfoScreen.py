@@ -17,7 +17,8 @@ from SQLite.ApplicationQueries import (add_application,
                                        delete_interview,
                                        get_interviews_for_application,
                                        set_interview_status,
-                                       ghost_prediction)
+                                       ghost_prediction,
+                                       get_num_apps_to_same_company)
 from SQLite.AutocompleteQueries import (autocomplete_companies,
                                         autocomplete_locations,
                                         autocomplete_app_sources,
@@ -316,6 +317,7 @@ class AppInfoDialog(QDialog):
         self.ui.interviewDatesWidget.hide()
         self.ui.appDeleteButton.hide()
         self.ui.DaysSinceAppliedWidget.hide()
+        self.ui.previousAppsWidget.hide()
         self.fill_data()
         self.app_info_type = self.AppInfoType.NEW
         self.setWindowTitle("New Application")
@@ -339,6 +341,21 @@ class AppInfoDialog(QDialog):
         self.ui.interviewDatesWidget.show()
         self.ui.appDeleteButton.show()
         self.ui.DaysSinceAppliedWidget.show()
+
+        prev_apps = get_num_apps_to_same_company(
+            self.currentFile,
+            app.company,
+            app.applied_on
+        )
+        if prev_apps != 0:
+            self.ui.previousAppsWidget.show()
+            self.ui.previousAppsTitleLabel.setText(
+                f"Previous applications to {app.company}:"
+            )
+            self.ui.previousApplicationsLabel.setText(str(prev_apps))
+        else:
+            self.ui.previousAppsWidget.hide()
+
         self.app_info_type = self.AppInfoType.EXISTING
         self.fill_data(app)
         self.refresh_interview_dates()

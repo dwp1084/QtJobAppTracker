@@ -75,3 +75,27 @@ def get_avg_ints_and_count(data_db: str) -> tuple[int, float]:
     res_dict = dict(result)
 
     return res_dict["jobs_interviewed"], res_dict["avg_int_count"]
+
+
+def get_top_of_app_count_leaderboard(data_db: str, limit: int = 5) -> list[tuple[str, int]]:
+    """
+
+    :param data_db:
+    :param limit:
+    :return:
+    """
+    get_leaderboard_sql = """
+    SELECT company, COUNT(*) AS num FROM applications 
+    GROUP BY company 
+    ORDER BY num DESC LIMIT ?;
+    """
+
+    db = DataFileSQLRunner(data_db)
+    result = db.fetch(get_leaderboard_sql, (limit,))
+
+    return_lst = []
+    for row in result:
+        row_dict = dict(row)
+        return_lst.append((row_dict["company"], row_dict["num"]))
+
+    return return_lst

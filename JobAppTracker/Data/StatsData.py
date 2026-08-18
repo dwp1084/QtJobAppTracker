@@ -12,6 +12,7 @@ class StatsData:
     avg_ints_per_job: float
     avg_apps_per_month: float
     jobs_interviewed: int
+    leaderboard: list[tuple[str, int]]
     pending: int = 0
     rejected: int = 0
     ghosted: int = 0

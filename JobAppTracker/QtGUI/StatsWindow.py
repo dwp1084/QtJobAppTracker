@@ -1,4 +1,4 @@
-from PyQt6.QtWidgets import QWidget
+from PyQt6.QtWidgets import QWidget, QTableWidgetItem
 
 from Data.StatsData import StatsData
 from QtGUI.ui.ui_StatsWindow import Ui_StatsWindow
@@ -26,6 +26,7 @@ class StatsWindow(QWidget):
         self.chartView = QChartView(self.chart)
 
         self.ui.statsWindowMainLayout.addWidget(self.chartView)
+        self.ui.statsWindowMainLayout.setStretch(2, 1)
 
     def load_stats_and_show(self, stats_data: StatsData) -> None:
         """
@@ -53,6 +54,17 @@ class StatsWindow(QWidget):
         self.ui.interviewRateLabel.setText(
             f"{round(stats_data.interview_rate * 100, 2)}%"
         )
+
+        self.ui.appsLeaderboard.setUpdatesEnabled(False)
+        self.ui.appsLeaderboard.clearContents()
+        for _ in range(len(stats_data.leaderboard)):
+            self.ui.appsLeaderboard.removeRow(0)
+        for idx, (company, count) in enumerate(stats_data.leaderboard):
+            self.ui.appsLeaderboard.insertRow(idx)
+            self.ui.appsLeaderboard.setItem(idx, 0, QTableWidgetItem(company))
+            self.ui.appsLeaderboard.setItem(idx, 1, QTableWidgetItem(str(count)))
+        self.ui.appsLeaderboard.resizeColumnsToContents()
+        self.ui.appsLeaderboard.setUpdatesEnabled(True)
 
         self.chart.removeSeries(self.pieSeries)
         self.pieSeries = QPieSeries()

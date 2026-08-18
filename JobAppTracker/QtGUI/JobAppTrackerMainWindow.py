@@ -23,7 +23,7 @@ from SQLite.Initializer import init_data_file
 from SQLite.Migration import migrate_file, SchemaMigrationException
 from SQLite.StatsQueries import (get_total_ints,
                                  get_avg_apps_per_month,
-                                 get_avg_ints_and_count)
+                                 get_avg_ints_and_count, get_top_of_app_count_leaderboard)
 from SQLite.Utils import DataFileSQLRunner
 from constants import CURRENT_APP_VERSION
 from errorDialog import (showWarningMessage, showErrorMessage, showQuestionMessage,
@@ -321,11 +321,14 @@ class JobAppTrackerMainWindow(QMainWindow):
         )
         avg_apps_per_month = get_avg_apps_per_month(self.currentFile)
 
+        leaderboard = get_top_of_app_count_leaderboard(self.currentFile)
+
         stats_data = StatsData(total_apps,
                                total_num_interviews,
                                avg_ints_per_job,
                                avg_apps_per_month,
-                               jobs_given_ints)
+                               jobs_given_ints,
+                               leaderboard)
 
         for app in self.tableData:
             match ghost_prediction(self.currentFile, app):
@@ -343,6 +346,7 @@ class JobAppTrackerMainWindow(QMainWindow):
                     pass
 
         self.statisticsWindow.load_stats_and_show(stats_data)
+
 
     def load_hide_column_setting(self, key: str, action: QAction, header: str) -> None:
         """

@@ -353,6 +353,26 @@ def ghost_prediction(data_db: str, app: Application) -> Status:
             return app.status
 
 
+def get_num_apps_to_same_company(data_db: str, company: str, before_date: datetime.date | None = None) -> int:
+    """
+
+    :param data_db:
+    :param company:
+    :param before_date:
+    :return:
+    """
+    get_num_apps_sql = "SELECT COUNT(*) FROM applications WHERE company = ?"
+
+    if before_date is not None:
+        get_num_apps_sql += " AND application_date < ?"
+
+    get_num_apps_sql += ";"
+    db = DataFileSQLRunner(data_db)
+
+    parameters = (company, before_date) if before_date is not None else (company,)
+    return db.fetchone(get_num_apps_sql, parameters)[0]
+
+
 def get_interview_count_for_application(data_db: str, app_id: int) -> int:
     """
     Gets the number of interviews tied to a specific application.

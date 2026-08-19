@@ -4,6 +4,7 @@ from PyQt6.QtCore import QAbstractTableModel, QModelIndex, Qt
 
 import constants as c
 from Data.Application import Application
+from QtGUI.QtUtils import add_privacy_filter
 from SQLite.ApplicationQueries import (get_interview_count_for_application,
                                        ghost_prediction)
 
@@ -44,11 +45,8 @@ class AppTableModel(QAbstractTableModel):
             (c.H_PENDING, lambda app: str(app.days_pending))
         ]
 
-    def add_privacy_filter(self, content: str):
-        if self.privacyFilter:
-            return "*****"
-        else:
-            return content
+    def add_privacy_filter(self, content: str) -> str:
+        return add_privacy_filter(content, self.privacyFilter)
 
     def enable_privacy_filter(self, setting: bool):
         self.privacyFilter = setting

@@ -29,3 +29,10 @@ def shorten_string(original_string: str, length: int) -> str:
         return substr
 
     return original_string
+
+
+def add_privacy_filter(content: str, privacyFilter: bool):
+    if privacyFilter:
+        return "*****"
+    else:
+        return content

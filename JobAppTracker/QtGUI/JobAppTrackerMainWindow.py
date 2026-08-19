@@ -162,6 +162,7 @@ class JobAppTrackerMainWindow(QMainWindow):
         self.ui.actionPrivacy_Filter.toggled.connect(self.toggle_privacy_filter)
         self.ui.actionPrivacy_Filter.setChecked(enable_privacy_filter)
         self.appInfoScreen.enable_privacy_filter(enable_privacy_filter)
+        self.statisticsWindow.enable_privacy_filter(enable_privacy_filter)
 
         self.ui.actionApplication_Count.toggled.connect(self.showAppCount)
         self.ui.actionApplication_Count.setChecked(show_app_count)
@@ -298,6 +299,7 @@ class JobAppTrackerMainWindow(QMainWindow):
         """
         self.tableModel.enable_privacy_filter(toggled)
         self.appInfoScreen.enable_privacy_filter(toggled)
+        self.statisticsWindow.enable_privacy_filter(toggled)
 
         self.scheduleAdjust()
 

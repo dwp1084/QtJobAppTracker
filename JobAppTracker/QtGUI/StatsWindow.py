@@ -1,6 +1,7 @@
 from PyQt6.QtWidgets import QWidget, QTableWidgetItem
 
 from Data.StatsData import StatsData
+from QtGUI.QtUtils import add_privacy_filter
 from QtGUI.ui.ui_StatsWindow import Ui_StatsWindow
 
 from PyQt6.QtCharts import QPieSeries, QChart, QChartView
@@ -10,6 +11,8 @@ class StatsWindow(QWidget):
     """
     Statistics window
     """
+
+    privacyFilter: bool = False
 
     def __init__(self):
         super().__init__()
@@ -61,7 +64,9 @@ class StatsWindow(QWidget):
             self.ui.appsLeaderboard.removeRow(0)
         for idx, (company, count) in enumerate(stats_data.leaderboard):
             self.ui.appsLeaderboard.insertRow(idx)
-            self.ui.appsLeaderboard.setItem(idx, 0, QTableWidgetItem(company))
+            self.ui.appsLeaderboard.setItem(idx, 0, QTableWidgetItem(
+                self.add_privacy_filter(company)
+            ))
             self.ui.appsLeaderboard.setItem(idx, 1, QTableWidgetItem(str(count)))
         self.ui.appsLeaderboard.resizeColumnsToContents()
         self.ui.appsLeaderboard.setUpdatesEnabled(True)
@@ -80,3 +85,9 @@ class StatsWindow(QWidget):
         self.chart.addSeries(self.pieSeries)
 
         self.show()
+
+    def enable_privacy_filter(self, enabled: bool) -> None:
+        self.privacyFilter = enabled
+
+    def add_privacy_filter(self, content: str) -> str:
+        return add_privacy_filter(content, self.privacyFilter)

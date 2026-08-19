@@ -51,6 +51,9 @@ class AppTableModel(QAbstractTableModel):
     def enable_privacy_filter(self, setting: bool):
         self.privacyFilter = setting
 
+    def get_app(self, row: int) -> Application:
+        return self._data[row]
+
     def searchColIdx(self, name: str) -> int:
         """
         Searches for a column by its header name.

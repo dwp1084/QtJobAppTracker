@@ -16,6 +16,7 @@ from Export.XLSXExporter import XLSXExporter
 from QtGUI.AppInfoScreen import AppInfoDialog
 from QtGUI.AppTableModel import AppTableModel
 from QtGUI.StatsWindow import StatsWindow
+from QtGUI.TableFilterProxy import TableFilterProxy
 from QtGUI.ui.ui_JobAppTrackerMainWindow import Ui_JobAppTrackerMainWindow
 from SQLite.ApplicationQueries import (get_applications,
                                        ghost_prediction, get_app_file_version)
@@ -58,6 +59,8 @@ class JobAppTrackerMainWindow(QMainWindow):
     """
 
     hiddenCount: int = 0
+
+    pending_search_text = ""
 
     def __init__(self) -> None:
         super().__init__()
@@ -146,8 +149,8 @@ class JobAppTrackerMainWindow(QMainWindow):
             "opts/showAppCount", defaultValue=True, type=bool
         )
 
-        self.ui.actionInactive_Applications.toggled.connect(self.toggle_inactive)
         self.ui.actionInactive_Applications.setChecked(show_inactive)
+        self.ui.actionInactive_Applications.toggled.connect(self.toggle_inactive)
 
         current_version = packaging.version.parse(CURRENT_APP_VERSION)
         if not current_version.is_devrelease:
@@ -158,6 +161,9 @@ class JobAppTrackerMainWindow(QMainWindow):
         self.tableModel = AppTableModel(self.tableData, self.currentFile)
         self.tableModel.modelReset.connect(self.scheduleAdjust)
         self.tableModel.enable_privacy_filter(enable_privacy_filter)
+
+        self.filterModel = TableFilterProxy(self.currentFile)
+        self.filterModel.setSourceModel(self.tableModel)
 
         self.ui.actionPrivacy_Filter.toggled.connect(self.toggle_privacy_filter)
         self.ui.actionPrivacy_Filter.setChecked(enable_privacy_filter)
@@ -182,13 +188,13 @@ class JobAppTrackerMainWindow(QMainWindow):
         self.setTitleStatus(titleStatus)
 
         # Set up table view
-        self.ui.appTableView.setModel(self.tableModel)
+        self.ui.appTableView.setModel(self.filterModel)
 
         self.ui.appTableView.verticalHeader().hide()
 
         self.ui.appTableView.doubleClicked.connect(
             lambda index: self.appInfoScreen.editApplication(
-                self.tableData[index.row()]
+                self.tableData[self.filterModel.mapToSource(index).row()]
             )
         )
 
@@ -235,6 +241,12 @@ class JobAppTrackerMainWindow(QMainWindow):
             lambda: self.export_data(self.csvExporter)
         )
 
+        self.searchTimer = QTimer()
+        self.searchTimer.setSingleShot(True)
+        self.searchTimer.timeout.connect(self.apply_search)
+
+        self.ui.searchBox.textChanged.connect(self.debounced_search)
+
     def export_data(self, exporter: BaseExporter):
         """
         Function that exports the data to a given format, allowing the user to
@@ -262,6 +274,15 @@ class JobAppTrackerMainWindow(QMainWindow):
             return
 
         exporter.export(self.currentFile, fileName, self.tableData)
+
+    @pyqtSlot(str)
+    def debounced_search(self, text):
+        self.pending_search_text = text
+        self.searchTimer.start(200)
+
+    @pyqtSlot()
+    def apply_search(self):
+        self.filterModel.set_search_text(self.pending_search_text)
 
     @pyqtSlot()
     def dev_delete_config(self):
@@ -398,23 +419,25 @@ class JobAppTrackerMainWindow(QMainWindow):
         """
         self.hiddenCount = 0
 
-        if show_inactive:
-            for row in range(self.tableModel.rowCount()):
-                self.ui.appTableView.setRowHidden(row, False)
+        # if show_inactive:
+        #     for row in range(self.tableModel.rowCount()):
+        #         self.ui.appTableView.setRowHidden(row, False)
+        #
+        # else:
+        #     for row, app in enumerate(self.tableData):
+        #         app_status = ghost_prediction(
+        #             self.currentFile,
+        #             self.tableData[row]
+        #         )
+        #
+        #         if app_status in {Status.LIKELY_GHOSTED, Status.REJECTED,
+        #                           Status.DECLINED, Status.CANCELLED}:
+        #             self.ui.appTableView.setRowHidden(row, True)
+        #             self.hiddenCount += 1
+        #         else:
+        #             self.ui.appTableView.setRowHidden(row, False)
 
-        else:
-            for row, app in enumerate(self.tableData):
-                app_status = ghost_prediction(
-                    self.currentFile,
-                    self.tableData[row]
-                )
-
-                if app_status in {Status.LIKELY_GHOSTED, Status.REJECTED,
-                                  Status.DECLINED, Status.CANCELLED}:
-                    self.ui.appTableView.setRowHidden(row, True)
-                    self.hiddenCount += 1
-                else:
-                    self.ui.appTableView.setRowHidden(row, False)
+        self.filterModel.set_show_inactive(show_inactive)
 
         self.settings.setValue("opts/showInactiveApplications", show_inactive)
 
@@ -516,6 +539,7 @@ class JobAppTrackerMainWindow(QMainWindow):
         # Disable updates during the changing data process to remove flickering
         self.ui.appTableView.setUpdatesEnabled(False)
         self.tableModel.setCurrentFile(self.currentFile)
+        self.filterModel.set_current_file(self.currentFile)
         self.appInfoScreen.setCurrentFile(new_file_path)
         self.settings.setValue("file/currentFile", self.currentFile)
         self.load_data()

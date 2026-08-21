@@ -8,7 +8,7 @@ from PyQt6.QtGui import QAction, QCloseEvent
 from PyQt6.QtWidgets import QMainWindow, QFileDialog
 
 import constants as c
-from Data.Application import Application, Status
+from Data.Application import Status
 from Data.StatsData import StatsData
 from Export.BaseExporter import BaseExporter
 from Export.CSVExporter import CSVExporter
@@ -51,11 +51,6 @@ class JobAppTrackerMainWindow(QMainWindow):
     currentFile: str | None = None
     """
     Path to the currently opened file
-    """
-
-    tableData: list[Application] = []
-    """
-    An internal list of applications displayed on the table
     """
 
     pending_search_text = ""
@@ -156,7 +151,7 @@ class JobAppTrackerMainWindow(QMainWindow):
         else:
             self.ui.action_DEV_Delete_Config.triggered.connect(self.dev_delete_config)
 
-        self.tableModel = AppTableModel(self.tableData, self.currentFile)
+        self.tableModel = AppTableModel(self.currentFile)
         self.tableModel.modelReset.connect(self.scheduleAdjust)
         self.tableModel.enable_privacy_filter(enable_privacy_filter)
 
@@ -192,7 +187,7 @@ class JobAppTrackerMainWindow(QMainWindow):
 
         self.ui.appTableView.doubleClicked.connect(
             lambda index: self.appInfoScreen.editApplication(
-                self.tableData[self.filterModel.mapToSource(index).row()]
+                self.tableModel[self.filterModel.mapToSource(index).row()]
             )
         )
 
@@ -272,7 +267,7 @@ class JobAppTrackerMainWindow(QMainWindow):
         if fileName == "":
             return
 
-        exporter.export(self.currentFile, fileName, self.tableData)
+        exporter.export(self.currentFile, fileName, self.tableModel)
 
     @pyqtSlot(str)
     def debounced_search(self, text):
@@ -336,7 +331,7 @@ class JobAppTrackerMainWindow(QMainWindow):
         if self.statisticsWindow.isVisible():
             return
 
-        total_apps = len(self.tableData)
+        total_apps = len(self.tableModel)
         total_num_interviews = get_total_ints(self.currentFile)
         jobs_given_ints, avg_ints_per_job = get_avg_ints_and_count(
             self.currentFile
@@ -352,7 +347,7 @@ class JobAppTrackerMainWindow(QMainWindow):
                                jobs_given_ints,
                                leaderboard)
 
-        for app in self.tableData:
+        for app in self.tableModel:
             match ghost_prediction(self.currentFile, app):
                 case Status.PENDING | Status.INTERVIEW:
                     stats_data.pending += 1
@@ -431,11 +426,11 @@ class JobAppTrackerMainWindow(QMainWindow):
         """
         match self.filterModel.num_hidden():
             case 0:
-                label_text = str(len(self.tableData))
+                label_text = str(len(self.tableModel))
             case 1:
-                label_text = f"{len(self.tableData)} (1 application hidden)"
+                label_text = f"{len(self.tableModel)} (1 application hidden)"
             case _:
-                label_text = f"{len(self.tableData)} ({self.filterModel.num_hidden()} applications hidden)"
+                label_text = f"{len(self.tableModel)} ({self.filterModel.num_hidden()} applications hidden)"
 
         self.ui.appCountLabel.setText(label_text)
 
@@ -556,9 +551,9 @@ class JobAppTrackerMainWindow(QMainWindow):
         Loads data from a data file into the main table and the data list.
         :return:
         """
-        self.tableData = get_applications(self.currentFile)
+        tableData = get_applications(self.currentFile)
 
-        self.tableModel.setModelData(self.tableData)
+        self.tableModel.setModelData(tableData)
 
     @pyqtSlot()
     def scheduleAdjust(self) -> None:

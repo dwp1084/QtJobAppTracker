@@ -15,9 +15,9 @@ class AppTableModel(QAbstractTableModel):
     data from the application dataclass to the table view.
     """
 
-    def __init__(self, data: list[Application], currentFile: str):
+    def __init__(self, currentFile: str):
         super().__init__()
-        self._data = data
+        self._data = []
         self.currentFile = currentFile
         self.privacyFilter = False
 
@@ -45,14 +45,20 @@ class AppTableModel(QAbstractTableModel):
             (c.H_PENDING, lambda app: str(app.days_pending))
         ]
 
+    def __iter__(self):
+        return iter(self._data)
+
+    def __getitem__(self, item: int) -> Application:
+        return self._data[item]
+
+    def __len__(self):
+        return len(self._data)
+
     def add_privacy_filter(self, content: str) -> str:
         return add_privacy_filter(content, self.privacyFilter)
 
     def enable_privacy_filter(self, setting: bool):
         self.privacyFilter = setting
-
-    def get_app(self, row: int) -> Application:
-        return self._data[row]
 
     def searchColIdx(self, name: str) -> int:
         """

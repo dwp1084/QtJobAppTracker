@@ -33,7 +33,7 @@ class TableFilterProxy(QSortFilterProxyModel):
         self.invalidateFilter()
 
     def filterAcceptsRow(self, source_row, source_parent):
-        app = self.sourceModel().get_app(source_row)
+        app = self.sourceModel()[source_row]
 
         if not self.showInactive:
             if self.is_inactive(app):

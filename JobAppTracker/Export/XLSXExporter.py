@@ -1,11 +1,12 @@
 from datetime import date
 from typing import Callable, Any
 
+import xlsxwriter as xlw
+
+import constants as c
 from Data.Application import Application, Status, JobTypes
 from Export.BaseExporter import BaseExporter
-
-import xlsxwriter as xlw
-import constants as c
+from QtGUI.AppTableModel import AppTableModel
 from SQLite.ApplicationQueries import (get_interview_count_for_application,
                                        ghost_prediction,
                                        get_interviews_for_application)
@@ -58,7 +59,7 @@ class XLSXExporter(BaseExporter):
     def ext(self) -> str:
         return "xlsx"
 
-    def _export(self, db_file: str, save_path: str, data: list[Application]) -> None:
+    def _export(self, db_file: str, save_path: str, data: AppTableModel) -> None:
         self.currentFile = db_file
 
         with xlw.Workbook(save_path) as wb:

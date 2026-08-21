@@ -1,10 +1,10 @@
 import csv
 from typing import Callable
 
+import constants as c
 from Data.Application import Application
 from Export.BaseExporter import BaseExporter
-
-import constants as c
+from QtGUI.AppTableModel import AppTableModel
 from SQLite.ApplicationQueries import (get_interview_count_for_application,
                                        ghost_prediction)
 
@@ -59,7 +59,7 @@ class CSVExporter(BaseExporter):
     def ext(self) -> str:
         return "csv"
 
-    def _export(self, db_file: str, save_path: str, data: list[Application]) -> None:
+    def _export(self, db_file: str, save_path: str, data: AppTableModel) -> None:
         self.currentFile = db_file
 
         with open(save_path, 'w', newline='') as csvfile:

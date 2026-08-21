@@ -1,3 +1,4 @@
+import faulthandler
 import sys
 import traceback
 
@@ -36,6 +37,8 @@ if __name__ == '__main__':
         sys.exit(-1)
 
     sys.excepthook = qt_excepthook
+
+    faulthandler.enable()
 
     window.show()
 

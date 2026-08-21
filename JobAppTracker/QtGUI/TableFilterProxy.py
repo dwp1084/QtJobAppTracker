@@ -45,6 +45,12 @@ class TableFilterProxy(QSortFilterProxyModel):
 
         return True
 
+    def num_hidden(self) -> int:
+        if self.sourceModel() is None:
+            return 0
+
+        return self.sourceModel().rowCount() - self.rowCount()
+
     def is_inactive(self, application: Application) -> bool:
         app_status = ghost_prediction(self.currentFile, application)
 

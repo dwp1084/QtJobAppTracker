@@ -58,8 +58,6 @@ class JobAppTrackerMainWindow(QMainWindow):
     An internal list of applications displayed on the table
     """
 
-    hiddenCount: int = 0
-
     pending_search_text = ""
 
     def __init__(self) -> None:
@@ -244,6 +242,7 @@ class JobAppTrackerMainWindow(QMainWindow):
         self.searchTimer = QTimer()
         self.searchTimer.setSingleShot(True)
         self.searchTimer.timeout.connect(self.apply_search)
+        self.searchTimer.timeout.connect(self.update_app_count)
 
         self.ui.searchBox.textChanged.connect(self.debounced_search)
 
@@ -417,45 +416,26 @@ class JobAppTrackerMainWindow(QMainWindow):
             if hidden
         :return:
         """
-        self.hiddenCount = 0
-
-        # if show_inactive:
-        #     for row in range(self.tableModel.rowCount()):
-        #         self.ui.appTableView.setRowHidden(row, False)
-        #
-        # else:
-        #     for row, app in enumerate(self.tableData):
-        #         app_status = ghost_prediction(
-        #             self.currentFile,
-        #             self.tableData[row]
-        #         )
-        #
-        #         if app_status in {Status.LIKELY_GHOSTED, Status.REJECTED,
-        #                           Status.DECLINED, Status.CANCELLED}:
-        #             self.ui.appTableView.setRowHidden(row, True)
-        #             self.hiddenCount += 1
-        #         else:
-        #             self.ui.appTableView.setRowHidden(row, False)
-
         self.filterModel.set_show_inactive(show_inactive)
 
         self.settings.setValue("opts/showInactiveApplications", show_inactive)
 
         self.update_app_count()
 
+    @pyqtSlot()
     def update_app_count(self) -> None:
         """
         Updates the application count label on the screen based on the number
         of applications loaded and the number of rows hidden.
         :return:
         """
-        match self.hiddenCount:
+        match self.filterModel.num_hidden():
             case 0:
                 label_text = str(len(self.tableData))
             case 1:
                 label_text = f"{len(self.tableData)} (1 application hidden)"
             case _:
-                label_text = f"{len(self.tableData)} ({self.hiddenCount} applications hidden)"
+                label_text = f"{len(self.tableData)} ({self.filterModel.num_hidden()} applications hidden)"
 
         self.ui.appCountLabel.setText(label_text)
 

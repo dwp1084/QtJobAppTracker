@@ -77,7 +77,7 @@ class TableFilterProxy(QSortFilterProxyModel):
             or self.searchText in application.contact.lower()
             or self.searchText in application.materials.lower()
             or self.searchText in application.salary.lower()
-            or self.searchText in str(application.status).lower()
+            or self.searchText in str(ghost_prediction(self.currentFile, application)).lower()
             or self.searchText in application.experience.lower()
         )
 

@@ -1,6 +1,6 @@
 from typing import cast
 
-from PyQt6.QtCore import QSortFilterProxyModel
+from PyQt6.QtCore import QSortFilterProxyModel, pyqtSlot
 
 from Data.Application import Application, Status
 from QtGUI.AppTableModel import AppTableModel
@@ -13,6 +13,7 @@ class TableFilterProxy(QSortFilterProxyModel):
         self.showInactive = True
         self.searchText = ""
         self.currentFile = currentFile
+        self.inverted = False
 
     def sourceModel(self) -> AppTableModel:
         return cast(AppTableModel, super().sourceModel())
@@ -30,6 +31,11 @@ class TableFilterProxy(QSortFilterProxyModel):
 
     def set_current_file(self, filePath: str) -> None:
         self.currentFile = filePath
+        self.invalidateFilter()
+
+    @pyqtSlot(bool)
+    def toggle_inverted(self, inverted: bool) -> None:
+        self.inverted = inverted
         self.invalidateFilter()
 
     def filterAcceptsRow(self, source_row, source_parent):
@@ -61,7 +67,7 @@ class TableFilterProxy(QSortFilterProxyModel):
                               }
 
     def match_search(self, application: Application) -> bool:
-        return (
+        matches = (
             self.searchText in application.company.lower()
             or self.searchText in application.title.lower()
             or self.searchText in str(application.job_type).lower()
@@ -74,3 +80,5 @@ class TableFilterProxy(QSortFilterProxyModel):
             or self.searchText in str(application.status).lower()
             or self.searchText in application.experience.lower()
         )
+
+        return matches if not self.inverted else not matches

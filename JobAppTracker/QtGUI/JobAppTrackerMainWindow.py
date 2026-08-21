@@ -166,6 +166,9 @@ class JobAppTrackerMainWindow(QMainWindow):
         self.ui.actionApplication_Count.toggled.connect(self.showAppCount)
         self.ui.actionApplication_Count.setChecked(show_app_count)
 
+        self.ui.invertCheckbox.toggled.connect(self.filterModel.toggle_inverted)
+        self.ui.invertCheckbox.toggled.connect(self.update_app_count)
+
         self.xlsxExporter = XLSXExporter()
         self.csvExporter = CSVExporter()
 

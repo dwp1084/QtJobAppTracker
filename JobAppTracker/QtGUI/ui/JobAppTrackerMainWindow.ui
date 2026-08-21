@@ -81,11 +81,22 @@
      </layout>
     </item>
     <item>
-     <widget class="QLineEdit" name="searchBox">
-      <property name="placeholderText">
-       <string>Search applications</string>
-      </property>
-     </widget>
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <widget class="QLineEdit" name="searchBox">
+        <property name="placeholderText">
+         <string>Search applications</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="invertCheckbox">
+        <property name="text">
+         <string>Invert Search</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </item>
     <item>
      <widget class="QTableView" name="appTableView">

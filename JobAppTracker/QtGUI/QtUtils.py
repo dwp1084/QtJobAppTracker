@@ -1,4 +1,17 @@
+import os
+import shutil
 from typing import Protocol, Callable, Any
+
+import packaging.version
+
+from constants import CURRENT_APP_VERSION
+
+from PyQt6.QtCore import QSettings, QStandardPaths
+
+# Name of the app settings file
+CONFIG_FILE_NAME = "jobapptrackerconfig.ini"
+
+CONFIG_DIR_NAME = f"Job Application Tracker"
 
 
 class QtSignal(Protocol):
@@ -36,3 +49,65 @@ def add_privacy_filter(content: str, privacyFilter: bool):
         return "*****"
     else:
         return content
+
+
+def initializeSettings() -> QSettings:
+    # Create and load the settings config file
+    app_data = QStandardPaths.writableLocation(
+        QStandardPaths.StandardLocation.AppDataLocation
+    )
+
+    # Config file creation, checking and migration
+    settings_dir = os.path.join(app_data, CONFIG_DIR_NAME)
+
+    if not os.path.exists(settings_dir):
+        os.mkdir(settings_dir)
+
+    # Version directory and config file migration
+    remove_open_file = False
+
+    settings_version_dir = os.path.join(settings_dir, CURRENT_APP_VERSION)
+    if not os.path.exists(settings_version_dir):
+        os.mkdir(settings_version_dir)
+
+        current_version = packaging.version.parse(CURRENT_APP_VERSION)
+
+        # Do config file migration only if it's not a dev release
+        if not current_version.is_devrelease:
+            version_folders = os.listdir(settings_dir)
+            previous_versions: list[packaging.version.Version] = []
+
+            for version_str in version_folders:
+                try:
+                    version = packaging.version.parse(version_str)
+                    if not version.is_devrelease and version < current_version:
+                        previous_versions.append(version)
+
+                except packaging.version.InvalidVersion:
+                    pass  # Somehow, an invalid version folder got in there, just ignore it
+
+            sorted_versions = sorted(previous_versions, reverse=True)
+            if len(sorted_versions) > 0:
+                most_recent_version = sorted_versions[0]
+                shutil.copy2(
+                    os.path.join(
+                        os.path.join(settings_dir, str(most_recent_version)),
+                        CONFIG_FILE_NAME
+                    ),
+                    os.path.join(settings_version_dir, CONFIG_FILE_NAME)
+                )
+
+                # If current version is of a different major version,
+                # migrate the file, but don't automatically open the last
+                # opened file.
+                if current_version.major != most_recent_version.major:
+                    remove_open_file = True
+
+    settings = QSettings(os.path.join(settings_version_dir, CONFIG_FILE_NAME),
+                              QSettings.Format.IniFormat
+                              )
+
+    if remove_open_file:
+        settings.remove("file/currentFile")
+
+    return settings

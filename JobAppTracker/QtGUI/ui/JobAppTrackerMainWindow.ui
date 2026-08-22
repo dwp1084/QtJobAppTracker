@@ -142,6 +142,7 @@
     <addaction name="actionNew"/>
     <addaction name="actionOpen"/>
     <addaction name="menuExport"/>
+    <addaction name="actionSettings"/>
     <addaction name="action_DEV_Delete_Config"/>
    </widget>
    <widget class="QMenu" name="menuView">
@@ -310,6 +311,11 @@
    </property>
    <property name="toolTip">
     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Delete the config file and close the application. Only available in dev versions.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+  </action>
+  <action name="actionSettings">
+   <property name="text">
+    <string>Settings</string>
    </property>
   </action>
  </widget>

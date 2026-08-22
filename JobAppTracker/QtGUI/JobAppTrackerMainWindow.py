@@ -14,7 +14,9 @@ from Export.BaseExporter import BaseExporter
 from Export.CSVExporter import CSVExporter
 from Export.XLSXExporter import XLSXExporter
 from QtGUI.AppInfoScreen import AppInfoDialog
+from QtGUI.AppSettingsWindow import AppSettingsWindow
 from QtGUI.AppTableModel import AppTableModel
+from QtGUI.QtUtils import initializeSettings
 from QtGUI.StatsWindow import StatsWindow
 from QtGUI.TableFilterProxy import TableFilterProxy
 from QtGUI.ui.ui_JobAppTrackerMainWindow import Ui_JobAppTrackerMainWindow
@@ -60,66 +62,10 @@ class JobAppTrackerMainWindow(QMainWindow):
         self.ui = Ui_JobAppTrackerMainWindow()
         self.ui.setupUi(self)
 
-        # Create and load the settings config file
-        app_data = QStandardPaths.writableLocation(
-            QStandardPaths.StandardLocation.AppDataLocation
-        )
-
         # Hide application count to start
         self._showAppCount(False)
 
-        # Config file creation, checking and migration
-        settings_dir = os.path.join(app_data, CONFIG_DIR_NAME)
-
-        if not os.path.exists(settings_dir):
-            os.mkdir(settings_dir)
-
-        # Version directory and config file migration
-        remove_open_file = False
-
-        settings_version_dir = os.path.join(settings_dir, CURRENT_APP_VERSION)
-        if not os.path.exists(settings_version_dir):
-            os.mkdir(settings_version_dir)
-
-            current_version = packaging.version.parse(CURRENT_APP_VERSION)
-
-            # Do config file migration only if it's not a dev release
-            if not current_version.is_devrelease:
-                version_folders = os.listdir(settings_dir)
-                previous_versions: list[packaging.version.Version] = []
-
-                for version_str in version_folders:
-                    try:
-                        version = packaging.version.parse(version_str)
-                        if not version.is_devrelease and version < current_version:
-                            previous_versions.append(version)
-
-                    except packaging.version.InvalidVersion:
-                        pass  # Somehow, an invalid version folder got in there, just ignore it
-
-                sorted_versions = sorted(previous_versions, reverse=True)
-                if len(sorted_versions) > 0:
-                    most_recent_version = sorted_versions[0]
-                    shutil.copy2(
-                        os.path.join(
-                            os.path.join(settings_dir, str(most_recent_version)),
-                            CONFIG_FILE_NAME
-                        ),
-                        os.path.join(settings_version_dir, CONFIG_FILE_NAME)
-                    )
-
-                    # If current version is of a different major version,
-                    # migrate the file, but don't automatically open the last
-                    # opened file.
-                    if current_version.major != most_recent_version.major:
-                        remove_open_file = True
-
-        self.settings = QSettings(os.path.join(settings_version_dir, CONFIG_FILE_NAME),
-                                  QSettings.Format.IniFormat
-                                  )
-
-        if remove_open_file:
-            self.settings.remove("file/currentFile")
+        self.settings = initializeSettings()
 
         # Create additional windows
         self.appInfoScreen = AppInfoDialog()
@@ -237,6 +183,9 @@ class JobAppTrackerMainWindow(QMainWindow):
             lambda: self.export_data(self.csvExporter)
         )
 
+        self.appSettingsWindow = AppSettingsWindow(self.settings)
+        self.ui.actionSettings.triggered.connect(self.show_settings)
+
         self.searchTimer = QTimer()
         self.searchTimer.setSingleShot(True)
         self.searchTimer.timeout.connect(self.apply_search)
@@ -271,6 +220,13 @@ class JobAppTrackerMainWindow(QMainWindow):
             return
 
         exporter.export(self.currentFile, fileName, self.tableModel)
+
+    @pyqtSlot()
+    def show_settings(self):
+        if self.appSettingsWindow.isVisible():
+            return
+
+        self.appSettingsWindow.show()
 
     @pyqtSlot(str)
     def debounced_search(self, text):

@@ -1,8 +1,11 @@
 import datetime
 from typing import cast
 
+from PyQt6.QtCore import QSettings
+
 from Data.Application import Application, JobTypes, Status
 from Data.InterviewDate import InterviewDate
+from QtGUI.QtUtils import initializeSettings
 from SQLite.Utils import DataFileSQLRunner
 
 APP_DAT_THRESHOLD = 21
@@ -19,6 +22,17 @@ INTERVIEW_THRESHOLD = 90
 """
 Threshold, in days after latest interview date, for ghosting prediction.
 """
+
+_settings_instance = None
+"""
+Singleton instance of Settings for this module
+"""
+
+def _get_settings() -> QSettings:
+    global _settings_instance
+    if _settings_instance is None:
+        _settings_instance = initializeSettings()
+    return _settings_instance
 
 def add_application(data_db: str,
                     applied_date: datetime.date,
@@ -331,14 +345,25 @@ def ghost_prediction(data_db: str, app: Application) -> Status:
     :param app: Application
     :return: Updated status, including if the application has been likely ghosted
     """
+    settings = _get_settings()
+
+    appDateThreshold = settings.value(
+        "opts/appDateThreshold", defaultValue=21, type=int
+    )
+    followUpThreshold = settings.value(
+        "opts/followUpThreshold", defaultValue=7, type=int
+    )
+    interviewThreshold = settings.value(
+        "opts/interviewThreshold", defaultValue=60, type=int
+    )
     past_follow_up_threshold = True if app.followed_up is None \
         else ((datetime.date.today() - app.followed_up).days
-              > FOLLOW_UP_THRESHOLD)
+              > followUpThreshold)
 
     match app.status:
         case Status.PENDING:
             past_app_threshold = ((datetime.date.today() - app.applied_on).days
-                                  > APP_DAT_THRESHOLD)
+                                  > appDateThreshold)
 
             return Status.LIKELY_GHOSTED if (past_app_threshold and
                                              past_follow_up_threshold) \
@@ -346,7 +371,7 @@ def ghost_prediction(data_db: str, app: Application) -> Status:
         case Status.INTERVIEW:
             last_int = days_since_last_interview(data_db, app.app_id)
 
-            return Status.LIKELY_GHOSTED if (last_int > INTERVIEW_THRESHOLD and
+            return Status.LIKELY_GHOSTED if (last_int > interviewThreshold and
                                              past_follow_up_threshold) \
                 else app.status
         case _:

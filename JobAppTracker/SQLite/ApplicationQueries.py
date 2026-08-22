@@ -8,20 +8,6 @@ from Data.InterviewDate import InterviewDate
 from QtGUI.QtUtils import initializeSettings
 from SQLite.Utils import DataFileSQLRunner
 
-APP_DAT_THRESHOLD = 21
-"""
-Threshold, in days after application date, for ghosting prediction.
-"""
-
-FOLLOW_UP_THRESHOLD = 7
-"""
-Threshold, in days after follow-up date, for ghosting prediction.
-"""
-
-INTERVIEW_THRESHOLD = 90
-"""
-Threshold, in days after latest interview date, for ghosting prediction.
-"""
 
 _settings_instance = None
 """

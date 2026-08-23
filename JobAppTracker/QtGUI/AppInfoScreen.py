@@ -6,7 +6,7 @@ from PyQt6.QtCore import pyqtSlot, pyqtSignal, Qt, QPoint
 from PyQt6.QtGui import QIntValidator
 from PyQt6.QtWidgets import QDialog, QCompleter, QMenu, QLineEdit, QWhatsThis
 
-from Data.Application import Application, Status
+from Data.Application import Application, Status, JobTypes
 from Data.InterviewDate import InterviewDate
 from QtGUI.QtUtils import QtSignal, shorten_string
 from QtGUI.ui.ui_AppInfoScreen import Ui_AppInfoScreen
@@ -455,28 +455,53 @@ class AppInfoDialog(QDialog):
                 )
 
             case self.AppInfoType.EXISTING:
-                update_application(
-                    self.currentFile,
-                    self.app_id,
-                    self.ui.companyField.text(),
-                    self.ui.jobTitleField.text(),
-                    self.ui.appFoundOnField.text(),
-                    self.ui.appSiteField.text(),
-                    self.ui.locationField.text(),
-                    self.ui.materialsSent.text(),
-                    self.ui.commentsField.toPlainText(),
-                    self.ui.salaryField.text(),
-                    self.ui.contactField.text(),
-                    self.ui.statusField.currentIndex(),
-                    self.ui.jobTypeField.currentIndex(),
-                    self.ui.hyperlinkField.text(),
-                    self.ui.jobDescriptionEdit.toHtml(),
-                    min_exp,
-                    max_exp,
-                    rej_date,
-                    self.ui.appDateEdit.date().toPyDate(),
-                    follow_up
-                )
+                send_status = self.ui.statusField.currentIndex() >= 0
+                status = Status(self.ui.statusField.currentIndex()) if send_status else Status.PENDING
+                appToUpdate = Application(self.app_id,
+                                          self.ui.companyField.text(),
+                                          self.ui.jobTitleField.text(),
+                                          self.ui.appDateEdit.date().toPyDate(),
+                                          follow_up if follow_up != "" else None,
+                                          JobTypes(self.ui.jobTypeField.currentIndex()),
+                                          self.ui.locationField.text(),
+                                          self.ui.appFoundOnField.text(),
+                                          self.ui.appSiteField.text(),
+                                          self.ui.contactField.text(),
+                                          self.ui.materialsSent.text(),
+                                          self.ui.salaryField.text(),
+                                          status,
+                                          self.ui.commentsField.toPlainText(),
+                                          self.ui.hyperlinkField.text(),
+                                          self.ui.jobDescriptionEdit.toHtml(),
+                                          rej_date,
+                                          min_exp,
+                                          max_exp
+                                          )
+
+                update_application(self.currentFile, appToUpdate, send_status)
+
+                # update_application(
+                #     self.currentFile,
+                #     self.app_id,
+                #     self.ui.companyField.text(),
+                #     self.ui.jobTitleField.text(),
+                #     self.ui.appFoundOnField.text(),
+                #     self.ui.appSiteField.text(),
+                #     self.ui.locationField.text(),
+                #     self.ui.materialsSent.text(),
+                #     self.ui.commentsField.toPlainText(),
+                #     self.ui.salaryField.text(),
+                #     self.ui.contactField.text(),
+                #     self.ui.statusField.currentIndex(),
+                #     self.ui.jobTypeField.currentIndex(),
+                #     self.ui.hyperlinkField.text(),
+                #     self.ui.jobDescriptionEdit.toHtml(),
+                #     min_exp,
+                #     max_exp,
+                #     rej_date,
+                #     self.ui.appDateEdit.date().toPyDate(),
+                #     follow_up
+                # )
 
         # Updates autocomplete data
         insert_companies(self.ui.companyField.text())

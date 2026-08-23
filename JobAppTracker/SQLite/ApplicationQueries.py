@@ -78,108 +78,172 @@ def add_application(data_db: str,
     db.run(add_app_sql, params)
 
 
-def update_application(data_db: str,
-                       app_id: int,
-                       company: str,
-                       title: str,
-                       app_found_at: str,
-                       applied_at: str,
-                       location: str,
-                       materials_sent: str,
-                       comments: str,
-                       salary: str,
-                       contact: str,
-                       status: int,
-                       job_type: int,
-                       link: str,
-                       description: str,
-                       exp_low: int | None,
-                       exp_upp: int | None,
-                       rej_date: datetime.date | None,
-                       app_date: datetime.date,
-                       follow_up: datetime.date | str = ""
-                       ) -> None:
-    """
-    Updates the main fields of an application in the database. If an invalid
-    index is used for status, then it will not be updated in the database.
-    :param data_db: Database file
-    :param app_id: Job application ID from database
-    :param company: Company name
-    :param title: Job title
-    :param app_found_at: Website or place where I found the application
-    :param applied_at: Website or place where I applied
-    :param location: Job location if not remote
-    :param materials_sent: Materials sent to the company
-    :param comments: Comments about the job position
-    :param salary: Posted salary information
-    :param contact: Contact info
-    :param status: Application status
-    :param job_type: Job type (remote, in-person, hybrid)
-    :param link: Link to the application
-    :param description: Rich-text job description
-    :param exp_low: Lower bound for years of experience
-    :param exp_upp: Upper bound for years of experience
-    :param rej_date: Rejection date
-    :param app_date: Application date
-    :param follow_up: Latest follow-up date
-    :return:
-    """
+# def update_application(data_db: str,
+#                        app_id: int,
+#                        company: str,
+#                        title: str,
+#                        app_found_at: str,
+#                        applied_at: str,
+#                        location: str,
+#                        materials_sent: str,
+#                        comments: str,
+#                        salary: str,
+#                        contact: str,
+#                        status: int,
+#                        job_type: int,
+#                        link: str,
+#                        description: str,
+#                        exp_low: int | None,
+#                        exp_upp: int | None,
+#                        rej_date: datetime.date | None,
+#                        app_date: datetime.date,
+#                        follow_up: datetime.date | str = ""
+#                        ) -> None:
+#     """
+#     Updates the main fields of an application in the database. If an invalid
+#     index is used for status, then it will not be updated in the database.
+#     :param data_db: Database file
+#     :param app_id: Job application ID from database
+#     :param company: Company name
+#     :param title: Job title
+#     :param app_found_at: Website or place where I found the application
+#     :param applied_at: Website or place where I applied
+#     :param location: Job location if not remote
+#     :param materials_sent: Materials sent to the company
+#     :param comments: Comments about the job position
+#     :param salary: Posted salary information
+#     :param contact: Contact info
+#     :param status: Application status
+#     :param job_type: Job type (remote, in-person, hybrid)
+#     :param link: Link to the application
+#     :param description: Rich-text job description
+#     :param exp_low: Lower bound for years of experience
+#     :param exp_upp: Upper bound for years of experience
+#     :param rej_date: Rejection date
+#     :param app_date: Application date
+#     :param follow_up: Latest follow-up date
+#     :return:
+#     """
+#     update_without_status_sql = """
+#     UPDATE applications
+#     SET company = ?,
+#         title = ?,
+#         app_found_at = ?,
+#         applied_at = ?,
+#         latest_follow_up = ?,
+#         location = ?,
+#         materials_sent = ?,
+#         comments = ?,
+#         salary = ?,
+#         contact = ?,
+#         type = ?,
+#         link = ?,
+#         description = ?,
+#         exp_low = ?,
+#         exp_upp = ?,
+#         rej_date = ?,
+#         application_date = ?
+#     WHERE app_id = ?;
+#     """
+#
+#     update_full_app_sql = """
+#     UPDATE applications
+#     SET company = ?,
+#         title = ?,
+#         app_found_at = ?,
+#         applied_at = ?,
+#         latest_follow_up = ?,
+#         location = ?,
+#         materials_sent = ?,
+#         comments = ?,
+#         salary = ?,
+#         contact = ?,
+#         status = ?,
+#         type = ?,
+#         link = ?,
+#         description = ?,
+#         exp_low = ?,
+#         exp_upp = ?,
+#         rej_date = ?,
+#         application_date = ?
+#     WHERE app_id = ?;
+#     """
+#
+#     if status < 0:
+#         sql_query = update_without_status_sql
+#         params = (company, title, app_found_at, applied_at, follow_up, location,
+#                   materials_sent, comments, salary, contact, job_type, link,
+#                   description, exp_low, exp_upp,  rej_date, app_date, app_id)
+#     else:
+#         sql_query = update_full_app_sql
+#         params = (company, title, app_found_at, applied_at, follow_up, location,
+#                   materials_sent, comments, salary, contact, status, job_type,
+#                   link, description, exp_low, exp_upp, rej_date, app_date,
+#                   app_id)
+#
+#     db = DataFileSQLRunner(data_db)
+#     db.run(sql_query, params)
+
+def update_application(data_db: str, app: Application, changeStatus: bool = True):
     update_without_status_sql = """
-    UPDATE applications 
-    SET company = ?,
-        title = ?,
-        app_found_at = ?,
-        applied_at = ?,
-        latest_follow_up = ?,
-        location = ?,
-        materials_sent = ?,
-        comments = ?,
-        salary = ?,
-        contact = ?,
-        type = ?,
-        link = ?,
-        description = ?,
-        exp_low = ?,
-        exp_upp = ?,
-        rej_date = ?,
-        application_date = ?
-    WHERE app_id = ?;
-    """
+        UPDATE applications 
+        SET company = ?,
+            title = ?,
+            app_found_at = ?,
+            applied_at = ?,
+            latest_follow_up = ?,
+            location = ?,
+            materials_sent = ?,
+            comments = ?,
+            salary = ?,
+            contact = ?,
+            type = ?,
+            link = ?,
+            description = ?,
+            exp_low = ?,
+            exp_upp = ?,
+            rej_date = ?,
+            application_date = ?
+        WHERE app_id = ?;
+        """
 
     update_full_app_sql = """
-    UPDATE applications 
-    SET company = ?,
-        title = ?,
-        app_found_at = ?,
-        applied_at = ?,
-        latest_follow_up = ?,
-        location = ?,
-        materials_sent = ?,
-        comments = ?,
-        salary = ?,
-        contact = ?,
-        status = ?,
-        type = ?,
-        link = ?,
-        description = ?,
-        exp_low = ?,
-        exp_upp = ?,
-        rej_date = ?,
-        application_date = ?
-    WHERE app_id = ?;
-    """
+        UPDATE applications 
+        SET company = ?,
+            title = ?,
+            app_found_at = ?,
+            applied_at = ?,
+            latest_follow_up = ?,
+            location = ?,
+            materials_sent = ?,
+            comments = ?,
+            salary = ?,
+            contact = ?,
+            status = ?,
+            type = ?,
+            link = ?,
+            description = ?,
+            exp_low = ?,
+            exp_upp = ?,
+            rej_date = ?,
+            application_date = ?
+        WHERE app_id = ?;
+        """
 
-    if status < 0:
-        sql_query = update_without_status_sql
-        params = (company, title, app_found_at, applied_at, follow_up, location,
-                  materials_sent, comments, salary, contact, job_type, link,
-                  description, exp_low, exp_upp,  rej_date, app_date, app_id)
-    else:
+    follow_up = "" if app.followed_up is None else app.followed_up
+
+    if changeStatus:
         sql_query = update_full_app_sql
-        params = (company, title, app_found_at, applied_at, follow_up, location,
-                  materials_sent, comments, salary, contact, status, job_type,
-                  link, description, exp_low, exp_upp, rej_date, app_date,
-                  app_id)
+        params = (app.company, app.title, app.found_at, app.website, follow_up, app.location,
+                  app.materials, app.comments, app.salary, app.contact, int(app.status), int(app.job_type),
+                  app.link, app.description, app.exp_low, app.exp_upp, app.rej_date, app.applied_on,
+                  app.app_id)
+    else:
+        sql_query = update_without_status_sql
+        params = (app.company, app.title, app.found_at, app.website, follow_up, app.location,
+                  app.materials, app.comments, app.salary, app.contact, int(app.job_type),
+                  app.link, app.description, app.exp_low, app.exp_upp, app.rej_date, app.applied_on,
+                  app.app_id)
 
     db = DataFileSQLRunner(data_db)
     db.run(sql_query, params)
@@ -448,3 +512,8 @@ def set_app_file_version(data_db: str, version: int) -> None:
     get_version_num_sql = f"PRAGMA user_version = {version};"
     db = DataFileSQLRunner(data_db)
     db.run(get_version_num_sql)
+
+def vacuum_db(data_db: str):
+    vacuum_sql = "VACUUM;"
+    db = DataFileSQLRunner(data_db)
+    db.run(vacuum_sql)

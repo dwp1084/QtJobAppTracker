@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>PurgeDataWindow</class>
+ <widget class="QDialog" name="PurgeDataWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>400</width>
+    <height>300</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Purge Older Data</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout" stretch="0,1,0">
+   <item>
+    <widget class="QWidget" name="purgeSettingsWidget" native="true">
+     <layout class="QVBoxLayout" name="verticalLayout_2">
+      <item>
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>Data to purge:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="jobDescRadioButton">
+        <property name="text">
+         <string>Job Descriptions</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+        <attribute name="buttonGroup">
+         <string notr="true">purgeDataTypeGroup</string>
+        </attribute>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="jobDescFormatRadioButton">
+        <property name="text">
+         <string>Job Description Formatting</string>
+        </property>
+        <attribute name="buttonGroup">
+         <string notr="true">purgeDataTypeGroup</string>
+        </attribute>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="docRadioButton">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="toolTip">
+         <string>Feature not implemented yet, so this option is disabled.</string>
+        </property>
+        <property name="text">
+         <string>Stored Documents</string>
+        </property>
+        <attribute name="buttonGroup">
+         <string notr="true">purgeDataTypeGroup</string>
+        </attribute>
+       </widget>
+      </item>
+      <item>
+       <layout class="QFormLayout" name="formLayout">
+        <item row="0" column="0">
+         <widget class="QLabel" name="label_2">
+          <property name="text">
+           <string>Purge before:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QDateEdit" name="dateEdit"/>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QGridLayout" name="gridLayout">
+        <item row="3" column="2">
+         <widget class="QCheckBox" name="interviewingCheckbox">
+          <property name="text">
+           <string>Interviewing</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+          <attribute name="buttonGroup">
+           <string notr="true">whitelistStatusGroup</string>
+          </attribute>
+         </widget>
+        </item>
+        <item row="0" column="0" colspan="3">
+         <widget class="QLabel" name="label_3">
+          <property name="text">
+           <string>Don't purge from applications with statuses:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="2">
+         <widget class="QCheckBox" name="declinedCheckbox">
+          <property name="text">
+           <string>Declined</string>
+          </property>
+          <attribute name="buttonGroup">
+           <string notr="true">whitelistStatusGroup</string>
+          </attribute>
+         </widget>
+        </item>
+        <item row="3" column="1">
+         <widget class="QCheckBox" name="pendingCheckbox">
+          <property name="text">
+           <string>Pending</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+          <attribute name="buttonGroup">
+           <string notr="true">whitelistStatusGroup</string>
+          </attribute>
+         </widget>
+        </item>
+        <item row="4" column="0">
+         <widget class="QCheckBox" name="ghostedCheckbox">
+          <property name="text">
+           <string>Ghosted</string>
+          </property>
+          <attribute name="buttonGroup">
+           <string notr="true">whitelistStatusGroup</string>
+          </attribute>
+         </widget>
+        </item>
+        <item row="4" column="1">
+         <widget class="QCheckBox" name="rejectedCheckbox">
+          <property name="text">
+           <string>Rejected</string>
+          </property>
+          <attribute name="buttonGroup">
+           <string notr="true">whitelistStatusGroup</string>
+          </attribute>
+         </widget>
+        </item>
+        <item row="3" column="0">
+         <widget class="QCheckBox" name="offeredCheckbox">
+          <property name="text">
+           <string>Offered</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+          <attribute name="buttonGroup">
+           <string notr="true">whitelistStatusGroup</string>
+          </attribute>
+         </widget>
+        </item>
+        <item row="5" column="0">
+         <widget class="QCheckBox" name="cancelledCheckbox">
+          <property name="text">
+           <string>Cancelled</string>
+          </property>
+          <attribute name="buttonGroup">
+           <string notr="true">whitelistStatusGroup</string>
+          </attribute>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Orientation::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>0</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item>
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="orientation">
+      <enum>Qt::Orientation::Horizontal</enum>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::StandardButton::Apply</set>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>accepted()</signal>
+   <receiver>PurgeDataWindow</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>248</x>
+     <y>254</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>157</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>rejected()</signal>
+   <receiver>PurgeDataWindow</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>316</x>
+     <y>260</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>286</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <buttongroups>
+  <buttongroup name="whitelistStatusGroup">
+   <property name="exclusive">
+    <bool>false</bool>
+   </property>
+  </buttongroup>
+  <buttongroup name="purgeDataTypeGroup"/>
+ </buttongroups>
+</ui>

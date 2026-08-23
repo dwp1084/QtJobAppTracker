@@ -5,10 +5,11 @@ import shutil
 import packaging.version
 from PyQt6.QtCore import QSettings, QStandardPaths, pyqtSlot, QTimer
 from PyQt6.QtGui import QAction, QCloseEvent
-from PyQt6.QtWidgets import QMainWindow, QFileDialog
+from PyQt6.QtWidgets import QMainWindow, QFileDialog, QWidget
 
 import constants as c
 from Data.Application import Status
+from Data.DataPurge import DataPurge
 from Data.StatsData import StatsData
 from Export.BaseExporter import BaseExporter
 from Export.CSVExporter import CSVExporter
@@ -16,6 +17,7 @@ from Export.XLSXExporter import XLSXExporter
 from QtGUI.AppInfoScreen import AppInfoDialog
 from QtGUI.AppSettingsWindow import AppSettingsWindow
 from QtGUI.AppTableModel import AppTableModel
+from QtGUI.PurgeDataWindow import PurgeDataWindow
 from QtGUI.QtUtils import initializeSettings
 from QtGUI.StatsWindow import StatsWindow
 from QtGUI.TableFilterProxy import TableFilterProxy
@@ -104,6 +106,9 @@ class JobAppTrackerMainWindow(QMainWindow):
         self.filterModel = TableFilterProxy(self.currentFile)
         self.filterModel.setSourceModel(self.tableModel)
 
+        self.dataPurger = DataPurge(self.tableModel, self.currentFile)
+        self.dataPurger.tableUpdated.connect(self.load_data)
+
         self.ui.actionPrivacy_Filter.toggled.connect(self.toggle_privacy_filter)
         self.ui.actionPrivacy_Filter.setChecked(enable_privacy_filter)
         self.appInfoScreen.enable_privacy_filter(enable_privacy_filter)
@@ -184,7 +189,12 @@ class JobAppTrackerMainWindow(QMainWindow):
         )
 
         self.appSettingsWindow = AppSettingsWindow(self.settings)
-        self.ui.actionSettings.triggered.connect(self.show_settings)
+        self.ui.actionSettings.triggered.connect(lambda: self.show_window(self.appSettingsWindow))
+
+        self.purgeDataWindow = PurgeDataWindow()
+        self.ui.actionPurge.triggered.connect(lambda: self.show_window(self.purgeDataWindow))
+
+        self.purgeDataWindow.purgeJD.connect(self.dataPurger.purge_job_descriptions)
 
         self.searchTimer = QTimer()
         self.searchTimer.setSingleShot(True)
@@ -222,11 +232,11 @@ class JobAppTrackerMainWindow(QMainWindow):
         exporter.export(self.currentFile, fileName, self.tableModel)
 
     @pyqtSlot()
-    def show_settings(self):
-        if self.appSettingsWindow.isVisible():
+    def show_window(self, window: QWidget):
+        if window.isVisible():
             return
 
-        self.appSettingsWindow.show()
+        window.show()
 
     @pyqtSlot(str)
     def debounced_search(self, text):
@@ -474,7 +484,8 @@ class JobAppTrackerMainWindow(QMainWindow):
         self.ui.appTableView.setUpdatesEnabled(False)
         self.tableModel.setCurrentFile(self.currentFile)
         self.filterModel.set_current_file(self.currentFile)
-        self.appInfoScreen.setCurrentFile(new_file_path)
+        self.appInfoScreen.setCurrentFile(self.currentFile)
+        self.dataPurger.set_current_file(self.currentFile)
         self.settings.setValue("file/currentFile", self.currentFile)
         self.load_data()
 

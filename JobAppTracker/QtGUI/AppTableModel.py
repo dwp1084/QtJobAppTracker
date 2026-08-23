@@ -17,7 +17,7 @@ class AppTableModel(QAbstractTableModel):
 
     def __init__(self, currentFile: str):
         super().__init__()
-        self._data = []
+        self._data: list[Application] = []
         self.currentFile = currentFile
         self.privacyFilter = False
 

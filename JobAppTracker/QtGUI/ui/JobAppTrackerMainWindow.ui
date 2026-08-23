@@ -142,7 +142,6 @@
     <addaction name="actionNew"/>
     <addaction name="actionOpen"/>
     <addaction name="menuExport"/>
-    <addaction name="actionSettings"/>
     <addaction name="action_DEV_Delete_Config"/>
    </widget>
    <widget class="QMenu" name="menuView">
@@ -163,7 +162,15 @@
     <addaction name="separator"/>
     <addaction name="actionPrivacy_Filter"/>
    </widget>
+   <widget class="QMenu" name="menuEdit">
+    <property name="title">
+     <string>Edit</string>
+    </property>
+    <addaction name="actionPurge"/>
+    <addaction name="actionSettings"/>
+   </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuEdit"/>
    <addaction name="menuView"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
@@ -316,6 +323,11 @@
   <action name="actionSettings">
    <property name="text">
     <string>Settings</string>
+   </property>
+  </action>
+  <action name="actionPurge">
+   <property name="text">
+    <string>Purge Older Data</string>
    </property>
   </action>
  </widget>

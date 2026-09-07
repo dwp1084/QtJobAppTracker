@@ -8,7 +8,7 @@ from PyQt6.QtWidgets import QDialog, QCompleter, QMenu, QLineEdit, QWhatsThis
 
 from Data.Application import Application, Status, JobTypes
 from Data.InterviewDate import InterviewDate
-from QtGUI.QtUtils import QtSignal, shorten_string
+from QtGUI.QtUtils import QtSignal, shorten_string, is_html
 from QtGUI.ui.ui_AppInfoScreen import Ui_AppInfoScreen
 from SQLite.ApplicationQueries import (add_application,
                                        update_application,
@@ -182,7 +182,10 @@ class AppInfoDialog(QDialog):
         self.ui.hyperlinkLabel.setText(hyperlink)
         self.ui.hyperlinkLabel.setToolTip(f"<html>{app.link}</html>")
 
-        self.ui.jobDescriptionEdit.setHtml(app.description)
+        if is_html(app.description):
+            self.ui.jobDescriptionEdit.setHtml(app.description)
+        else:
+            self.ui.jobDescriptionEdit.setPlainText(app.description)
 
         # Hyperlink logic
         link_filled = app.link == ""

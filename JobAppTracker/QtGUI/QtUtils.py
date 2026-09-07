@@ -3,6 +3,7 @@ import shutil
 from typing import Protocol, Callable, Any
 
 import packaging.version
+from bs4 import BeautifulSoup
 
 from constants import CURRENT_APP_VERSION
 
@@ -49,6 +50,26 @@ def add_privacy_filter(content: str, privacyFilter: bool):
         return "*****"
     else:
         return content
+
+
+def readable_data_size(num_bytes: int):
+    w_size = float(num_bytes)
+    for unit in ['bytes', 'KB', 'MB', 'GB', 'TB']:
+        if w_size < 1024.0:
+            return f"{w_size:.2f} {unit}"
+        w_size /= 1024.0
+
+    raise NotImplementedError("Bytes count too large")
+
+
+def strip_html(html_text: str):
+    soup = BeautifulSoup(html_text, "html.parser")
+
+    return soup.getText().strip()
+
+
+def is_html(text: str) -> bool:
+    return bool(BeautifulSoup(text, "html.parser").find())
 
 
 def initializeSettings() -> QSettings:

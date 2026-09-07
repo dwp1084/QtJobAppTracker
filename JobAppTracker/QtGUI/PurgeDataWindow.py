@@ -1,10 +1,11 @@
 import datetime
 
-from PyQt6.QtCore import pyqtSlot, pyqtSignal
+from PyQt6.QtCore import pyqtSlot, pyqtSignal, QDate
 from PyQt6.QtWidgets import QDialog, QDialogButtonBox
 
 from Data.Application import Status
 from QtGUI.ui.ui_PurgeDataWindow import Ui_PurgeDataWindow
+from errorDialog import showInfoMessage
 
 
 class PurgeDataWindow(QDialog):
@@ -24,6 +25,10 @@ class PurgeDataWindow(QDialog):
         self.ui.purgeDataTypeGroup.setId(self.ui.jobDescRadioButton, 1)
         self.ui.purgeDataTypeGroup.setId(self.ui.jobDescFormatRadioButton, 2)
         self.ui.purgeDataTypeGroup.setId(self.ui.docRadioButton, 3)
+
+        default_date = QDate.currentDate().addMonths(-3)
+
+        self.ui.dateEdit.setDate(default_date)
 
     @pyqtSlot()
     def purge(self):
@@ -49,6 +54,7 @@ class PurgeDataWindow(QDialog):
             case 1:
                 self.purgeJD.emit(before_date, whitelisted_statuses)
             case 2:
+                self.purgeJDFormat.emit(before_date, whitelisted_statuses)
                 pass
             case 3:
                 pass

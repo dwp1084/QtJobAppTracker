@@ -195,6 +195,7 @@ class JobAppTrackerMainWindow(QMainWindow):
         self.ui.actionPurge.triggered.connect(lambda: self.show_window(self.purgeDataWindow))
 
         self.purgeDataWindow.purgeJD.connect(self.dataPurger.purge_job_descriptions)
+        self.purgeDataWindow.purgeJDFormat.connect(self.dataPurger.purge_job_desc_formats)
 
         self.searchTimer = QTimer()
         self.searchTimer.setSingleShot(True)

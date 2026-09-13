@@ -47,6 +47,8 @@ if %PY_OK%==0 (
 )
 
 echo %ESC%[92mOK%ESC%[0m
+
+echo Starting application...
 python JobAppTracker\main.py
 
 :done

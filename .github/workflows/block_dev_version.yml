@@ -1,0 +1,23 @@
+name: Block dev version on main
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  check-release-version:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Set up python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install packaging library
+        run: pip install packaging
+
+      - name: Verify version is a release build
+        run: python .github/scripts/check_rel_version.py JobAppTracker/version.py

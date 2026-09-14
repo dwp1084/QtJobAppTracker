@@ -40,9 +40,10 @@ if %PY_MAJOR%==%MIN_PY_MAJOR% if %PY_MINOR% LSS %MIN_PY_MINOR% set PY_OK=0
 
 if %PY_OK%==0 (
     echo.
-    echo %ESC%[91m[ERROR]%ESC%[0m This virtual environment was built with Python %ESC%[93m%PY_VERSION%%ESC%[0m.
+    echo %ESC%[91m[ERROR]%ESC%[0m This virtual environment was built with Python %ESC%[93m%PY_VERSION%%ESC%[0m
     echo   but this version of the app requires Python %ESC%[93m%MIN_PY_MAJOR%.%MIN_PY_MINOR%%ESC%[0m or later.
     echo   Please delete the %ESC%[94m%VENV_DIR%%ESC%[0m folder and run %ESC%[94mSetup.bat%ESC%[0m again.
+    echo   Update your system python installation if necessary.
     goto :error
 )
 

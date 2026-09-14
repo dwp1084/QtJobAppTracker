@@ -20,7 +20,7 @@ where python >nul 2>nul
 if errorlevel 1 (
     echo.
     echo %ESC%[91m[ERROR]%ESC%[0m Python was not found on PATH
-    echo Please install Python %MIN_PY_MAJOR%.%MIN_PY_MINOR% or later from %ESC%[94mhttps://www.python.org/downloads/%ESC%[0m
+    echo Please install Python %ESC%[93m%MIN_PY_MAJOR%.%MIN_PY_MINOR%%ESC%[0m or later from %ESC%[94mhttps://www.python.org/downloads/%ESC%[0m
     goto :error
 )
 
@@ -83,6 +83,7 @@ set /p "=Compiling UI files... " <nul
 for %%f in ("%UI_DIR%\*.ui") do (
     pyuic6 "%%f" -o "%UI_DIR%\ui_%%~nf.py"
     if errorlevel 1 (
+        echo.
         echo %ESC%[91m[ERROR]%ESC%[0m Failed to compile "%%f".
         goto :error
     )

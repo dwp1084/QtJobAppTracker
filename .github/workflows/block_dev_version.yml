@@ -16,8 +16,11 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Install packaging library
-        run: pip install packaging
+      - name: Install packaging and yaml libraries
+        run: pip install packaging pyyaml
 
       - name: Verify version is a release build
         run: python .github/scripts/check_rel_version.py JobAppTracker/constants.py
+
+      - name: Verify logs are set to the desired release configuration
+        run: python .github/scripts/check_log_level.py log_config.yml

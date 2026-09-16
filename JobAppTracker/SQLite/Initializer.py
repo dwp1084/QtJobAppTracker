@@ -2,9 +2,8 @@ import os.path
 from os import PathLike
 
 from SQLite.Utils import DataFileSQLRunner, ACFileSQLRunner
-from constants import CURRENT_DATA_FILE_VERSION
+from constants import CURRENT_DATA_FILE_VERSION, APP_FILES_DIR
 
-APP_FILES_DIR = "internal"
 """
 Name for the folder that contains internal files for the application.
 """

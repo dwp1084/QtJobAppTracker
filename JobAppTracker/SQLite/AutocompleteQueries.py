@@ -1,6 +1,7 @@
 import os.path
 
-from SQLite.Initializer import AUTOCOMPLETE_FILE, APP_FILES_DIR
+from SQLite.Initializer import AUTOCOMPLETE_FILE
+from constants import APP_FILES_DIR
 from SQLite.Utils import AutocompleteTables, ACFileSQLRunner
 
 

@@ -1,5 +1,6 @@
 import faulthandler
 import logging.config
+import os.path
 import sys
 import traceback
 
@@ -8,7 +9,7 @@ from PyQt6.QtWidgets import QApplication
 
 from QtGUI.JobAppTrackerMainWindow import JobAppTrackerMainWindow
 from SQLite.Initializer import init_autocomplete_file
-from constants import CURRENT_APP_VERSION
+from constants import CURRENT_APP_VERSION, APP_FILES_DIR
 from errorDialog import showErrorMessage
 
 
@@ -32,6 +33,8 @@ def qt_excepthook(exc_type, value, tb):
 
 
 if __name__ == '__main__':
+    if not os.path.exists(APP_FILES_DIR):
+        os.mkdir(APP_FILES_DIR)
     with open("log_config.yml", "r", encoding="utf-8") as f:
         config = yaml.safe_load(f)
     logging.config.dictConfig(config)
